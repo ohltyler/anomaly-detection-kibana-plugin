@@ -20,10 +20,13 @@ import {
   EuiFlexGroup,
   EuiFlexItem,
   EuiPagination,
+  EuiButtonEmpty,
 } from '@elastic/eui';
 import React from 'react';
 import { getDetectorStateOptions } from '../../utils/helpers';
 import { DETECTOR_STATE } from '../../../../utils/constants';
+import { convertToTourStep } from '../../ListTour/ListTour';
+import { TourStepProps } from '../../../../models/interfaces';
 
 interface ListControlsProps {
   activePage: number;
@@ -37,60 +40,123 @@ interface ListControlsProps {
   onSearchDetectorChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onSearchIndexChange: (searchValue: string) => void;
   onPageClick: (pageNumber: number) => void;
+  tourStepProps: TourStepProps;
 }
-export const ListControls = (props: ListControlsProps) => (
-  <EuiFlexGroup gutterSize="s">
-    <EuiFlexItem grow={false} style={{ width: '40%' }}>
-      <EuiFieldSearch
-        fullWidth={true}
-        value={props.search}
-        placeholder="Search"
-        onChange={props.onSearchDetectorChange}
-        data-test-subj="detectorListSearch"
-      />
-    </EuiFlexItem>
-    <EuiFlexItem>
-      <EuiComboBox
-        id="selectedDetectorStates"
-        placeholder="All detector states"
-        isClearable={true}
-        singleSelection={false}
-        options={getDetectorStateOptions()}
-        onChange={props.onDetectorStateChange}
-        selectedOptions={
-          props.selectedDetectorStates.length > 0
-            ? props.selectedDetectorStates.map(index => ({ label: index }))
-            : []
-        }
-        fullWidth={true}
-      />
-    </EuiFlexItem>
-    <EuiFlexItem>
-      <EuiComboBox
-        id="selectedIndices"
-        placeholder="All indices"
-        isClearable={true}
-        singleSelection={false}
-        options={props.indexOptions}
-        onChange={props.onIndexChange}
-        onSearchChange={props.onSearchIndexChange}
-        selectedOptions={
-          props.selectedIndices.length > 0
-            ? props.selectedIndices.map(index => ({ label: index }))
-            : []
-        }
-        fullWidth={true}
-      />
-    </EuiFlexItem>
-    {props.pageCount > 1 ? (
-      <EuiFlexItem grow={false} style={{ justifyContent: 'center' }}>
-        <EuiPagination
-          pageCount={props.pageCount}
-          activePage={props.activePage}
-          onPageClick={props.onPageClick}
-          data-test-subj="detectorPageControls"
-        />
+export const ListControls = (props: ListControlsProps) => {
+  // setting up the tour step info
+  const tourSteps = [
+    {
+      ...props.tourStepProps,
+      stepNumber: 1,
+      stepTitle: 'Step 1',
+      stepContent: (
+        <span>
+          <p>Search for detectors by name from here.</p>
+          <EuiButtonEmpty onClick={props.tourStepProps.incrementStep}>
+            Next
+          </EuiButtonEmpty>
+        </span>
+      ),
+    },
+    {
+      ...props.tourStepProps,
+      stepNumber: 2,
+      stepTitle: 'Step 2',
+      stepContent: (
+        <span>
+          <p>Filter by detector state here.</p>
+          <EuiButtonEmpty onClick={props.tourStepProps.incrementStep}>
+            Next
+          </EuiButtonEmpty>
+        </span>
+      ),
+    },
+    {
+      ...props.tourStepProps,
+      stepNumber: 3,
+      stepTitle: 'Step 3',
+      stepContent: (
+        <span>
+          <p>Filter by indices here.</p>
+          <EuiButtonEmpty onClick={props.tourStepProps.incrementStep}>
+            Finish
+          </EuiButtonEmpty>
+        </span>
+      ),
+    },
+  ] as TourStepProps[];
+
+  return (
+    <EuiFlexGroup gutterSize="s">
+      <EuiFlexItem grow={false} style={{ width: '40%' }}>
+        {convertToTourStep({
+          ...tourSteps[0],
+          pageContent: (
+            <EuiFieldSearch
+              fullWidth={true}
+              value={props.search}
+              placeholder="Search"
+              onChange={props.onSearchDetectorChange}
+              data-test-subj="detectorListSearch"
+            />
+          ),
+        })}
       </EuiFlexItem>
-    ) : null}
-  </EuiFlexGroup>
-);
+      <EuiFlexItem>
+        {convertToTourStep({
+          ...tourSteps[1],
+          pageContent: (
+            <EuiComboBox
+              id="selectedDetectorStates"
+              placeholder="All detector states"
+              isClearable={true}
+              singleSelection={false}
+              options={getDetectorStateOptions()}
+              onChange={props.onDetectorStateChange}
+              selectedOptions={
+                props.selectedDetectorStates.length > 0
+                  ? props.selectedDetectorStates.map(index => ({
+                      label: index,
+                    }))
+                  : []
+              }
+              fullWidth={true}
+            />
+          ),
+        })}
+      </EuiFlexItem>
+      <EuiFlexItem>
+        {convertToTourStep({
+          ...tourSteps[2],
+          pageContent: (
+            <EuiComboBox
+              id="selectedIndices"
+              placeholder="All indices"
+              isClearable={true}
+              singleSelection={false}
+              options={props.indexOptions}
+              onChange={props.onIndexChange}
+              onSearchChange={props.onSearchIndexChange}
+              selectedOptions={
+                props.selectedIndices.length > 0
+                  ? props.selectedIndices.map(index => ({ label: index }))
+                  : []
+              }
+              fullWidth={true}
+            />
+          ),
+        })}
+      </EuiFlexItem>
+      {props.pageCount > 1 ? (
+        <EuiFlexItem grow={false} style={{ justifyContent: 'center' }}>
+          <EuiPagination
+            pageCount={props.pageCount}
+            activePage={props.activePage}
+            onPageClick={props.onPageClick}
+            data-test-subj="detectorPageControls"
+          />
+        </EuiFlexItem>
+      ) : null}
+    </EuiFlexGroup>
+  );
+};

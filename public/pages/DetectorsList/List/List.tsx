@@ -21,6 +21,7 @@ import {
   EuiPage,
   EuiPageBody,
   EuiTitle,
+  EuiButtonEmpty,
 } from '@elastic/eui';
 import { debounce, get, isEmpty } from 'lodash';
 import queryString from 'query-string';
@@ -34,6 +35,7 @@ import {
   GetDetectorsQueryParams,
   IndexAlias,
 } from '../../../../server/models/types';
+import { Tour, TourStepProps } from '../../../models/interfaces';
 import { SORT_DIRECTION } from '../../../../server/utils/constants';
 import ContentPanel from '../../../components/ContentPanel/ContentPanel';
 import { AppState } from '../../../redux/reducers';
@@ -82,6 +84,8 @@ interface ListState {
   selectedIndices: string[];
 }
 
+const TOTAL_TOUR_STEPS = 3;
+
 export const DetectorList = (props: ListProps) => {
   const dispatch = useDispatch();
   const allDetectors = useSelector((state: AppState) => state.ad.detectorList);
@@ -90,6 +94,43 @@ export const DetectorList = (props: ListProps) => {
   );
 
   const isLoading = useSelector((state: AppState) => state.ad.requesting);
+
+  // creating custom hook for the tour state & initializing
+  const [tourState, setTourState] = useState<Tour>({
+    title: 'Demo tour',
+    currentStep: 1,
+    isActive: true,
+    popoverWidth: 360,
+    totalSteps: 3,
+  });
+
+  const incrementStep = () => {
+    setTourState({
+      ...tourState,
+      currentStep: tourState.currentStep + 1,
+    });
+  };
+
+  const resetTour = () => {
+    setTourState({
+      ...tourState,
+      currentStep: 1,
+      isActive: true,
+    });
+  };
+
+  const finishTour = () => {
+    setTourState({
+      ...tourState,
+      isActive: false,
+    });
+  };
+
+  const tourStepProps = {
+    tour: tourState,
+    finishTour: finishTour,
+    incrementStep: incrementStep,
+  } as TourStepProps;
 
   // Getting all initial indices
   const [indexQuery, setIndexQuery] = useState('');
@@ -307,6 +348,7 @@ export const DetectorList = (props: ListProps) => {
             onSearchDetectorChange={handleSearchDetectorChange}
             onSearchIndexChange={handleSearchIndexChange}
             onPageClick={handlePageChange}
+            tourStepProps={tourStepProps}
           />
           <EuiHorizontalRule margin="xs" />
           <EuiBasicTable
@@ -326,6 +368,9 @@ export const DetectorList = (props: ListProps) => {
               )
             }
           />
+          <EuiButtonEmpty iconType="refresh" flush="left" onClick={resetTour}>
+            Reset tour
+          </EuiButtonEmpty>
         </ContentPanel>
       </EuiPageBody>
     </EuiPage>

@@ -71,6 +71,7 @@
   },
   "dependencies": {
     "@elastic/charts": "^18.2.2",
+    "@elastic/eui": "^22.6.0",
     "babel-polyfill": "^6.26.0",
     "formik": "^1.5.8",
     "query-string": "^6.8.2",

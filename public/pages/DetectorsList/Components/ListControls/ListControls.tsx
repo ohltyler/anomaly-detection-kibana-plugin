@@ -20,12 +20,11 @@ import {
   EuiFlexGroup,
   EuiFlexItem,
   EuiPagination,
-  EuiButtonEmpty,
 } from '@elastic/eui';
 import React from 'react';
 import { getDetectorStateOptions } from '../../utils/helpers';
 import { DETECTOR_STATE } from '../../../../utils/constants';
-import { convertToTourStep } from '../../ListTour/ListTour';
+import { convertToTourStep } from '../../Tour/TourHelpers';
 import { TourStepProps } from '../../../../models/interfaces';
 
 interface ListControlsProps {
@@ -40,57 +39,14 @@ interface ListControlsProps {
   onSearchDetectorChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onSearchIndexChange: (searchValue: string) => void;
   onPageClick: (pageNumber: number) => void;
-  tourStepProps: TourStepProps;
+  tourSteps: TourStepProps[];
 }
 export const ListControls = (props: ListControlsProps) => {
-  // setting up the tour step info
-  const tourSteps = [
-    {
-      ...props.tourStepProps,
-      stepNumber: 1,
-      stepTitle: 'Step 1',
-      stepContent: (
-        <span>
-          <p>Search for detectors by name from here.</p>
-          <EuiButtonEmpty onClick={props.tourStepProps.incrementStep}>
-            Next
-          </EuiButtonEmpty>
-        </span>
-      ),
-    },
-    {
-      ...props.tourStepProps,
-      stepNumber: 2,
-      stepTitle: 'Step 2',
-      stepContent: (
-        <span>
-          <p>Filter by detector state here.</p>
-          <EuiButtonEmpty onClick={props.tourStepProps.incrementStep}>
-            Next
-          </EuiButtonEmpty>
-        </span>
-      ),
-    },
-    {
-      ...props.tourStepProps,
-      stepNumber: 3,
-      stepTitle: 'Step 3',
-      stepContent: (
-        <span>
-          <p>Filter by indices here.</p>
-          <EuiButtonEmpty onClick={props.tourStepProps.incrementStep}>
-            Finish
-          </EuiButtonEmpty>
-        </span>
-      ),
-    },
-  ] as TourStepProps[];
-
   return (
     <EuiFlexGroup gutterSize="s">
       <EuiFlexItem grow={false} style={{ width: '40%' }}>
         {convertToTourStep({
-          ...tourSteps[0],
+          ...props.tourSteps[0],
           pageContent: (
             <EuiFieldSearch
               fullWidth={true}
@@ -104,7 +60,7 @@ export const ListControls = (props: ListControlsProps) => {
       </EuiFlexItem>
       <EuiFlexItem>
         {convertToTourStep({
-          ...tourSteps[1],
+          ...props.tourSteps[1],
           pageContent: (
             <EuiComboBox
               id="selectedDetectorStates"
@@ -127,7 +83,7 @@ export const ListControls = (props: ListControlsProps) => {
       </EuiFlexItem>
       <EuiFlexItem>
         {convertToTourStep({
-          ...tourSteps[2],
+          ...props.tourSteps[2],
           pageContent: (
             <EuiComboBox
               id="selectedIndices"

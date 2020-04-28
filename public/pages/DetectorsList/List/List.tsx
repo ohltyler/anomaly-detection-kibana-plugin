@@ -67,6 +67,7 @@ import {
 } from '../../utils/helpers';
 import { staticColumn } from '../utils/tableUtils';
 import { darkModeEnabled } from '../../../utils/kibanaUtils';
+import { constructAndReturnSteps } from '../Tour/TourHelpers';
 
 export interface ListRouterParams {
   from: string;
@@ -83,8 +84,6 @@ interface ListState {
   selectedDetectorStates: DETECTOR_STATE[];
   selectedIndices: string[];
 }
-
-const TOTAL_TOUR_STEPS = 3;
 
 export const DetectorList = (props: ListProps) => {
   const dispatch = useDispatch();
@@ -131,6 +130,8 @@ export const DetectorList = (props: ListProps) => {
     finishTour: finishTour,
     incrementStep: incrementStep,
   } as TourStepProps;
+
+  const tourSteps = constructAndReturnSteps(tourStepProps);
 
   // Getting all initial indices
   const [indexQuery, setIndexQuery] = useState('');
@@ -348,7 +349,7 @@ export const DetectorList = (props: ListProps) => {
             onSearchDetectorChange={handleSearchDetectorChange}
             onSearchIndexChange={handleSearchIndexChange}
             onPageClick={handlePageChange}
-            tourStepProps={tourStepProps}
+            tourSteps={tourSteps}
           />
           <EuiHorizontalRule margin="xs" />
           <EuiBasicTable

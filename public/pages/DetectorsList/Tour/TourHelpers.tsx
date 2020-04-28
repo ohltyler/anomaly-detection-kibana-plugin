@@ -19,7 +19,7 @@
  */
 
 import React from 'react';
-import { EuiTourStep } from '@elastic/eui';
+import { EuiTourStep, EuiButtonEmpty } from '@elastic/eui';
 import { TourStepProps } from 'public/models/interfaces';
 
 // constructs an EuiTourStep
@@ -42,3 +42,41 @@ export const convertToTourStep = (props: TourStepProps) => {
     </EuiTourStep>
   );
 };
+
+// takes the set of props and builds an array of tour step props
+export const constructAndReturnSteps = (props: TourStepProps) =>
+  [
+    {
+      ...props,
+      stepNumber: 1,
+      stepTitle: 'Step 1',
+      stepContent: (
+        <span>
+          <p>Search for detectors by name from here.</p>
+          <EuiButtonEmpty onClick={props.incrementStep}>Next</EuiButtonEmpty>
+        </span>
+      ),
+    },
+    {
+      ...props,
+      stepNumber: 2,
+      stepTitle: 'Step 2',
+      stepContent: (
+        <span>
+          <p>Filter by detector state here.</p>
+          <EuiButtonEmpty onClick={props.incrementStep}>Next</EuiButtonEmpty>
+        </span>
+      ),
+    },
+    {
+      ...props,
+      stepNumber: 3,
+      stepTitle: 'Step 3',
+      stepContent: (
+        <span>
+          <p>Filter by indices here.</p>
+          <EuiButtonEmpty onClick={props.incrementStep}>Finish</EuiButtonEmpty>
+        </span>
+      ),
+    },
+  ] as TourStepProps[];

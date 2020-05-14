@@ -24,8 +24,8 @@ import {
 import React from 'react';
 import { getDetectorStateOptions } from '../../utils/helpers';
 import { DETECTOR_STATE } from '../../../../utils/constants';
-import { convertToTourStep } from '../../Tour/TourHelpers';
 import { TourStepProps } from '../../../../models/interfaces';
+import { convertToTourStep } from '../../utils/tourUtils';
 
 interface ListControlsProps {
   activePage: number;

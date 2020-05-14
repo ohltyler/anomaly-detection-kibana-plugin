@@ -66,7 +66,7 @@ import {
 } from '../../utils/helpers';
 import { staticColumn } from '../utils/tableUtils';
 import { getTitleWithCount } from '../../../utils/utils';
-import { constructAndReturnSteps } from '../Tour/TourHelpers';
+import { constructAndReturnSteps } from '../utils/tourUtils';
 
 
 export interface ListRouterParams {

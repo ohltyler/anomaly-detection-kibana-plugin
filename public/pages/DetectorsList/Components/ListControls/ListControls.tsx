@@ -20,12 +20,11 @@ import {
   EuiFlexGroup,
   EuiFlexItem,
   EuiPagination,
-  EuiButtonEmpty,
 } from '@elastic/eui';
 import React from 'react';
 import { getDetectorStateOptions } from '../../utils/helpers';
 import { DETECTOR_STATE } from '../../../../utils/constants';
-import { convertToTourStep } from '../../ListTour/ListTour';
+import { convertToTourStep } from '../../Tour/TourHelpers';
 import { TourStepProps } from '../../../../models/interfaces';
 
 interface ListControlsProps {
@@ -40,18 +39,23 @@ interface ListControlsProps {
   onSearchDetectorChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onSearchIndexChange: (searchValue: string) => void;
   onPageClick: (pageNumber: number) => void;
-  tourStepProps: TourStepProps;
+  tourSteps: TourStepProps[];
 }
 export const ListControls = (props: ListControlsProps) => (
   <EuiFlexGroup gutterSize="s">
     <EuiFlexItem grow={false} style={{ width: '40%' }}>
-      <EuiFieldSearch
-        fullWidth={true}
-        value={props.search}
-        placeholder="Search"
-        onChange={props.onSearchDetectorChange}
-        data-test-subj="detectorListSearch"
-      />
+    {convertToTourStep({
+          ...props.tourSteps[0],
+          pageContent: (
+            <EuiFieldSearch
+              fullWidth={true}
+              value={props.search}
+              placeholder="Search"
+              onChange={props.onSearchDetectorChange}
+              data-test-subj="detectorListSearch"
+            />
+          ),
+        })}
     </EuiFlexItem>
     <EuiFlexItem>
       <EuiComboBox

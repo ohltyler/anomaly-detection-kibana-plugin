@@ -20,7 +20,7 @@
 
 import React from 'react';
 import { EuiTourStep, EuiButtonEmpty } from '@elastic/eui';
-import { TourStepProps } from 'public/models/interfaces';
+import { TourStepProps } from '../../../models/interfaces';
 
 // constructs an EuiTourStep
 export const convertToTourStep = (props: TourStepProps) => {

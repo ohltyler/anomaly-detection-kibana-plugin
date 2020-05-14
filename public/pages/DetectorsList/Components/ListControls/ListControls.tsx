@@ -20,10 +20,13 @@ import {
   EuiFlexGroup,
   EuiFlexItem,
   EuiPagination,
+  EuiButtonEmpty,
 } from '@elastic/eui';
 import React from 'react';
 import { getDetectorStateOptions } from '../../utils/helpers';
 import { DETECTOR_STATE } from '../../../../utils/constants';
+import { convertToTourStep } from '../../ListTour/ListTour';
+import { TourStepProps } from '../../../../models/interfaces';
 
 interface ListControlsProps {
   activePage: number;
@@ -37,6 +40,7 @@ interface ListControlsProps {
   onSearchDetectorChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onSearchIndexChange: (searchValue: string) => void;
   onPageClick: (pageNumber: number) => void;
+  tourStepProps: TourStepProps;
 }
 export const ListControls = (props: ListControlsProps) => (
   <EuiFlexGroup gutterSize="s">

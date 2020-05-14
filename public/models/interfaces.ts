@@ -174,3 +174,22 @@ export type DateRange = {
   startDate: number;
   endDate: number;
 };
+
+export type Tour = {
+  title: string;
+  currentStep: number;
+  isActive: boolean;
+  popoverWidth: number;
+  totalSteps: number;
+};
+
+export type TourStepProps = {
+  tour: Tour;
+  finishTour: () => void;
+  incrementStep: () => void;
+  stepContent: any;
+  pageContent: any;
+  stepNumber: number;
+  stepTitle: string;
+  anchorRef: string;
+};

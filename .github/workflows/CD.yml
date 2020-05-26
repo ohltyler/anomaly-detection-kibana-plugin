@@ -5,7 +5,7 @@ on:
       - v*
 
 jobs:
-  Build and upload:
+  Build-and-upload:
     name: Build and upload artifacts
     runs-on: ubuntu-latest
     steps:

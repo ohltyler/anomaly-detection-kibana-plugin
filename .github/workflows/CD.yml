@@ -51,6 +51,12 @@ jobs:
       #     yarn build
       #     artifact=`ls build/*.zip`
       #     aws s3 cp $artifact s3://artifacts.opendistroforelasticsearch.amazon.com/downloads/kibana-plugins/opendistro-anomaly-detection/
+      - name: Create artifact path
+        run: |
+          mkdir -p anomaly-detection-kibana-artifacts
+          cp kibana/plugins/anomaly-detection-kibana-plugin/build/*.zip anomaly-detection-kibana-artifacts
+          cp kibana/plugins/anomaly-detection-kibana-plugin/build/*.zip anomaly-detection-kibana-artifacts-zip
+
       - name: Set tag version
         run: |
           echo ::set-env name=TAG_VERSION::${GITHUB_REF/refs\/tags\//}
@@ -64,12 +70,12 @@ jobs:
           release_name: Release ${{ env.TAG_VERSION }}
           draft: true
           prerelease: false
-      # - name: Upload zip release asset
-      #   uses: actions/upload-release-asset@v1.0.1
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #   with:
-      #     upload_url: ${{ steps.create_release.outputs.upload_url }}
-      #     asset_name: index-management-artifacts.zip
-      #     asset_path: index-management-artifacts_zip
-      #     asset_content_type: application/zip
+      - name: Upload zip release asset
+        uses: actions/upload-release-asset@v1.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_name: anomaly-detection-kibana-artifacts.zip
+          asset_path: anomaly-detection-kibana-artifacts-zip
+          asset_content_type: application/zip

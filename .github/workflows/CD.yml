@@ -9,12 +9,18 @@ jobs:
     name: Build and upload artifacts
     runs-on: ubuntu-latest
     steps:
+      - name: Set tag name and version
+        run: |
+          tag=${GITHUB_REF/refs\/tags\//}
+          echo ::set-env name=TAG_VERSION::"${tag:1}"
+
       # - name: Configure AWS
       #   uses: aws-actions/configure-aws-credentials@v1
       #   with:
       #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
       #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       #     aws-region: us-east-1
+
       - name: Checkout Kibana
         uses: actions/checkout@v2
         with:
@@ -23,50 +29,44 @@ jobs:
           token: ${{ secrets.KIBANA_OSS_ACCESS }}
           path: kibana
 
-      - name: Set tag version
-        run: |
-          tag=${GITHUB_REF/refs\/tags\//}
-          echo ::set-env name=TAG_NAME::${tag}
-          echo ::set-env name=TAG_VERSION::"${tag:1}"
-
       - name: Get node and yarn versions
         id: versions_step
         run: |
           echo "::set-output name=node_version::$(node -p "(require('./kibana/package.json').engines.node).match(/[.0-9]+/)[0]")"
           echo "::set-output name=yarn_version::$(node -p "(require('./kibana/package.json').engines.yarn).match(/[.0-9]+/)[0]")"
+
       - name: Setup node
         uses: actions/setup-node@v1
         with:
           node-version: ${{ steps.versions_step.outputs.node_version }}
           registry-url: 'https://registry.npmjs.org'
+
       - name: Install correct yarn version for Kibana
         run: |
           npm uninstall -g yarn
           echo "Installing yarn ${{ steps.versions_step.outputs.yarn_version }}"
           npm i -g yarn@${{ steps.versions_step.outputs.yarn_version }}
+
       - name: Checkout Anomaly Detection Kibana plugin
         uses: actions/checkout@v2
         with:
           path: kibana/plugins/anomaly-detection-kibana-plugin
+
       - name: Bootstrap the plugin
         run: |
           cd kibana/plugins/anomaly-detection-kibana-plugin
           yarn kbn bootstrap
-      # - name: Build and upload the artifact
-      #   run: |
-      #     cd kibana/plugins/anomaly-detection-kibana-plugin
-      #     yarn build
-      #     artifact=`ls build/*.zip`
-      #     aws s3 cp $artifact s3://artifacts.opendistroforelasticsearch.amazon.com/downloads/kibana-plugins/opendistro-anomaly-detection/
+
       - name: Build the artifact
         run: |
           cd kibana/plugins/anomaly-detection-kibana-plugin
           yarn build
-      # - name: Create artifact path
+
+      # - name: Upload the artifact
       #   run: |
-      #     mkdir -p anomaly-detection-kibana-artifacts
-      #     cp kibana/plugins/anomaly-detection-kibana-plugin/build/*.zip anomaly-detection-kibana-${{ env.TAG_VERSION }}
-      #     cp kibana/plugins/anomaly-detection-kibana-plugin/build/*.zip anomaly-detection-kibana-artifacts-zip
+      #     cd kibana/plugins/anomaly-detection-kibana-plugin
+      #     artifact=`ls build/*.zip`
+      #     aws s3 cp $artifact s3://artifacts.opendistroforelasticsearch.amazon.com/downloads/kibana-plugins/opendistro-anomaly-detection/
 
       - name: Create GitHub draft release
         id: create_release
@@ -75,9 +75,10 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ github.ref }}
-          release_name: Release ${{ env.TAG_NAME }}
+          release_name: Version ${{ env.TAG_VERSION }}
           draft: true
           prerelease: false
+
       - name: Upload zip release asset
         uses: actions/upload-release-asset@v1.0.1
         env:

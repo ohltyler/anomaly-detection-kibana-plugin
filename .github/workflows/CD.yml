@@ -55,11 +55,11 @@ jobs:
         run: |
           cd kibana/plugins/anomaly-detection-kibana-plugin
           yarn build
-      - name: Create artifact path
-        run: |
-          mkdir -p anomaly-detection-kibana-artifacts
-          cp kibana/plugins/anomaly-detection-kibana-plugin/build/*.zip anomaly-detection-kibana-${{ env.TAG_VERSION }}
-          cp kibana/plugins/anomaly-detection-kibana-plugin/build/*.zip anomaly-detection-kibana-artifacts-zip
+      # - name: Create artifact path
+      #   run: |
+      #     mkdir -p anomaly-detection-kibana-artifacts
+      #     cp kibana/plugins/anomaly-detection-kibana-plugin/build/*.zip anomaly-detection-kibana-${{ env.TAG_VERSION }}
+      #     cp kibana/plugins/anomaly-detection-kibana-plugin/build/*.zip anomaly-detection-kibana-artifacts-zip
 
       - name: Set tag version
         run: |
@@ -80,6 +80,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_name: anomaly-detection-kibana-${{ env.TAG_VERSION }}.zip
-          asset_path: anomaly-detection-kibana-artifacts-zip
+          asset_name: opendistro-anomaly-detection-kibana-${{ env.TAG_VERSION:1 }}.zip
+          asset_path: kibana/plugins/anomaly-detection-kibana-plugin/build
           asset_content_type: application/zip

@@ -63,7 +63,8 @@ jobs:
 
       - name: Set tag version
         run: |
-          echo ::set-env name=TAG_VERSION::${GITHUB_REF/refs\/tags\//}
+          echo ::set-env name=TAG_NAME::${GITHUB_REF/refs\/tags\//}
+          echo ::set-env name=TAG_VERSION::"${TAG_NAME:1}"
       - name: Create GitHub draft release
         id: create_release
         uses: actions/create-release@v1.0.0
@@ -71,7 +72,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ github.ref }}
-          release_name: Release ${{ env.TAG_VERSION }}
+          release_name: Release ${{ env.TAG_NAME }}
           draft: true
           prerelease: false
       - name: Upload zip release asset
@@ -80,6 +81,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_name: opendistro-anomaly-detection-kibana-${${{ env.TAG_VERSION }}:1}.zip
-          asset_path: kibana/plugins/anomaly-detection-kibana-plugin/build
+          asset_name: opendistro-anomaly-detection-kibana-${{ env.TAG_VERSION }}.zip
+          asset_path: kibana/plugins/anomaly-detection-kibana-plugin/buyeild
           asset_content_type: application/zip

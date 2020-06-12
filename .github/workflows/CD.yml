@@ -22,6 +22,12 @@ jobs:
           ref: 7.7.0
           token: ${{ secrets.KIBANA_OSS_ACCESS }}
           path: kibana
+
+      - name: Set tag version
+        run: |
+          echo ::set-env name=TAG_NAME::${GITHUB_REF/refs\/tags\//}
+          echo ::set-env name=TAG_VERSION::"${env.TAG_NAME:1}"
+
       - name: Get node and yarn versions
         id: versions_step
         run: |
@@ -61,10 +67,6 @@ jobs:
       #     cp kibana/plugins/anomaly-detection-kibana-plugin/build/*.zip anomaly-detection-kibana-${{ env.TAG_VERSION }}
       #     cp kibana/plugins/anomaly-detection-kibana-plugin/build/*.zip anomaly-detection-kibana-artifacts-zip
 
-      - name: Set tag version
-        run: |
-          echo ::set-env name=TAG_NAME::${GITHUB_REF/refs\/tags\//}
-          echo ::set-env name=TAG_VERSION::"${TAG_NAME:1}"
       - name: Create GitHub draft release
         id: create_release
         uses: actions/create-release@v1.0.0

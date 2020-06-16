@@ -1,0 +1,33 @@
+# The overall template of the release notes
+template: |
+  Compatible with Kibana (**insert version here**) and Open Distro for Elasticsearch (**insert version here**).
+
+  $CHANGES
+
+# Setting the formatting and sorting for the release notes body
+name-template: Version (insert version here)
+change-template: '- $TITLE (PR #$NUMBER)'
+sort-by: merged_at
+sort-direction: ascending
+
+# Organizing the tagged PRs into categories
+categories:
+  - title: 'Major changes'
+    labels:
+      - 'feature'
+      - 'new feature'
+  - title: 'Enhancements'
+    labels:
+      - 'enhancement'
+  - title: 'Bug Fixes'
+    labels:
+      - 'fix'
+      - 'bug'
+  - title: 'Infra Changes'
+    labels:
+      - 'infra'
+      - 'test'
+      - 'documentation'
+  - title: 'Version Upgrades'
+    labels:
+      - 'version upgrade'

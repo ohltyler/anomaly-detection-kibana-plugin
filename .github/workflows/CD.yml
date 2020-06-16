@@ -12,6 +12,7 @@ jobs:
       - name: Set tag name and version
         run: |
           tag=${GITHUB_REF/refs\/tags\//}
+          echo ::set-env name=TAG_NAME::"${tag}"
           echo ::set-env name=TAG_VERSION::"${tag:1}"
       # - name: Configure AWS
       #   uses: aws-actions/configure-aws-credentials@v1
@@ -67,9 +68,10 @@ jobs:
     name: Update release notes and attach artifact
     runs-on: ubuntu-latest
     steps:
-      - name: Update release notes draft
+      - uses: release-drafter/release-drafter@v5
         id: update_release
-        uses: release-drafter/release-drafter@v5
+        name: Version ${{ env.TAG_VERSION }}
+        tag: ${{ env.TAG_NAME }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

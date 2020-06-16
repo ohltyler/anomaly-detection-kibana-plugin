@@ -64,10 +64,6 @@ jobs:
       #     artifact=`ls build/*.zip`
       #     aws s3 cp $artifact s3://artifacts.opendistroforelasticsearch.amazon.com/downloads/kibana-plugins/opendistro-anomaly-detection/
 
-  Update-release-notes:
-    name: Update release notes and attach artifact
-    runs-on: ubuntu-latest
-    steps:
       - name: Update release notes draft
         uses: release-drafter/release-drafter@v5
         id: update_release

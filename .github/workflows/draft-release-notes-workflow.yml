@@ -1,9 +1,9 @@
 name: Release Drafter
 
 on:
-  push:
+  pull-request:
     branches:
-      - createNotes
+      - master
 
 jobs:
   update_release_draft:
@@ -45,8 +45,7 @@ jobs:
           git config --local user.email "${{ secrets.GH_EMAIL }}"
           git add .
           git commit -m 'Update release notes file'
-
-      - name: Push new updated file to repo
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+      # - name: Push new updated file to repo
+      #   uses: ad-m/github-push-action@master
+      #   with:
+      #     github_token: ${{ secrets.GITHUB_TOKEN }}

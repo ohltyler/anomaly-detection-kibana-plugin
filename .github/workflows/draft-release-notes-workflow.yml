@@ -27,7 +27,6 @@ jobs:
       - name: Checkout Anomaly Detection Kibana plugin
         uses: actions/checkout@v2
         with:
-          path: anomaly-detection-kibana-plugin
           persist-credentials: false
           fetch-depth: 0
 

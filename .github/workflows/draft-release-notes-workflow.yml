@@ -42,7 +42,6 @@ jobs:
           echo ${{ steps.update_release.outputs.body }} > temp-release-notes.md
           git add .
           git commit -m 'Update release notes file'
-          - name: Push changes # push the output folder to your repo
       - name: Push new file to repo
         uses: ad-m/github-push-action@master
         with:

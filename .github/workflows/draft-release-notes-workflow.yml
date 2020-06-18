@@ -36,8 +36,8 @@ jobs:
           cd anomaly-detection-kibana-plugin/release-notes
           touch temp-release-notes.md
           echo "${{ steps.update_release.outputs.body }}" > temp-release-notes.md
-          git config user.name ${{ secrets.GH_USER }}
-          git config user.email "${{ secrets.GH_EMAIL }}"
+          git config --global user.name ${{ secrets.GH_USER }}
+          git config --global user.email "${{ secrets.GH_EMAIL }}"
           git add .
           git commit -m 'Update release notes file'
       - name: Push new file to repo
@@ -45,5 +45,3 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           force: true
-        run: |
-          cd anomaly-detection-kibana-plugin

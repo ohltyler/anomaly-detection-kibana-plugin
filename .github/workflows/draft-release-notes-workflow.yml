@@ -35,7 +35,7 @@ jobs:
         run: |
           cd anomaly-detection-kibana-plugin/release-notes
           touch temp-release-notes.md
-          echo ${{ steps.update_release.outputs.body }} > temp-release-notes.md
+          echo "${{ steps.update_release.outputs.body }}" > temp-release-notes.md
           git add .
           git commit -m 'Update release notes file'
       - name: Push new file to repo

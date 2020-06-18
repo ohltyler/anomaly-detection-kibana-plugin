@@ -3,18 +3,48 @@ name: Release Drafter
 on:
   push:
     branches:
-      - master
+      - createNotes
 
 jobs:
   update_release_draft:
     name: Update draft release notes
     runs-on: ubuntu-latest
     steps:
+      - name: Set tag name, tag version, and Kibana version
+        run: |
+          tag=v1.8.1.0
+          kibana-version=7.7.1
+          echo ::set-env name=TAG_NAME::"${tag}"
+          echo ::set-env name=TAG_VERSION::"${tag:1}"
+          echo ::set-env name=TAG_NAME::"${kibana-version}"
+
       - name: Update draft release notes
+        id: update_release
         uses: release-drafter/release-drafter@v5
         with:
           config-name: draft-release-notes-config.yml
-          name: Version (set here)
-          tag: (None)
+          name: Version ${{ env.TAG_VERSION }}
+          tag: ${{ env.TAG_NAME }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Checkout Anomaly Detection Kibana plugin
+        uses: actions/checkout@v2
+        with:
+          path: anomaly-detection-kibana-plugin
+
+      - name: Create draft notes file in release-notes
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cd anomaly-detection-kibana-plugin/release-notes
+          touch temp-release-notes.md
+          echo ${{ steps.update_release.outputs.body }} > temp-release-notes.md
+          git add .
+          git commit -m 'Update release notes file'
+          - name: Push changes # push the output folder to your repo
+      - name: Push new file to repo
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          force: true

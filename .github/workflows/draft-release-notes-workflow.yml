@@ -12,8 +12,8 @@ jobs:
     steps:
       - name: Set tag name, tag version, and Kibana version
         run: |
-          tag=v1.8.1.0
-          kibana-version=7.7.1
+          tag="v1.8.1.0"
+          kibana-version="7.7.1"
           echo ::set-env name=TAG_NAME::"${tag}"
           echo ::set-env name=TAG_VERSION::"${tag:1}"
           echo ::set-env name=TAG_NAME::"${kibana-version}"

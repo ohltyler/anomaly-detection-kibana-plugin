@@ -7,17 +7,13 @@ on:
 
 jobs:
   update_release_draft:
+    env:
+      TAG_NAME: v1.8.1.0
+      TAG_VERSION: 1.8.1.0
+      KIBANA_VERSION: 7.7.1
     name: Update draft release notes
     runs-on: ubuntu-latest
     steps:
-      - name: Set tag name, tag version, and Kibana version
-        run: |
-          tag="v1.8.1.0"
-          kibana-version="7.7.1"
-          echo ::set-env name=TAG_NAME::"${tag}"
-          echo ::set-env name=TAG_VERSION::"${tag:1}"
-          echo ::set-env name=TAG_NAME::"${kibana-version}"
-
       - name: Update draft release notes
         id: update_release
         uses: release-drafter/release-drafter@v5

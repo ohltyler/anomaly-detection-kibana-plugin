@@ -20,7 +20,12 @@ import {
   APIErrorAction,
 } from '../middleware/types';
 import handleActions from '../utils/handleActions';
-import { Detector, DetectorListItem } from '../../models/interfaces';
+import {
+  Detector,
+  DetectorListItem,
+  Task,
+  TaskListItem,
+} from '../../models/interfaces';
 import { AD_NODE_API } from '../../../utils/constants';
 import { GetDetectorsQueryParams } from '../../../server/models/types';
 import { cloneDeep } from 'lodash';
@@ -41,6 +46,8 @@ export interface Detectors {
   requesting: boolean;
   detectors: { [key: string]: Detector };
   detectorList: { [key: string]: DetectorListItem };
+  tasks: { [key: string]: Task };
+  taskList: { [key: string]: TaskListItem };
   totalDetectors: number;
   errorMessage: string;
 }
@@ -48,6 +55,8 @@ export const initialDetectorsState: Detectors = {
   requesting: false,
   detectors: {},
   detectorList: {},
+  tasks: {},
+  taskList: {},
   errorMessage: '',
   totalDetectors: 0,
 };

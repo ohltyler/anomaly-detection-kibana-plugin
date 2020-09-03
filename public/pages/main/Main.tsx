@@ -18,8 +18,10 @@ import React from 'react';
 import { AppState } from '../../redux/reducers';
 import { CreateDetector } from '../createDetector';
 import { DetectorList } from '../DetectorsList';
+import { TaskList } from '../TaskList';
 import { SampleData } from '../SampleData';
 import { ListRouterParams } from '../DetectorsList/containers/List/List';
+import { TaskListRouterParams } from '../TaskList/containers/TaskList/TaskList';
 // @ts-ignore
 import { EuiSideNav, EuiPage, EuiPageBody, EuiPageSideBar } from '@elastic/eui';
 import { useSelector } from 'react-redux';
@@ -33,12 +35,14 @@ enum Navigation {
   Dashboard = 'Dashboard',
   Detectors = 'Detectors',
   SampleDetectors = 'Sample detectors',
+  HistoricalAnalysis = 'Historical analysis',
 }
 
 enum Pathname {
   Dashboard = '/dashboard',
   Detectors = '/detectors',
   SampleDetectors = '/sample-detectors',
+  HistoricalAnalysis = '/tasks',
 }
 
 interface MainProps extends RouteComponentProps {}
@@ -66,8 +70,14 @@ export function Main(props: MainProps) {
           isSelected: props.location.pathname === Pathname.Detectors,
         },
         {
-          name: Navigation.SampleDetectors,
+          name: Navigation.HistoricalAnalysis,
           id: 3,
+          href: `#${Pathname.HistoricalAnalysis}`,
+          isSelected: props.location.pathname === Pathname.HistoricalAnalysis,
+        },
+        {
+          name: Navigation.SampleDetectors,
+          id: 4,
           href: `#${Pathname.SampleDetectors}`,
           isSelected: props.location.pathname === Pathname.SampleDetectors,
         },
@@ -91,6 +101,13 @@ export function Main(props: MainProps) {
             path={APP_PATH.LIST_DETECTORS}
             render={(props: RouteComponentProps<ListRouterParams>) => (
               <DetectorList {...props} />
+            )}
+          />
+          <Route
+            exact
+            path={APP_PATH.LIST_TASKS}
+            render={(props: RouteComponentProps<TaskListRouterParams>) => (
+              <TaskList {...props} />
             )}
           />
           <Route

@@ -25,7 +25,7 @@ import get from 'lodash/get';
 import React from 'react';
 import { Detector } from '../../../models/interfaces';
 import { PLUGIN_NAME, DETECTOR_STATE } from '../../../utils/constants';
-import { stateToColorMap } from '../../utils/constants';
+import { detectorStateToColorMap } from '../../utils/constants';
 
 export const DEFAULT_EMPTY_DATA = '-';
 const columnStyle = {
@@ -48,7 +48,7 @@ const renderIndices = (indices: string[]) => {
 const renderState = (state: DETECTOR_STATE) => {
   return (
     //@ts-ignore
-    <EuiHealth color={stateToColorMap.get(state)}>{state}</EuiHealth>
+    <EuiHealth color={detectorStateToColorMap.get(state)}>{state}</EuiHealth>
   );
 };
 

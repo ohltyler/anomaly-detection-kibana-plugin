@@ -14,7 +14,7 @@
  */
 
 import { SORT_DIRECTION } from '../../../server/utils/constants';
-import { DETECTOR_STATE } from '../../utils/constants';
+import { DETECTOR_STATE, TASK_STATE } from '../../utils/constants';
 
 export const customSubduedColor = '#98A2B3';
 export const customSuccessColor = '#7DE2D1';
@@ -30,7 +30,10 @@ export enum DETECTOR_STATE_COLOR {
   UNEXPECTED_FAILURE = '#F66',
 }
 
-export const stateToColorMap = new Map<DETECTOR_STATE, DETECTOR_STATE_COLOR>()
+export const detectorStateToColorMap = new Map<
+  DETECTOR_STATE,
+  DETECTOR_STATE_COLOR
+>()
   .set(DETECTOR_STATE.DISABLED, DETECTOR_STATE_COLOR.DISABLED)
   .set(DETECTOR_STATE.INIT, DETECTOR_STATE_COLOR.INIT)
   .set(DETECTOR_STATE.RUNNING, DETECTOR_STATE_COLOR.RUNNING)
@@ -41,9 +44,22 @@ export const stateToColorMap = new Map<DETECTOR_STATE, DETECTOR_STATE_COLOR>()
     DETECTOR_STATE_COLOR.UNEXPECTED_FAILURE
   );
 
+export enum TASK_STATE_COLOR {
+  DISABLED = '#98A2B3',
+  RUNNING = '#7DE2D1',
+  RUNNING_FAILURE = '#F66',
+}
+
+export const taskStateToColorMap = new Map<TASK_STATE, TASK_STATE_COLOR>()
+  .set(TASK_STATE.DISABLED, TASK_STATE_COLOR.DISABLED)
+  .set(TASK_STATE.RUNNING, TASK_STATE_COLOR.RUNNING)
+  .set(TASK_STATE.RUNNING_FAILURE, TASK_STATE_COLOR.RUNNING_FAILURE);
+
 export const ALL_DETECTOR_STATES = [];
+export const ALL_TASK_STATES = [];
 export const ALL_INDICES = [];
 export const MAX_DETECTORS = 1000;
+export const MAX_TASKS = 1000;
 export const MAX_SELECTED_INDICES = 10;
 
 export const DEFAULT_QUERY_PARAMS = {
@@ -69,6 +85,15 @@ export const GET_SAMPLE_DETECTORS_QUERY_PARAMS = {
   search: 'opendistro-sample',
   indices: '',
   size: MAX_DETECTORS,
+  sortDirection: SORT_DIRECTION.ASC,
+  sortField: 'name',
+};
+
+export const GET_ALL_TASKS_QUERY_PARAMS = {
+  from: 0,
+  search: '',
+  indices: '',
+  size: MAX_TASKS,
   sortDirection: SORT_DIRECTION.ASC,
   sortField: 'name',
 };

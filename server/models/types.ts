@@ -88,6 +88,14 @@ export type GetDetectorsQueryParams = {
   sortField: string;
 };
 
+export type GetTasksQueryParams = {
+  from: number;
+  size: number;
+  search: string;
+  sortDirection: SORT_DIRECTION;
+  sortField: string;
+};
+
 export type GetAdMonitorsQueryParams = {
   from: number;
   size: number;
@@ -134,4 +142,4 @@ export type DateRangeFilter = {
   startTime?: number;
   endTime?: number;
   fieldName: string;
-}
+};

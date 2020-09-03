@@ -13,7 +13,7 @@
  * permissions and limitations under the License.
  */
 
-import { DATA_TYPES, DETECTOR_STATE } from '../utils/constants';
+import { DATA_TYPES, DETECTOR_STATE, TASK_STATE } from '../utils/constants';
 
 export type FieldInfo = {
   label: string;
@@ -124,6 +124,30 @@ export type DetectorListItem = {
   lastActiveAnomaly: number;
   lastUpdateTime: number;
   enabledTime?: number;
+};
+
+export type Task = {
+  primaryTerm: number;
+  seqNo: number;
+  id: string;
+  name: string;
+  detectorId: string;
+  description: string;
+  curState: TASK_STATE;
+  dataStartTime: number;
+  dataEndTime: number;
+  lastUpdateTime: number;
+  enabled?: boolean;
+};
+
+export type TaskListItem = {
+  name: string;
+  detectorId: string;
+  description: string;
+  curState: TASK_STATE;
+  dataStartTime: number;
+  dataEndTime: number;
+  lastUpdateTime: number;
 };
 
 export type AnomalyData = {

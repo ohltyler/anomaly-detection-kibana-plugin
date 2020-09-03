@@ -29,6 +29,8 @@ export const BREADCRUMBS = Object.freeze({
   EDIT_DETECTOR: { text: 'Edit detector' },
   DASHBOARD: { text: 'Dashboard', href: '#/' },
   EDIT_MODEL_CONFIGURATION: { text: 'Edit model configuration' },
+  EDIT_FEATURES: { text: 'Edit features' },
+  TASKS: { text: 'Tasks', href: '#/tasks' },
 });
 
 export const APP_PATH = {
@@ -39,6 +41,7 @@ export const APP_PATH = {
   EDIT_DETECTOR: '/detectors/:detectorId/edit',
   EDIT_FEATURES: '/detectors/:detectorId/features/',
   DETECTOR_DETAIL: '/detectors/:detectorId/',
+  LIST_TASKS: '/tasks',
 };
 
 export const KIBANA_PATH = {
@@ -66,6 +69,12 @@ export enum DETECTOR_STATE {
   FEATURE_REQUIRED = 'Feature required',
   INIT_FAILURE = 'Initialization failure',
   UNEXPECTED_FAILURE = 'Unexpected failure',
+}
+
+export enum TASK_STATE {
+  DISABLED = 'Stopped',
+  RUNNING = 'Running',
+  RUNNING_FAILURE = 'Running failure',
 }
 
 export enum SAMPLE_TYPE {

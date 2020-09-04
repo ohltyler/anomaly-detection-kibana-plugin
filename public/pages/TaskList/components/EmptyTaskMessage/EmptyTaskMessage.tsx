@@ -15,7 +15,7 @@
 
 import { EuiButton, EuiEmptyPrompt, EuiText } from '@elastic/eui';
 import React from 'react';
-import { CreateDetectorButtons } from '../../../../components/CreateDetectorButtons/CreateDetectorButtons';
+import { APP_PATH, PLUGIN_NAME } from '../../../../utils/constants';
 
 const filterText =
   'There are no tasks matching your applied filters. Reset your filters to view all tasks.';
@@ -45,7 +45,14 @@ export const EmptyTaskMessage = (props: EmptyTaskProps) => (
           Reset filters
         </EuiButton>
       ) : (
-        <CreateDetectorButtons />
+        <EuiButton
+          style={{ width: '150px' }}
+          fill
+          href={`${PLUGIN_NAME}#${APP_PATH.CREATE_TASK}`}
+          data-test-subj="createTaskButton"
+        >
+          Create task
+        </EuiButton>
       )
     }
   />

@@ -31,6 +31,8 @@ export const BREADCRUMBS = Object.freeze({
   EDIT_MODEL_CONFIGURATION: { text: 'Edit model configuration' },
   EDIT_FEATURES: { text: 'Edit features' },
   TASKS: { text: 'Tasks', href: '#/tasks' },
+  CREATE_TASK: { text: 'Create task' },
+  EDIT_TASK: { text: 'Edit task' },
 });
 
 export const APP_PATH = {
@@ -42,6 +44,9 @@ export const APP_PATH = {
   EDIT_FEATURES: '/detectors/:detectorId/features/',
   DETECTOR_DETAIL: '/detectors/:detectorId/',
   LIST_TASKS: '/tasks',
+  CREATE_TASK: '/create-task/',
+  EDIT_TASK: '/tasks/:taskId/edit',
+  TASK_DETAIL: '/tasks/:taskId/',
 };
 
 export const KIBANA_PATH = {

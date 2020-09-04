@@ -17,6 +17,9 @@ import queryString from 'query-string';
 import { GetTasksQueryParams } from '../../../../server/models/types';
 import { SORT_DIRECTION } from '../../../../server/utils/constants';
 import { DEFAULT_QUERY_PARAMS } from '../../utils/constants';
+import { get, cloneDeep } from 'lodash';
+import { TASK_STATE } from '../../../utils/constants';
+import { TaskListItem } from '../../../models/interfaces';
 
 export const getURLQueryParams = (location: {
   search: string;
@@ -40,4 +43,11 @@ export const getURLQueryParams = (location: {
         ? DEFAULT_QUERY_PARAMS.sortDirection
         : (sortDirection as SORT_DIRECTION),
   };
+};
+
+export const getTaskStateOptions = () => {
+  return Object.values(TASK_STATE).map((taskState) => ({
+    label: taskState,
+    text: taskState,
+  }));
 };

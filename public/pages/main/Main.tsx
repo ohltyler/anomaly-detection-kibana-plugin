@@ -19,6 +19,7 @@ import { AppState } from '../../redux/reducers';
 import { CreateDetector } from '../createDetector';
 import { DetectorList } from '../DetectorsList';
 import { TaskList } from '../TaskList';
+import { CreateTask } from '../CreateTask';
 import { SampleData } from '../SampleData';
 import { ListRouterParams } from '../DetectorsList/containers/List/List';
 import { TaskListRouterParams } from '../TaskList/containers/TaskList/TaskList';
@@ -138,6 +139,20 @@ export function Main(props: MainProps) {
             path={APP_PATH.DETECTOR_DETAIL}
             render={(props: RouteComponentProps) => (
               <DetectorDetail {...props} />
+            )}
+          />
+          <Route
+            exact
+            path={APP_PATH.CREATE_TASK}
+            render={(props: RouteComponentProps) => (
+              <CreateTask {...props} isEdit={false} />
+            )}
+          />
+          <Route
+            exact
+            path={APP_PATH.EDIT_TASK}
+            render={(props: RouteComponentProps) => (
+              <CreateTask {...props} isEdit={true} />
             )}
           />
           <Redirect from="/" to={APP_PATH.DASHBOARD} />

@@ -20,6 +20,7 @@ import {
   EuiHorizontalRule,
   EuiPage,
   EuiPageBody,
+  EuiSpacer,
 } from '@elastic/eui';
 import { isEmpty } from 'lodash';
 import queryString from 'query-string';
@@ -43,6 +44,7 @@ import { getURLQueryParams } from '../../utils/helpers';
 import { filterAndSortTasks, getTasksToDisplay } from '../../../utils/helpers';
 import { EmptyTaskMessage } from '../../components/EmptyTaskMessage/EmptyTaskMessage';
 import { taskListColumns } from '../../utils/constants';
+import { TaskFilters } from '../../components/TaskFilters/TaskFilters';
 
 export interface TaskListRouterParams {
   from: string;
@@ -224,15 +226,30 @@ export const TaskList = (props: TaskListProps) => {
           }
           actions={[
             <EuiButton
+              style={{ width: '150px', marginBottom: '12px' }}
               data-test-subj="createTaskButton"
               fill
-              href={`${PLUGIN_NAME}#${APP_PATH.CREATE_DETECTOR}`}
+              href={`${PLUGIN_NAME}#${APP_PATH.CREATE_TASK}`}
             >
               Create task
             </EuiButton>,
           ]}
         >
-          <EuiHorizontalRule margin="xs" />
+          <TaskFilters
+            activePage={state.page}
+            pageCount={
+              isLoading
+                ? 0
+                : Math.ceil(selectedTasks.length / state.queryParams.size) || 1
+            }
+            search={state.queryParams.search}
+            selectedTaskStates={state.selectedTaskStates}
+            onTaskStateChange={handleTaskStateChange}
+            onSearchTaskChange={handleSearchTaskChange}
+            onPageClick={handlePageChange}
+          />
+          <EuiSpacer size="s" />
+          <EuiHorizontalRule margin="s" style={{ marginBottom: '0px' }} />
           <EuiBasicTable<any>
             items={isLoading ? [] : tasksToDisplay}
             columns={taskListColumns}

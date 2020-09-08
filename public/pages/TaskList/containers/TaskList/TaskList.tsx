@@ -60,7 +60,7 @@ interface TaskListState {
   selectedTaskStates: TASK_STATE[];
 }
 
-export const TaskList = (props: TaskListProps) => {
+export function TaskList(props: TaskListProps) {
   const dispatch = useDispatch();
   const allTasks = useSelector((state: AppState) => state.ad.taskList);
   const errorGettingTasks = useSelector(
@@ -271,4 +271,4 @@ export const TaskList = (props: TaskListProps) => {
       </EuiPageBody>
     </EuiPage>
   );
-};
+}

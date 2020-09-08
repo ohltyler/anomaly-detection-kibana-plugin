@@ -13,17 +13,36 @@
  * permissions and limitations under the License.
  */
 
-import { EuiPage, EuiPageBody, EuiText } from '@elastic/eui';
-import React, { useEffect, useState } from 'react';
+import {
+  EuiButton,
+  EuiButtonEmpty,
+  EuiFlexGroup,
+  EuiFlexItem,
+  EuiPage,
+  EuiPageBody,
+  EuiPageHeader,
+  EuiPageHeaderSection,
+  EuiSpacer,
+  EuiTitle,
+} from '@elastic/eui';
+import { Formik } from 'formik';
+import { get, isEmpty } from 'lodash';
+import React, { Fragment, useEffect, useState } from 'react';
 import { BREADCRUMBS } from '../../../../utils/constants';
 import { MAX_TASKS } from '../../../utils/constants';
+import { AppState } from '../../../../redux/reducers';
 import { RouteComponentProps } from 'react-router';
+import { useDispatch, useSelector } from 'react-redux';
 import { useHideSideNavBar } from '../../../main/hooks/useHideSideNavBar';
-
+import { TaskInfo } from '../../components/TaskInfo/TaskInfo';
+import { TaskFormikValues } from '../../utils/constants';
+import { formikToTask, taskToFormik } from '../../utils/helpers';
 //@ts-ignore
 import chrome from 'ui/chrome';
 //@ts-ignore
 import { toastNotifications } from 'ui/notify';
+import { getDetector, updateDetector } from '../../../../redux/reducers/ad';
+import { Task } from '../../../../models/interfaces';
 
 interface CreateRouterProps {
   taskId?: string;
@@ -34,8 +53,17 @@ interface CreateTaskProps extends RouteComponentProps<CreateRouterProps> {
 }
 
 export function CreateTask(props: CreateTaskProps) {
+  const dispatch = useDispatch();
+  const taskId: string = get(props, 'match.params.taskId', '');
+  // TODO: this may not return the right val
+  const task = get(
+    useSelector((state: AppState) => state.ad.tasks),
+    taskId
+  );
+
   useHideSideNavBar(true, false);
-  //Set breadcrumbs based on Create / Update
+
+  // Set breadcrumbs based on Create / Update
   useEffect(() => {
     const createOrEditBreadcrumb = props.isEdit
       ? BREADCRUMBS.EDIT_TASK
@@ -55,12 +83,106 @@ export function CreateTask(props: CreateTaskProps) {
     chrome.breadcrumbs.set(breadCrumbs);
   });
 
+  // Try to get the task initially
+  useEffect(() => {
+    const fetchTask = async (taskId: string) => {
+      // TODO: change to getTask() when implemented
+      dispatch(getDetector(taskId));
+    };
+    if (taskId) {
+      fetchTask(taskId);
+    }
+  }, []);
+
+  // TODO: stub for now
+  const handleValidateName = async (taskName: string) => {
+    return undefined;
+  };
+
+  const handleValidateDescription = async (taskDescription: string) => {
+    if (taskDescription.length > 400) {
+      throw 'Description should not exceed 400 characters';
+    }
+    return undefined;
+  };
+
+  // TODO: stub for now
+  const handleUpdate = async (taskToUpdate: Task) => {
+    return;
+  };
+
+  // TODO: stub for now
+  const handleCreate = async (taskToCreate: Task) => {
+    return;
+  };
+
+  const handleSubmit = async (values: TaskFormikValues, formikBag: any) => {
+    const apiRequest = formikToTask(values, task);
+    try {
+      if (props.isEdit) {
+        await handleUpdate(apiRequest);
+      } else {
+        await handleCreate(apiRequest);
+      }
+      formikBag.setSubmitting(false);
+    } catch (e) {
+      formikBag.setSubmitting(false);
+    }
+  };
+
+  const handleCancelClick = () => {
+    taskId
+      ? props.history.push(`/tasks/${taskId}/configurations`)
+      : props.history.push('/tasks');
+  };
+
   return (
     <EuiPage>
       <EuiPageBody>
-        <EuiText>
-          <p>Create/edit task placeholder</p>
-        </EuiText>
+        <EuiPageHeader>
+          <EuiPageHeaderSection>
+            <EuiTitle size="l">
+              <h1>{props.isEdit ? 'Edit task' : 'Create task'} </h1>
+            </EuiTitle>
+          </EuiPageHeaderSection>
+        </EuiPageHeader>
+        <Formik
+          enableReinitialize={true}
+          initialValues={taskToFormik(task)}
+          onSubmit={handleSubmit}
+        >
+          {(formikProps) => (
+            <Fragment>
+              <TaskInfo
+                onValidateTaskName={handleValidateName}
+                onValidateTaskDescription={handleValidateDescription}
+              />
+              <EuiSpacer />
+              {/* <DataSource formikProps={formikProps} />
+              <EuiSpacer />
+              <Settings /> */}
+              <EuiSpacer />
+              <EuiFlexGroup alignItems="center" justifyContent="flexEnd">
+                <EuiFlexItem grow={false}>
+                  <EuiButtonEmpty onClick={handleCancelClick}>
+                    Cancel
+                  </EuiButtonEmpty>
+                </EuiFlexItem>
+                <EuiFlexItem grow={false}>
+                  <EuiButton
+                    fill
+                    type="submit"
+                    isLoading={formikProps.isSubmitting}
+                    //@ts-ignore
+                    onClick={formikProps.handleSubmit}
+                  >
+                    {props.isEdit ? 'Save changes' : 'Create'}
+                  </EuiButton>
+                </EuiFlexItem>
+              </EuiFlexGroup>
+            </Fragment>
+          )}
+        </Formik>
       </EuiPageBody>
     </EuiPage>
   );

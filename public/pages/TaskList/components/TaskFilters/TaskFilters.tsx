@@ -34,43 +34,45 @@ interface TaskListFiltersProps {
   onSearchTaskChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onPageClick: (pageNumber: number) => void;
 }
-export const TaskFilters = (props: TaskListFiltersProps) => (
-  <EuiFlexGroup gutterSize="s">
-    <EuiFlexItem grow={false} style={{ width: '60%' }}>
-      <EuiFieldSearch
-        fullWidth={true}
-        value={props.search}
-        placeholder="Search"
-        onChange={props.onSearchTaskChange}
-        data-test-subj="taskListSearch"
-      />
-    </EuiFlexItem>
-    <EuiFlexItem>
-      <EuiComboBox
-        id="selectedTaskStates"
-        data-test-subj="taskStateFilter"
-        placeholder="All task states"
-        isClearable={true}
-        singleSelection={false}
-        options={getTaskStateOptions()}
-        onChange={props.onTaskStateChange}
-        selectedOptions={
-          props.selectedTaskStates.length > 0
-            ? props.selectedTaskStates.map((state) => ({ label: state }))
-            : []
-        }
-        fullWidth={true}
-      />
-    </EuiFlexItem>
-    {props.pageCount > 1 ? (
-      <EuiFlexItem grow={false} style={{ justifyContent: 'center' }}>
-        <EuiPagination
-          pageCount={props.pageCount}
-          activePage={props.activePage}
-          onPageClick={props.onPageClick}
-          data-test-subj="taskListPageControls"
+export function TaskFilters(props: TaskListFiltersProps) {
+  return (
+    <EuiFlexGroup gutterSize="s">
+      <EuiFlexItem grow={false} style={{ width: '60%' }}>
+        <EuiFieldSearch
+          fullWidth={true}
+          value={props.search}
+          placeholder="Search"
+          onChange={props.onSearchTaskChange}
+          data-test-subj="taskListSearch"
         />
       </EuiFlexItem>
-    ) : null}
-  </EuiFlexGroup>
-);
+      <EuiFlexItem>
+        <EuiComboBox
+          id="selectedTaskStates"
+          data-test-subj="taskStateFilter"
+          placeholder="All task states"
+          isClearable={true}
+          singleSelection={false}
+          options={getTaskStateOptions()}
+          onChange={props.onTaskStateChange}
+          selectedOptions={
+            props.selectedTaskStates.length > 0
+              ? props.selectedTaskStates.map((state) => ({ label: state }))
+              : []
+          }
+          fullWidth={true}
+        />
+      </EuiFlexItem>
+      {props.pageCount > 1 ? (
+        <EuiFlexItem grow={false} style={{ justifyContent: 'center' }}>
+          <EuiPagination
+            pageCount={props.pageCount}
+            activePage={props.activePage}
+            onPageClick={props.onPageClick}
+            data-test-subj="taskListPageControls"
+          />
+        </EuiFlexItem>
+      ) : null}
+    </EuiFlexGroup>
+  );
+}

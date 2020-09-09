@@ -48,13 +48,19 @@ export function DateRangePicker(props: DateRangePickerProps) {
     <ContentPanel title="Date range" titleSize="s">
       <Field name="dateRange">
         {({ field, form }: FieldProps) => {
+          // form.setFieldValue('startTime', props.dateRange.startDate);
+          // form.setFieldValue('endTime', props.dateRange.endDate);
           return (
             <EuiSuperDatePicker
               isLoading={props.isLoading}
               start={formattedStart}
               end={formattedEnd}
               onTimeChange={({ start, end, isInvalid, isQuickSelection }) => {
-                field.value = { startDate: start, endDate: end };
+                form.setFieldValue(
+                  'startTime',
+                  dateMath.parse(start)?.valueOf()
+                );
+                form.setFieldValue('endTime', dateMath.parse(end)?.valueOf());
                 onDateRangeChange(start, end);
               }}
               isPaused={true}

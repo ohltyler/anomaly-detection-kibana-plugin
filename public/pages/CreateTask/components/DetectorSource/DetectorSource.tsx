@@ -21,10 +21,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import ContentPanel from '../../../../components/ContentPanel/ContentPanel';
 import { AppState } from '../../../../redux/reducers';
 import { getDetectorList } from '../../../../redux/reducers/ad';
-import { getError, isInvalid } from '../../../../utils/utils';
+import { getError, isInvalid, required } from '../../../../utils/utils';
 import { sanitizeSearchText } from '../../../utils/helpers';
 import { FormattedFormRow } from '../../../createDetector/components/FormattedFormRow/FormattedFormRow';
-import { validateDetectorSource } from '../../../utils/validate';
 import { GET_ALL_DETECTORS_QUERY_PARAMS } from '../../../utils/constants';
 
 export function DetectorSource() {
@@ -55,7 +54,7 @@ export function DetectorSource() {
 
   return (
     <ContentPanel title="Detector source" titleSize="s">
-      <Field name="detector" validate={validateDetectorSource}>
+      <Field name="detectorId" validate={required}>
         {({ field, form }: FieldProps) => {
           return (
             <FormattedFormRow
@@ -65,7 +64,7 @@ export function DetectorSource() {
               error={getError(field.name, form)}
             >
               <EuiComboBox
-                id="detector"
+                id="detectorId"
                 placeholder="Find a detector"
                 async
                 isLoading={adState.requesting}
@@ -74,12 +73,14 @@ export function DetectorSource() {
                 }))}
                 onSearchChange={handleSearchChange}
                 onBlur={() => {
-                  form.setFieldTouched('detector', true);
+                  form.setFieldTouched('detectorId', true);
                 }}
                 onChange={(options) => {
-                  form.setFieldValue('detector', options);
+                  form.setFieldValue('detectorId', get(options, '0.label'));
                 }}
-                selectedOptions={field.value}
+                selectedOptions={
+                  (field.value && [{ label: field.value }]) || []
+                }
                 singleSelection={true}
                 isClearable={true}
               />

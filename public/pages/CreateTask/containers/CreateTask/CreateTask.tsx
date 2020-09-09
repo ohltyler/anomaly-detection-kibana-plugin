@@ -184,7 +184,7 @@ export function CreateTask(props: CreateTaskProps) {
         </EuiPageHeader>
         <Formik
           enableReinitialize={true}
-          initialValues={taskToFormik(task)}
+          initialValues={taskToFormik(task, dateRange)}
           onSubmit={handleSubmit}
         >
           {(formikProps) => (

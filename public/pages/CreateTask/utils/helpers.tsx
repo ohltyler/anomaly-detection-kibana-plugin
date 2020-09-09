@@ -14,7 +14,7 @@
  */
 
 import { cloneDeep, isEmpty, get } from 'lodash';
-import { Task } from '../../../models/interfaces';
+import { Task, DateRange } from '../../../models/interfaces';
 import { TaskFormikValues, INITIAL_TASK_VALUES } from './constants';
 
 export function formikToTask(values: TaskFormikValues, task: Task) {
@@ -30,9 +30,11 @@ export function formikToTask(values: TaskFormikValues, task: Task) {
   return apiRequest;
 }
 
-export function taskToFormik(task: Task) {
+export function taskToFormik(task: Task, defaultDateRange: DateRange) {
   const initialValues = cloneDeep(INITIAL_TASK_VALUES);
   if (isEmpty(task)) {
+    initialValues.startTime = defaultDateRange.startDate;
+    initialValues.endTime = defaultDateRange.endDate;
     return initialValues;
   }
   return {

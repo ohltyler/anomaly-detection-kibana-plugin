@@ -13,7 +13,7 @@
  * permissions and limitations under the License.
  */
 
-import { EuiComboBox } from '@elastic/eui';
+import { EuiComboBox, EuiText, EuiSpacer } from '@elastic/eui';
 import { Field, FieldProps } from 'formik';
 import { debounce, get } from 'lodash';
 import React, { useEffect, useState } from 'react';
@@ -25,12 +25,16 @@ import { getError, isInvalid, required } from '../../../../utils/utils';
 import { sanitizeSearchText } from '../../../utils/helpers';
 import { FormattedFormRow } from '../../../createDetector/components/FormattedFormRow/FormattedFormRow';
 import { GET_ALL_DETECTORS_QUERY_PARAMS } from '../../../utils/constants';
+import { DetectorListItem } from '../../../../models/interfaces';
+import { DetectorSettings } from '../../components/DetectorSettings/DetectorSettings';
 
 export function DetectorSource() {
   const dispatch = useDispatch();
   const [queryText, setQueryText] = useState('');
   const adState = useSelector((state: AppState) => state.ad);
   const detectors = adState.detectorList;
+
+  const [selectedDetector, setSelectedDetector] = useState<DetectorListItem>();
 
   // Getting all detectors when first loading the page
   useEffect(() => {
@@ -70,16 +74,20 @@ export function DetectorSource() {
                 isLoading={adState.requesting}
                 options={Object.values(detectors).map((detector) => ({
                   label: detector.name,
+                  id: detector.id,
                 }))}
                 onSearchChange={handleSearchChange}
                 onBlur={() => {
                   form.setFieldTouched('detectorId', true);
                 }}
                 onChange={(options) => {
-                  form.setFieldValue('detectorId', get(options, '0.label'));
+                  const detectorId = get(options, '0.id') as string;
+                  form.setFieldValue('detectorId', detectorId);
+                  setSelectedDetector(detectors[detectorId]);
                 }}
                 selectedOptions={
-                  (field.value && [{ label: field.value }]) || []
+                  (field.value && [{ label: detectors[field.value].name }]) ||
+                  []
                 }
                 singleSelection={true}
                 isClearable={true}
@@ -88,6 +96,9 @@ export function DetectorSource() {
           );
         }}
       </Field>
+      {selectedDetector ? (
+        <DetectorSettings detector={selectedDetector} />
+      ) : null}
     </ContentPanel>
   );
 }

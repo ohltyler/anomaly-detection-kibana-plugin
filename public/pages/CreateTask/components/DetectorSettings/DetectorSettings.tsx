@@ -1,0 +1,56 @@
+/*
+ * Copyright 2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License").
+ * You may not use this file except in compliance with the License.
+ * A copy of the License is located at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * or in the "license" file accompanying this file. This file is distributed
+ * on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing
+ * permissions and limitations under the License.
+ */
+
+import { EuiText, EuiFieldText } from '@elastic/eui';
+import React from 'react';
+import ContentPanel from '../../../../components/ContentPanel/ContentPanel';
+import { DetectorListItem } from '../../../../models/interfaces';
+import { FormattedFormRow } from '../../../createDetector/components/FormattedFormRow/FormattedFormRow';
+import { getTitleWithCount } from '../../../../utils/utils';
+
+interface DetectorSettingsProps {
+  detector: DetectorListItem;
+}
+
+export function DetectorSettings(props: DetectorSettingsProps) {
+  return (
+    <ContentPanel
+      title="Detector settings"
+      titleSize="xs"
+      panelStyles={{ marginTop: '24px', marginBottom: '-8px' }}
+    >
+      <FormattedFormRow title="Index">
+        <EuiFieldText
+          name="indexName"
+          placeholder={props.detector.indices[0]}
+          readOnly={true}
+        />
+      </FormattedFormRow>
+      <FormattedFormRow
+        formattedTitle={getTitleWithCount(
+          'Features',
+          props.detector.featureAttributes.length,
+          'xxxs'
+        )}
+      >
+        <EuiFieldText
+          name="indexName"
+          placeholder={props.detector.indices[0]}
+          readOnly={true}
+        />
+      </FormattedFormRow>
+    </ContentPanel>
+  );
+}

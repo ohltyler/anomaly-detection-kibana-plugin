@@ -89,8 +89,9 @@ export const getAlertingCreateMonitorLink = (
     const navLinks = get(npStart, 'core.chrome.navLinks', undefined);
     const url = `${navLinks.get(ALERTING_PLUGIN_NAME).url}`;
     const alertingRootUrl = getPluginRootPath(url, ALERTING_PLUGIN_NAME);
-    return `${alertingRootUrl}#/create-monitor?searchType=ad&adId=${detectorId}&name=${detectorName}&interval=${2 *
-      detectorInterval}&unit=${unit}`;
+    return `${alertingRootUrl}#/create-monitor?searchType=ad&adId=${detectorId}&name=${detectorName}&interval=${
+      2 * detectorInterval
+    }&unit=${unit}`;
   } catch (e) {
     console.error('unable to get the alerting URL', e);
     return '';
@@ -116,9 +117,13 @@ export interface Listener {
 
 const detectorCountFontColor = darkModeEnabled() ? '#98A2B3' : '#535966';
 
-export const getTitleWithCount = (title: string, count: number | string) => {
+export const getTitleWithCount = (
+  title: string,
+  count: number | string,
+  titleSize?: string
+) => {
   return (
-    <EuiTitle size={'s'} className={''}>
+    <EuiTitle size={titleSize ? titleSize : 's'} className={''}>
       <h3
         style={{
           display: 'flex',

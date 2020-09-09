@@ -37,6 +37,7 @@ interface FeaturesProps {
   detectorId: string;
   detector: Detector;
   onEditFeatures(): void;
+  tableOnly?: boolean;
 }
 
 interface FeaturesState {
@@ -186,12 +187,20 @@ export class Features extends Component<FeaturesProps, FeaturesState> {
 
     const setParamsText = `Set the index fields that you want to find anomalies for by defining
                            the model features. You can also set other model parameters such as
-                           window size.`
+                           window size.`;
 
     const previewText = `After you set the model features and other optional parameters, you can
-                         preview your anomalies from a sample feature output.`
+                         preview your anomalies from a sample feature output.`;
 
-    return (
+    return this.props.tableOnly ? (
+      <EuiBasicTable
+        items={sortedItems}
+        columns={columns}
+        cellProps={getCellProps}
+        sorting={sorting}
+        onChange={this.handleTableChange}
+      />
+    ) : (
       <ContentPanel
         title="Model configuration"
         titleSize="s"
@@ -223,8 +232,8 @@ export class Features extends Component<FeaturesProps, FeaturesState> {
             body={
               <EuiText className="emptyFeatureBody">
                 {setParamsText}
-                <br/>
-                <br/>
+                <br />
+                <br />
                 {previewText}
               </EuiText>
             }
@@ -252,15 +261,12 @@ export class Features extends Component<FeaturesProps, FeaturesState> {
                 onChange={this.handleTableChange}
               />
             </ContentPanel>
-            <EuiSpacer size="m"/>
-            <ContentPanel
-              title="Additional settings"
-              titleSize="s"
-            >
+            <EuiSpacer size="m" />
+            <ContentPanel title="Additional settings" titleSize="s">
               <EuiBasicTable
                 className="header-single-value-euiBasicTable"
                 items={[{ windowSize: shingleSize }]}
-                columns={[{ field: 'windowSize', name: 'Window size'}]}
+                columns={[{ field: 'windowSize', name: 'Window size' }]}
                 cellProps={getCellProps}
               />
             </ContentPanel>

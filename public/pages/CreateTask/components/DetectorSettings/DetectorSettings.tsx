@@ -13,15 +13,16 @@
  * permissions and limitations under the License.
  */
 
-import { EuiText, EuiFieldText } from '@elastic/eui';
+import { EuiFieldText } from '@elastic/eui';
 import React from 'react';
 import ContentPanel from '../../../../components/ContentPanel/ContentPanel';
-import { DetectorListItem } from '../../../../models/interfaces';
+import { Detector } from '../../../../models/interfaces';
 import { FormattedFormRow } from '../../../createDetector/components/FormattedFormRow/FormattedFormRow';
 import { getTitleWithCount } from '../../../../utils/utils';
+import { Features } from '../../../DetectorConfig/containers/Features';
 
 interface DetectorSettingsProps {
-  detector: DetectorListItem;
+  detector: Detector;
 }
 
 export function DetectorSettings(props: DetectorSettingsProps) {
@@ -44,11 +45,15 @@ export function DetectorSettings(props: DetectorSettingsProps) {
           props.detector.featureAttributes.length,
           'xxxs'
         )}
+        fullWidth={true}
       >
-        <EuiFieldText
-          name="indexName"
-          placeholder={props.detector.indices[0]}
-          readOnly={true}
+        <Features
+          detectorId={props.detector.id}
+          detector={props.detector}
+          onEditFeatures={() => {
+            return;
+          }}
+          tableOnly={true}
         />
       </FormattedFormRow>
     </ContentPanel>

@@ -13,7 +13,7 @@
  * permissions and limitations under the License.
  */
 
-import { EuiComboBox, EuiText, EuiSpacer } from '@elastic/eui';
+import { EuiComboBox } from '@elastic/eui';
 import { Field, FieldProps } from 'formik';
 import { debounce, get } from 'lodash';
 import React, { useEffect, useState } from 'react';
@@ -25,16 +25,18 @@ import { getError, isInvalid, required } from '../../../../utils/utils';
 import { sanitizeSearchText } from '../../../utils/helpers';
 import { FormattedFormRow } from '../../../createDetector/components/FormattedFormRow/FormattedFormRow';
 import { GET_ALL_DETECTORS_QUERY_PARAMS } from '../../../utils/constants';
-import { DetectorListItem } from '../../../../models/interfaces';
 import { DetectorSettings } from '../../components/DetectorSettings/DetectorSettings';
+import { searchDetector } from '../../../../redux/reducers/ad';
 
 export function DetectorSource() {
   const dispatch = useDispatch();
   const [queryText, setQueryText] = useState('');
   const adState = useSelector((state: AppState) => state.ad);
-  const detectors = adState.detectorList;
+  const detectorItems = adState.detectorList;
+  const detectors = adState.detectors;
 
-  const [selectedDetector, setSelectedDetector] = useState<DetectorListItem>();
+  const [selectedDetectorId, setSelectedDetectorId] = useState<string>('');
+  const selectedDetector = detectors[selectedDetectorId];
 
   // Getting all detectors when first loading the page
   useEffect(() => {
@@ -43,6 +45,16 @@ export function DetectorSource() {
     };
     getInitialDetectors();
   }, []);
+
+  const getDetectorInfo = (detectorId: string) => {
+    if (detectorId && detectorItems[detectorId]) {
+      dispatch(
+        searchDetector({
+          query: { term: { 'name.keyword': detectorItems[detectorId].name } },
+        })
+      );
+    }
+  };
 
   const handleSearchChange = debounce(async (searchValue: string) => {
     if (searchValue !== queryText) {
@@ -72,7 +84,7 @@ export function DetectorSource() {
                 placeholder="Find a detector"
                 async
                 isLoading={adState.requesting}
-                options={Object.values(detectors).map((detector) => ({
+                options={Object.values(detectorItems).map((detector) => ({
                   label: detector.name,
                   id: detector.id,
                 }))}
@@ -83,10 +95,13 @@ export function DetectorSource() {
                 onChange={(options) => {
                   const detectorId = get(options, '0.id') as string;
                   form.setFieldValue('detectorId', detectorId);
-                  setSelectedDetector(detectors[detectorId]);
+                  setSelectedDetectorId(detectorId);
+                  getDetectorInfo(detectorId);
                 }}
                 selectedOptions={
-                  (field.value && [{ label: detectors[field.value].name }]) ||
+                  (field.value && [
+                    { label: detectorItems[field.value].name },
+                  ]) ||
                   []
                 }
                 singleSelection={true}

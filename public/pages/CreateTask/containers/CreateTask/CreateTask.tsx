@@ -90,13 +90,13 @@ export function CreateTask(props: CreateTaskProps) {
       BREADCRUMBS.TASKS,
       createOrEditBreadcrumb,
     ];
-    // if (task && task.name) {
-    //   breadCrumbs.splice(2, 0, {
-    //     text: task.name,
-    //     //@ts-ignore
-    //     href: `#/tasks/${detectorId}`,
-    //   });
-    // }
+    if (task && task.name) {
+      breadCrumbs.splice(2, 0, {
+        text: task.name,
+        //@ts-ignore
+        href: `#/tasks/${detectorId}`,
+      });
+    }
     chrome.breadcrumbs.set(breadCrumbs);
   });
 
@@ -122,15 +122,11 @@ export function CreateTask(props: CreateTaskProps) {
     }
   }, [task]);
 
-  const handleDateRangeChange = async (dateRange: DateRange) => {
-    setDateRange({
-      startDate: dateRange.startDate,
-      endDate: dateRange.endDate,
-    });
-  };
-
-  // TODO: stub for now
+  // TODO: stub for now. Will want to make sure no duplicates can be created
   const handleValidateName = async (taskName: string) => {
+    if (taskName.length === 0) {
+      return 'Required';
+    }
     return undefined;
   };
 
@@ -196,11 +192,7 @@ export function CreateTask(props: CreateTaskProps) {
               <EuiSpacer />
               <DetectorSource />
               <EuiSpacer />
-              <DateRangePicker
-                dateRange={dateRange}
-                isLoading={isRequesting}
-                onDateRangeChange={handleDateRangeChange}
-              />
+              <DateRangePicker isLoading={isRequesting} />
               <EuiSpacer />
               <EuiFlexGroup alignItems="center" justifyContent="flexEnd">
                 <EuiFlexItem grow={false}>

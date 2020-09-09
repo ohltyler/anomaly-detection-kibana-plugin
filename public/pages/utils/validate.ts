@@ -35,6 +35,11 @@ export const validateIndex = (options: any) => {
   }
 };
 
+export const validateDetectorSource = (options: any) => {
+  if (!Array.isArray(options)) return 'Must specify a detector source';
+  if (!options.length) return 'Must specify a detector source';
+};
+
 export function isIndexPatternQueryValid(
   pattern: string,
   illegalCharacters: string[]
@@ -45,5 +50,5 @@ export function isIndexPatternQueryValid(
   if (pattern === '.' || pattern === '..') {
     return false;
   }
-  return !illegalCharacters.some(char => pattern.includes(char));
+  return !illegalCharacters.some((char) => pattern.includes(char));
 }

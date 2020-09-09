@@ -35,6 +35,8 @@ import { RouteComponentProps } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHideSideNavBar } from '../../../main/hooks/useHideSideNavBar';
 import { TaskInfo } from '../../components/TaskInfo/TaskInfo';
+import { DetectorSource } from '../../components/DetectorSource/DetectorSource';
+import { DateRangePicker } from '../../components/DateRangePicker/DateRangePicker';
 import { TaskFormikValues } from '../../utils/constants';
 import { formikToTask, taskToFormik } from '../../utils/helpers';
 //@ts-ignore
@@ -42,7 +44,8 @@ import chrome from 'ui/chrome';
 //@ts-ignore
 import { toastNotifications } from 'ui/notify';
 import { getDetector, updateDetector } from '../../../../redux/reducers/ad';
-import { Task } from '../../../../models/interfaces';
+import moment from 'moment';
+import { Task, DateRange } from '../../../../models/interfaces';
 
 interface CreateRouterProps {
   taskId?: string;
@@ -60,6 +63,20 @@ export function CreateTask(props: CreateTaskProps) {
     useSelector((state: AppState) => state.ad.tasks),
     taskId
   );
+  // const task = {
+  //   dataStartTime: 1598400591419,
+  //   dataEndTime: 1599610191420,
+  // } as Task;
+  const isRequesting = useSelector((state: AppState) => state.ad.requesting);
+
+  const initialStartDate = moment().subtract(7, 'days').valueOf();
+  console.log('initial start date: ', initialStartDate);
+  const [dateRange, setDateRange] = useState<DateRange>({
+    startDate: moment().subtract(7, 'days').valueOf(),
+    endDate: moment().valueOf(),
+  });
+
+  console.log('re-rendering with start date of ', dateRange.startDate);
 
   useHideSideNavBar(true, false);
 
@@ -94,6 +111,24 @@ export function CreateTask(props: CreateTaskProps) {
     }
   }, []);
 
+  // Using the task-specified date range (if it exists)
+  useEffect(() => {
+    console.log('task changed');
+    if (task?.dataStartTime && task?.dataEndTime) {
+      setDateRange({
+        startDate: task.dataStartTime,
+        endDate: task.dataEndTime,
+      });
+    }
+  }, [task]);
+
+  const handleDateRangeChange = async (dateRange: DateRange) => {
+    setDateRange({
+      startDate: dateRange.startDate,
+      endDate: dateRange.endDate,
+    });
+  };
+
   // TODO: stub for now
   const handleValidateName = async (taskName: string) => {
     return undefined;
@@ -118,6 +153,7 @@ export function CreateTask(props: CreateTaskProps) {
 
   const handleSubmit = async (values: TaskFormikValues, formikBag: any) => {
     const apiRequest = formikToTask(values, task);
+    console.log('api request: ', apiRequest);
     try {
       if (props.isEdit) {
         await handleUpdate(apiRequest);
@@ -158,9 +194,13 @@ export function CreateTask(props: CreateTaskProps) {
                 onValidateTaskDescription={handleValidateDescription}
               />
               <EuiSpacer />
-              {/* <DataSource formikProps={formikProps} />
+              <DetectorSource />
               <EuiSpacer />
-              <Settings /> */}
+              <DateRangePicker
+                dateRange={dateRange}
+                isLoading={isRequesting}
+                onDateRangeChange={handleDateRangeChange}
+              />
               <EuiSpacer />
               <EuiFlexGroup alignItems="center" justifyContent="flexEnd">
                 <EuiFlexItem grow={false}>

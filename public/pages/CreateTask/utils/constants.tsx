@@ -28,3 +28,15 @@ export const INITIAL_TASK_VALUES: TaskFormikValues = {
   startTime: 0,
   endTime: 0,
 };
+
+export const TASK_DATE_RANGE_COMMON_OPTIONS = [
+  { start: 'now-24h', end: 'now', label: 'last 24 hours' },
+  { start: 'now-7d', end: 'now', label: 'last 7 days' },
+  { start: 'now-30d', end: 'now', label: 'last 30 days' },
+  { start: 'now-90d', end: 'now', label: 'last 90 days' },
+
+  { start: 'now/d', end: 'now', label: 'Today' },
+  { start: 'now/w', end: 'now', label: 'Week to date' },
+  { start: 'now/M', end: 'now', label: 'Month to date' },
+  { start: 'now/y', end: 'now', label: 'Year to date' },
+];

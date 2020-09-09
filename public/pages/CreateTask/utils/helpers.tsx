@@ -13,9 +13,11 @@
  * permissions and limitations under the License.
  */
 
-import { cloneDeep, isEmpty, get } from 'lodash';
-import { Task, DateRange } from '../../../models/interfaces';
+import { cloneDeep, isEmpty } from 'lodash';
+import { Task } from '../../../models/interfaces';
 import { TaskFormikValues, INITIAL_TASK_VALUES } from './constants';
+import datemath from '@elastic/datemath';
+import moment from 'moment';
 
 export function formikToTask(values: TaskFormikValues, task: Task) {
   let apiRequest = {
@@ -23,18 +25,16 @@ export function formikToTask(values: TaskFormikValues, task: Task) {
     name: values.taskName,
     description: values.taskDescription,
     detectorId: values.detectorId,
-    dataStartTime: values.startTime,
-    dataEndTime: values.endTime,
+    dataStartTime: convertTimestampToNumber(values.startTime),
+    dataEndTime: convertTimestampToNumber(values.endTime),
   } as Task;
 
   return apiRequest;
 }
 
-export function taskToFormik(task: Task, defaultDateRange: DateRange) {
+export function taskToFormik(task: Task) {
   const initialValues = cloneDeep(INITIAL_TASK_VALUES);
   if (isEmpty(task)) {
-    initialValues.startTime = defaultDateRange.startDate;
-    initialValues.endTime = defaultDateRange.endDate;
     return initialValues;
   }
   return {
@@ -45,4 +45,18 @@ export function taskToFormik(task: Task, defaultDateRange: DateRange) {
     startTime: task.dataStartTime,
     endTime: task.dataEndTime,
   };
+}
+
+export function convertTimestampToString(timestamp: number | string) {
+  if (typeof timestamp === 'string') {
+    return timestamp;
+  }
+  return moment(timestamp).format();
+}
+
+export function convertTimestampToNumber(timestamp: number | string) {
+  if (typeof timestamp === 'string') {
+    return datemath.parse(timestamp)?.valueOf();
+  }
+  return timestamp;
 }

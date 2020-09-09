@@ -17,16 +17,16 @@ export interface TaskFormikValues {
   taskName: string;
   taskDescription: string;
   detectorId: string;
-  startTime: number;
-  endTime: number;
+  startTime: number | string;
+  endTime: number | string;
 }
 
 export const INITIAL_TASK_VALUES: TaskFormikValues = {
   taskName: '',
   taskDescription: '',
   detectorId: '',
-  startTime: 0,
-  endTime: 0,
+  startTime: 'now-7d',
+  endTime: 'now',
 };
 
 export const TASK_DATE_RANGE_COMMON_OPTIONS = [

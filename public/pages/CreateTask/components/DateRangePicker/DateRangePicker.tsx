@@ -17,8 +17,7 @@ import { EuiSuperDatePicker } from '@elastic/eui';
 import { Field, FieldProps } from 'formik';
 import React from 'react';
 import ContentPanel from '../../../../components/ContentPanel/ContentPanel';
-import dateMath from '@elastic/datemath';
-import moment from 'moment';
+import { convertTimestampToString } from '../../utils/helpers';
 import { TASK_DATE_RANGE_COMMON_OPTIONS } from '../../utils/constants';
 
 interface DateRangePickerProps {
@@ -33,14 +32,11 @@ export function DateRangePicker(props: DateRangePickerProps) {
           return (
             <EuiSuperDatePicker
               isLoading={props.isLoading}
-              start={moment(form.values.startTime).format()}
-              end={moment(form.values.endTime).format()}
+              start={convertTimestampToString(form.values.startTime)}
+              end={convertTimestampToString(form.values.endTime)}
               onTimeChange={({ start, end, isInvalid, isQuickSelection }) => {
-                form.setFieldValue(
-                  'startTime',
-                  dateMath.parse(start)?.valueOf()
-                );
-                form.setFieldValue('endTime', dateMath.parse(end)?.valueOf());
+                form.setFieldValue('startTime', start);
+                form.setFieldValue('endTime', end);
               }}
               isPaused={true}
               showUpdateButton={false}

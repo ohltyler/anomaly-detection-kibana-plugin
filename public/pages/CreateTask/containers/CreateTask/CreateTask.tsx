@@ -44,6 +44,7 @@ import chrome from 'ui/chrome';
 //@ts-ignore
 import { toastNotifications } from 'ui/notify';
 import { getDetector, updateDetector } from '../../../../redux/reducers/ad';
+import { createTask } from '../../../../redux/reducers/task';
 import moment from 'moment';
 import { Task, DateRange } from '../../../../models/interfaces';
 
@@ -58,11 +59,12 @@ interface CreateTaskProps extends RouteComponentProps<CreateRouterProps> {
 export function CreateTask(props: CreateTaskProps) {
   const dispatch = useDispatch();
   const taskId: string = get(props, 'match.params.taskId', '');
-  // TODO: this may not return the right val
-  const task = get(
-    useSelector((state: AppState) => state.ad.tasks),
-    taskId
-  );
+  const taskState = useSelector((state: AppState) => state.task);
+  const tasks = taskState.tasks;
+  const task = tasks[taskId];
+
+  console.log('all tasks: ', tasks);
+
   // const task = {
   //   dataStartTime: 1598400591419,
   //   dataEndTime: 1599610191420,
@@ -70,13 +72,12 @@ export function CreateTask(props: CreateTaskProps) {
   const isRequesting = useSelector((state: AppState) => state.ad.requesting);
 
   const initialStartDate = moment().subtract(7, 'days').valueOf();
-  console.log('initial start date: ', initialStartDate);
   const [dateRange, setDateRange] = useState<DateRange>({
     startDate: moment().subtract(7, 'days').valueOf(),
     endDate: moment().valueOf(),
   });
 
-  console.log('re-rendering with start date of ', dateRange.startDate);
+  console.log('re-rendering create task page...');
 
   useHideSideNavBar(true, false);
 
@@ -142,9 +143,20 @@ export function CreateTask(props: CreateTaskProps) {
     return;
   };
 
-  // TODO: stub for now
   const handleCreate = async (taskToCreate: Task) => {
-    return;
+    try {
+      const taskResp = await dispatch(createTask(taskToCreate));
+      toastNotifications.addSuccess(
+        `Task created: ${taskResp.data.response.name}`
+      );
+      // props.history.push(
+      //   `/detectors/${detectorResp.data.response.id}/configurations/`
+      // );
+    } catch (err) {
+      toastNotifications.addDanger(
+        `There was a problem creating the task: ${err}`
+      );
+    }
   };
 
   const handleSubmit = async (values: TaskFormikValues, formikBag: any) => {

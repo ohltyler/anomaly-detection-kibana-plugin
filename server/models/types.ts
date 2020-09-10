@@ -68,6 +68,17 @@ export type Detector = {
   disabledTime?: number;
 };
 
+export type Task = {
+  id: string;
+  name: string;
+  description: string;
+  detectorId: string;
+  dataStartTime: number;
+  dataEndTime: number;
+  lastUpdateTime: number;
+  // enabled?: boolean;
+};
+
 export type Monitor = {
   id: string;
   name: string;

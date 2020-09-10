@@ -19,6 +19,7 @@ import { BASE_NODE_API_PATH } from '../utils/constants';
 import { createAdCluster } from './cluster';
 import { default as createRouter, Router } from './router';
 import registerADRoutes from './routes/ad';
+import registerTaskRoutes from './routes/task';
 import registerAlertingRoutes from './routes/alerting';
 import registerElasticsearchRoute from './routes/elasticsearch';
 import registerSampleDataRoutes from './routes/sampleData';
@@ -46,6 +47,7 @@ export class ADPlugin {
     );
     registerElasticsearchRoute(apiRouter);
     registerADRoutes(apiRouter);
+    registerTaskRoutes(apiRouter);
     registerAlertingRoutes(apiRouter);
     registerSampleDataRoutes(apiRouter);
   }

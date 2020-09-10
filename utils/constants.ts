@@ -21,6 +21,7 @@ export const AD_NODE_API = Object.freeze({
   _ALIASES: `${BASE_NODE_API_PATH}/_aliases`,
   _MAPPINGS: `${BASE_NODE_API_PATH}/_mappings`,
   DETECTOR: `${BASE_NODE_API_PATH}/detectors`,
+  TASK: `${BASE_NODE_API_PATH}/tasks`,
   CREATE_INDEX: `${BASE_NODE_API_PATH}/create_index`,
   BULK: `${BASE_NODE_API_PATH}/bulk`,
   DELETE_INDEX: `${BASE_NODE_API_PATH}/delete_index`,

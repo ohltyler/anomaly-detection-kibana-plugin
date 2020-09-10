@@ -131,7 +131,7 @@ export function TaskList(props: TaskListProps) {
   }, [allTasks]);
 
   const getUpdatedTasks = async () => {
-    console.log('imagine getting updated tasks here');
+    console.log('[stub] getting updated tasks]');
   };
 
   const handlePageChange = (pageNumber: number) => {

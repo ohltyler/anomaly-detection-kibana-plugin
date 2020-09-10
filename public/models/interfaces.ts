@@ -144,6 +144,7 @@ export type TaskListItem = {
   id: string;
   name: string;
   detectorId: string;
+  detectorName: string;
   description: string;
   curState: TASK_STATE;
   dataStartTime: number;

@@ -15,6 +15,7 @@
 
 import {
   EuiLink,
+  EuiText,
   EuiToolTip,
   EuiHealth,
   EuiBasicTableColumn,
@@ -56,7 +57,7 @@ export const taskListColumns = [
       </EuiToolTip>
     ),
     sortable: true,
-    truncateText: true,
+    truncateText: false,
     textOnly: true,
     align: 'left',
     render: (name: string, task: Task) => (
@@ -64,18 +65,18 @@ export const taskListColumns = [
     ),
   },
   {
-    field: 'detector',
+    field: 'detectorName',
     name: (
       <EuiToolTip content="The detector used to create the task">
         <span style={columnStyle}>Detector{''}</span>
       </EuiToolTip>
     ),
     sortable: true,
-    truncateText: true,
+    truncateText: false,
     textOnly: true,
     align: 'left',
-    render: (name: string, detectorId: string) => (
-      <EuiLink href={`${PLUGIN_NAME}#/detectors/${detectorId}`}>{name}</EuiLink>
+    render: (detectorName: string) => (
+      <EuiText size="s">{detectorName}</EuiText>
     ),
   },
   {

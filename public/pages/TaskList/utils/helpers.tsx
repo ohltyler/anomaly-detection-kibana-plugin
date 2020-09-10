@@ -17,6 +17,7 @@ import queryString from 'query-string';
 import { SORT_DIRECTION } from '../../../../server/utils/constants';
 import { DEFAULT_QUERY_PARAMS } from '../../utils/constants';
 import { TASK_STATE } from '../../../utils/constants';
+import { TaskListItem, DetectorListItem } from '../../../models/interfaces';
 
 export const getURLQueryParams = (location: { search: string }): any => {
   const { from, size, search, sortField, sortDirection } = queryString.parse(
@@ -45,4 +46,16 @@ export const getTaskStateOptions = () => {
     label: taskState,
     text: taskState,
   }));
+};
+
+export const getTasksWithDetectorName = (
+  tasks: TaskListItem[],
+  detectors: { [key: string]: DetectorListItem }
+) => {
+  if (Object.values(detectors).length > 0) {
+    tasks.forEach((task: TaskListItem) => {
+      task.detectorName = detectors[task.detectorId].name;
+    });
+  }
+  return tasks;
 };

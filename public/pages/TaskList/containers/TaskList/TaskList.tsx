@@ -31,22 +31,28 @@ import { RouteComponentProps } from 'react-router';
 import chrome from 'ui/chrome';
 // @ts-ignore
 import { toastNotifications } from 'ui/notify';
-import { GetTasksQueryParams } from '../../../../../server/models/types';
 import { TaskListItem } from '../../../../models/interfaces';
 import { SORT_DIRECTION } from '../../../../../server/utils/constants';
 import ContentPanel from '../../../../components/ContentPanel/ContentPanel';
 import { AppState } from '../../../../redux/reducers';
 import { getTaskList } from '../../../../redux/reducers/task';
+import { getDetectorList } from '../../../../redux/reducers/ad';
 import { APP_PATH, PLUGIN_NAME, TASK_STATE } from '../../../../utils/constants';
 import { BREADCRUMBS } from '../../../../utils/constants';
 import { getTitleWithCount } from '../../../../utils/utils';
 import { MAX_TASKS, ALL_TASK_STATES } from '../../../utils/constants';
-import { getURLQueryParams } from '../../utils/helpers';
+import {
+  getURLQueryParams,
+  getTasksWithDetectorName,
+} from '../../utils/helpers';
 import { filterAndSortTasks, getTasksToDisplay } from '../../../utils/helpers';
 import { EmptyTaskMessage } from '../../components/EmptyTaskMessage/EmptyTaskMessage';
 import { taskListColumns } from '../../utils/constants';
 import { TaskFilters } from '../../components/TaskFilters/TaskFilters';
-import { GET_ALL_TASKS_QUERY_PARAMS } from '../../../utils/constants';
+import {
+  GET_ALL_TASKS_QUERY_PARAMS,
+  GET_ALL_DETECTORS_QUERY_PARAMS,
+} from '../../../utils/constants';
 
 export interface TaskListRouterParams {
   from: string;
@@ -64,15 +70,18 @@ interface TaskListState {
 
 export function TaskList(props: TaskListProps) {
   const dispatch = useDispatch();
+
+  // get task store
   const taskState = useSelector((state: AppState) => state.task);
   const allTasks = taskState.taskList;
   const errorGettingTasks = taskState.errorMessage;
-  const isRequestingFromES = taskState.requesting;
-  const elasticsearchState = useSelector(
-    (state: AppState) => state.elasticsearch
-  );
+  const isRequestingTasks = taskState.requesting;
 
-  console.log('all tasks: ', allTasks);
+  // get AD / detector store
+  const adState = useSelector((state: AppState) => state.ad);
+  const allDetectors = adState.detectorList;
+  const errorGettingDetectors = adState.errorMessage;
+  const isRequestingDetectors = adState.requesting;
 
   const [selectedTasks, setSelectedTasks] = useState([] as TaskListItem[]);
   const [tasksToDisplay, setTasksToDisplay] = useState([] as TaskListItem[]);
@@ -80,7 +89,10 @@ export function TaskList(props: TaskListProps) {
   const [selectedTasksForAction, setSelectedTasksForAction] = useState(
     [] as TaskListItem[]
   );
-  const isLoading = isRequestingFromES || isLoadingFinalTasks;
+
+  // if loading tasks, detectors, or sorting/filtering: set whole page in loading state
+  const isLoading =
+    isRequestingTasks || isRequestingDetectors || isLoadingFinalTasks;
 
   const [state, setState] = useState<TaskListState>({
     page: 0,
@@ -108,6 +120,7 @@ export function TaskList(props: TaskListProps) {
 
     setIsLoadingFinalTasks(true);
     getUpdatedTasks();
+    getUpdatedDetectors();
   }, [state.page, state.queryParams, state.selectedTaskStates]);
 
   // Handle all filtering / sorting of tasks
@@ -121,20 +134,29 @@ export function TaskList(props: TaskListProps) {
     );
     setSelectedTasks(curSelectedTasks);
 
-    const curTasksToDisplay = getTasksToDisplay(
+    const tasksToDisplay = getTasksToDisplay(
       curSelectedTasks,
       state.page,
       state.queryParams.size
     );
 
-    console.log('cur tasks to display: ', curTasksToDisplay);
-    setTasksToDisplay(curTasksToDisplay);
+    const tasksToDisplayWithDetectorName = getTasksWithDetectorName(
+      tasksToDisplay,
+      allDetectors
+    );
+
+    console.log('cur tasks to display: ', tasksToDisplayWithDetectorName);
+    setTasksToDisplay(tasksToDisplayWithDetectorName);
 
     setIsLoadingFinalTasks(false);
-  }, [allTasks]);
+  }, [allTasks, allDetectors]);
 
   const getUpdatedTasks = async () => {
     dispatch(getTaskList(GET_ALL_TASKS_QUERY_PARAMS));
+  };
+
+  const getUpdatedDetectors = async () => {
+    dispatch(getDetectorList(GET_ALL_DETECTORS_QUERY_PARAMS));
   };
 
   const handlePageChange = (pageNumber: number) => {

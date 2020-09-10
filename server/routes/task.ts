@@ -139,7 +139,7 @@ const getTasks = async (
             _source: {
               name: 'dummy-task-1',
               description: 'dummy-description-1',
-              detector_id: 'dummy-detector-id-1',
+              detector_id: '2EC_VHQBuKdlEiSG71H8',
               state: 'RUNNING',
               data_start_time: 1593864000,
               data_end_time: 1593964000,
@@ -153,7 +153,7 @@ const getTasks = async (
             _source: {
               name: 'dummy-task-2',
               description: 'dummy-description-2',
-              detector_id: 'dummy-detector-id-2',
+              detector_id: 'rEC_VHQBuKdlEiSGQVFN',
               state: 'DISABLED',
               data_start_time: 1593874000,
               data_end_time: 1594964000,

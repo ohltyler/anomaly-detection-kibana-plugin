@@ -245,14 +245,3 @@ export const isIndexNotFoundError = (err: any) => {
     get<string>(err, 'body.error.type', '') === 'index_not_found_exception'
   );
 };
-
-export const convertTaskKeysToSnakeCase = (payload: any) => {
-  return {
-    ...mapKeysDeep({ payload }, toSnake),
-  };
-};
-
-export const convertTaskKeysToCamelCase = (response: any) => {
-  const obj = { ...mapKeysDeep({ response }, toCamel) };
-  return obj.response;
-};

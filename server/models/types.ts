@@ -100,11 +100,7 @@ export type GetDetectorsQueryParams = {
 };
 
 export type GetTasksQueryParams = {
-  from: number;
-  size: number;
   search: string;
-  sortDirection: SORT_DIRECTION;
-  sortField: string;
 };
 
 export type GetAdMonitorsQueryParams = {

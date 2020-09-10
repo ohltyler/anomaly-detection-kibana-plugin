@@ -64,7 +64,7 @@ export const taskListColumns = [
     ),
   },
   {
-    field: 'indices',
+    field: 'detector',
     name: (
       <EuiToolTip content="The detector used to create the task">
         <span style={columnStyle}>Detector{''}</span>

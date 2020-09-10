@@ -14,16 +14,11 @@
  */
 
 import queryString from 'query-string';
-import { GetTasksQueryParams } from '../../../../server/models/types';
 import { SORT_DIRECTION } from '../../../../server/utils/constants';
 import { DEFAULT_QUERY_PARAMS } from '../../utils/constants';
-import { get, cloneDeep } from 'lodash';
 import { TASK_STATE } from '../../../utils/constants';
-import { TaskListItem } from '../../../models/interfaces';
 
-export const getURLQueryParams = (location: {
-  search: string;
-}): GetTasksQueryParams => {
+export const getURLQueryParams = (location: { search: string }): any => {
   const { from, size, search, sortField, sortDirection } = queryString.parse(
     location.search
   ) as { [key: string]: string };

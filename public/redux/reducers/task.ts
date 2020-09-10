@@ -29,7 +29,7 @@ import { TASK_STATE } from '../../utils/constants';
 
 const CREATE_TASK = 'task/CREATE_TASK';
 const GET_TASK = 'task/GET_TASK';
-//   const GET_DETECTOR_LIST = 'ad/GET_DETECTOR_LIST';
+const GET_TASK_LIST = 'ad/GET_TASK_LIST';
 //   const UPDATE_DETECTOR = 'ad/UPDATE_DETECTOR';
 //   const SEARCH_DETECTOR = 'ad/SEARCH_DETECTOR';
 //   const DELETE_DETECTOR = 'ad/DELETE_DETECTOR';
@@ -68,6 +68,24 @@ const reducer = handleActions<Tasks>(
           ...state.tasks,
           [action.result.data.response.id]: action.result.data.response,
         },
+      }),
+      FAILURE: (state: Tasks, action: APIErrorAction): Tasks => ({
+        ...state,
+        requesting: false,
+        errorMessage: action.error,
+      }),
+    },
+    [GET_TASK_LIST]: {
+      REQUEST: (state: Tasks): Tasks => ({
+        ...state,
+        requesting: true,
+        errorMessage: '',
+      }),
+      SUCCESS: (state: Tasks, action: APIResponseAction): Tasks => ({
+        ...state,
+        requesting: false,
+        taskList: action.result.data.response.taskList,
+        totalTasks: action.result.data.response.totalTasks,
       }),
       FAILURE: (state: Tasks, action: APIErrorAction): Tasks => ({
         ...state,
@@ -174,30 +192,6 @@ const reducer = handleActions<Tasks>(
     //       requesting: false,
     //     }),
     //   },
-    //   [GET_DETECTOR_LIST]: {
-    //     REQUEST: (state: Detectors): Detectors => ({
-    //       ...state,
-    //       requesting: true,
-    //       errorMessage: '',
-    //     }),
-    //     SUCCESS: (state: Detectors, action: APIResponseAction): Detectors => ({
-    //       ...state,
-    //       requesting: false,
-    //       detectorList: action.result.data.response.detectorList.reduce(
-    //         (acc: any, detector: DetectorListItem) => ({
-    //           ...acc,
-    //           [detector.id]: detector,
-    //         }),
-    //         {}
-    //       ),
-    //       totalDetectors: action.result.data.response.totalDetectors,
-    //     }),
-    //     FAILURE: (state: Detectors, action: APIErrorAction): Detectors => ({
-    //       ...state,
-    //       requesting: false,
-    //       errorMessage: action.error,
-    //     }),
-    //   },
     //   [UPDATE_DETECTOR]: {
     //     REQUEST: (state: Detectors): Detectors => {
     //       const newState = { ...state, requesting: true, errorMessage: '' };
@@ -274,20 +268,18 @@ export const createTask = (requestBody: Task): APIAction => ({
     client.post(`..${AD_NODE_API.TASK}`, requestBody),
 });
 
+export const getTaskList = (queryParams: GetTasksQueryParams): APIAction => ({
+  type: GET_TASK_LIST,
+  request: (client: IHttpService) =>
+    client.get(`..${AD_NODE_API.TASK}`, { params: queryParams }),
+});
+
 // export const getTask = (taskId: string): APIAction => ({
 //   type: GET_TASK,
 //   request: (client: IHttpService) =>
 //     client.get(`..${AD_NODE_API.TASK}/${taskId}`),
 //   taskId,
 // });
-
-//   export const getDetectorList = (
-//     queryParams: GetDetectorsQueryParams
-//   ): APIAction => ({
-//     type: GET_DETECTOR_LIST,
-//     request: (client: IHttpService) =>
-//       client.get(`..${AD_NODE_API.DETECTOR}`, { params: queryParams }),
-//   });
 
 //   export const searchDetector = (requestBody: any): APIAction => ({
 //     type: SEARCH_DETECTOR,

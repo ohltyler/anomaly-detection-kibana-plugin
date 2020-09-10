@@ -141,6 +141,7 @@ export type Task = {
 };
 
 export type TaskListItem = {
+  id: string;
   name: string;
   detectorId: string;
   description: string;

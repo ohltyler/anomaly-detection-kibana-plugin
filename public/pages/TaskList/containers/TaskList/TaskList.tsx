@@ -36,6 +36,7 @@ import { TaskListItem } from '../../../../models/interfaces';
 import { SORT_DIRECTION } from '../../../../../server/utils/constants';
 import ContentPanel from '../../../../components/ContentPanel/ContentPanel';
 import { AppState } from '../../../../redux/reducers';
+import { getTaskList } from '../../../../redux/reducers/task';
 import { APP_PATH, PLUGIN_NAME, TASK_STATE } from '../../../../utils/constants';
 import { BREADCRUMBS } from '../../../../utils/constants';
 import { getTitleWithCount } from '../../../../utils/utils';
@@ -45,6 +46,7 @@ import { filterAndSortTasks, getTasksToDisplay } from '../../../utils/helpers';
 import { EmptyTaskMessage } from '../../components/EmptyTaskMessage/EmptyTaskMessage';
 import { taskListColumns } from '../../utils/constants';
 import { TaskFilters } from '../../components/TaskFilters/TaskFilters';
+import { GET_ALL_TASKS_QUERY_PARAMS } from '../../../utils/constants';
 
 export interface TaskListRouterParams {
   from: string;
@@ -56,22 +58,21 @@ export interface TaskListRouterParams {
 interface TaskListProps extends RouteComponentProps<TaskListRouterParams> {}
 interface TaskListState {
   page: number;
-  queryParams: GetTasksQueryParams;
+  queryParams: any;
   selectedTaskStates: TASK_STATE[];
 }
 
 export function TaskList(props: TaskListProps) {
   const dispatch = useDispatch();
-  const allTasks = useSelector((state: AppState) => state.ad.taskList);
-  const errorGettingTasks = useSelector(
-    (state: AppState) => state.ad.errorMessage
-  );
+  const taskState = useSelector((state: AppState) => state.task);
+  const allTasks = taskState.taskList;
+  const errorGettingTasks = taskState.errorMessage;
+  const isRequestingFromES = taskState.requesting;
   const elasticsearchState = useSelector(
     (state: AppState) => state.elasticsearch
   );
-  const isRequestingFromES = useSelector(
-    (state: AppState) => state.ad.requesting
-  );
+
+  console.log('all tasks: ', allTasks);
 
   const [selectedTasks, setSelectedTasks] = useState([] as TaskListItem[]);
   const [tasksToDisplay, setTasksToDisplay] = useState([] as TaskListItem[]);
@@ -125,13 +126,15 @@ export function TaskList(props: TaskListProps) {
       state.page,
       state.queryParams.size
     );
+
+    console.log('cur tasks to display: ', curTasksToDisplay);
     setTasksToDisplay(curTasksToDisplay);
 
     setIsLoadingFinalTasks(false);
   }, [allTasks]);
 
   const getUpdatedTasks = async () => {
-    console.log('[stub] getting updated tasks]');
+    dispatch(getTaskList(GET_ALL_TASKS_QUERY_PARAMS));
   };
 
   const handlePageChange = (pageNumber: number) => {
@@ -188,7 +191,6 @@ export function TaskList(props: TaskListProps) {
       queryParams: {
         ...state.queryParams,
         search: '',
-        indices: '',
       },
       selectedTaskStates: ALL_TASK_STATES,
     }));

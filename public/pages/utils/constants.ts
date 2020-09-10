@@ -90,12 +90,7 @@ export const GET_SAMPLE_DETECTORS_QUERY_PARAMS = {
 };
 
 export const GET_ALL_TASKS_QUERY_PARAMS = {
-  from: 0,
   search: '',
-  indices: '',
-  size: MAX_TASKS,
-  sortDirection: SORT_DIRECTION.ASC,
-  sortField: 'name',
 };
 
 export const GET_SAMPLE_INDICES_QUERY = 'opendistro-sample-*';

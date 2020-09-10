@@ -14,42 +14,17 @@
  */
 
 import { Request, ResponseToolkit } from 'hapi';
-//@ts-ignore
-import get from 'lodash/get';
-import orderBy from 'lodash/orderBy';
-import pullAll from 'lodash/pullAll';
+import { get, orderBy } from 'lodash';
 //@ts-ignore
 import { CallClusterWithRequest } from 'src/legacy/core_plugins/elasticsearch';
-import { AnomalyResults, SearchResponse } from '../models/interfaces';
-import {
-  AnomalyResult,
-  AnomalyResultsResponse,
-  Task,
-  GetDetectorsQueryParams,
-  ServerResponse,
-  FeatureResult,
-  DateRangeFilter,
-} from '../models/types';
+import { Task, GetTasksQueryParams, ServerResponse } from '../models/types';
 import { Router } from '../router';
-import { SORT_DIRECTION, AD_DOC_FIELDS } from '../utils/constants';
+import { isIndexNotFoundError } from './utils/adHelpers';
 import {
-  mapKeysDeep,
-  toCamel,
-  toSnake,
-  toFixedNumberForAnomaly,
-} from '../utils/helpers';
-import {
-  anomalyResultMapper,
   convertTaskKeysToCamelCase,
   convertTaskKeysToSnakeCase,
-  convertPreviewInputKeysToSnakeCase,
-  getResultAggregationQuery,
-  getFinalDetectorStates,
-  getDetectorsWithJob,
-  getDetectorInitProgress,
-  isIndexNotFoundError,
-} from './utils/adHelpers';
-import { set } from 'lodash';
+  getFinalTaskStates,
+} from './utils/taskHelpers';
 
 type PutDetectorParams = {
   detectorId: string;
@@ -60,6 +35,7 @@ type PutDetectorParams = {
 
 export default function (apiRouter: Router) {
   apiRouter.post('/tasks', createTask);
+  apiRouter.get('/tasks', getTasks);
   //apiRouter.get('/tasks/{taskId}', getTask);
   //   apiRouter.put('/detectors/{detectorId}', updateTask);
   //   apiRouter.post('/detectors/_search', searchDetector);
@@ -118,6 +94,119 @@ const createTask = async (
     return { ok: false, error: err.message };
   }
 };
+
+const getTasks = async (
+  req: Request,
+  h: ResponseToolkit,
+  callWithRequest: CallClusterWithRequest
+): Promise<ServerResponse<any>> => {
+  try {
+    const {
+      search = '',
+      //@ts-ignore
+    } = req.query as GetTasksQueryParams;
+
+    //Preparing search request
+    const requestBody = {
+      query: {
+        match: {
+          name: search,
+        },
+      },
+    };
+
+    // Getting all of the detectors, including info about the execution state and last update time.
+    // For detectors, we have to call the (1) get detector and (2) detector profile apis for each individual detector
+    // to get this info. This getTasks api will support a param to search on task executions, to include
+    // this information all from one api call. The mock response is a simulation of what may get returned.
+
+    // const response: SearchResponse<Task> = await callWithRequest(
+    //   req,
+    //   'ad.searchTask',
+    //   { body: requestBody }
+    // );
+
+    const response = {
+      hits: {
+        total: {
+          value: 2,
+        },
+        hits: [
+          {
+            _index: '.opendistro-task-executions',
+            _type: 'doc',
+            _id: 'dummy-id-1',
+            _source: {
+              name: 'dummy-task-1',
+              description: 'dummy-description-1',
+              detector_id: 'dummy-detector-id-1',
+              state: 'RUNNING',
+              data_start_time: 1593864000,
+              data_end_time: 1593964000,
+              last_update_time: 1594964000,
+            },
+          },
+          {
+            _index: '.opendistro-task-executions',
+            _type: 'doc',
+            _id: 'dummy-id-2',
+            _source: {
+              name: 'dummy-task-2',
+              description: 'dummy-description-2',
+              detector_id: 'dummy-detector-id-2',
+              state: 'DISABLED',
+              data_start_time: 1593874000,
+              data_end_time: 1594964000,
+              last_update_time: 1594994000,
+            },
+          },
+        ],
+      },
+    };
+
+    console.log('request: ', requestBody);
+    console.log('mock response: ', response);
+
+    const totalTasks = get(response, 'hits.total.value', 0);
+
+    const allTasks = get(response, 'hits.hits', []).reduce(
+      (acc: any, task: any) => ({
+        ...acc,
+        [task._id]: {
+          id: task._id,
+          name: get(task, '_source.name', ''),
+          detectorId: get(task, '_source.detector_id'),
+          description: get(task, '_source.description', ''),
+          curState: get(task, '_source.state'),
+          dataStartTime: get(task, '_source.data_start_time'),
+          dataEndTime: get(task, '_source.data_end_time'),
+          lastUpdateTime: get(task, '_source.last_update_time'),
+        },
+      }),
+      {}
+    );
+
+    // Get the final task states
+    const allTasksWithFinalStates = getFinalTaskStates(allTasks);
+
+    return {
+      ok: true,
+      response: {
+        totalTasks,
+        taskList: allTasksWithFinalStates,
+      },
+    };
+  } catch (err) {
+    console.log('Anomaly detector - Unable to get tasks', err);
+    if (isIndexNotFoundError(err)) {
+      return { ok: true, response: { totalDetectors: 0, taskList: {} } };
+    }
+    return { ok: false, error: err.message };
+  }
+};
+
+// NOTE: the ad.getDetector api call here will want to add the optional ?execution=true here to retrieve the execution state.
+// We will not call the profile api to get the state here, as it is heavy and should just be used for debugging to get a lot of details.
 
 // const getTask = async (
 //   req: Request,
@@ -308,215 +397,6 @@ const createTask = async (
 //     console.log('Anomaly detector - Unable to search detectors', err);
 //     if (isIndexNotFoundError(err)) {
 //       return { ok: true, response: { totalDetectors: 0, detectors: [] } };
-//     }
-//     return { ok: false, error: err.message };
-//   }
-// };
-
-// const getDetectors = async (
-//   req: Request,
-//   h: ResponseToolkit,
-//   callWithRequest: CallClusterWithRequest
-// ): Promise<ServerResponse<any>> => {
-//   try {
-//     const {
-//       from = 0,
-//       size = 20,
-//       search = '',
-//       indices = '',
-//       sortDirection = SORT_DIRECTION.DESC,
-//       sortField = 'name',
-//       //@ts-ignore
-//     } = req.query as GetDetectorsQueryParams;
-//     const mustQueries = [];
-//     if (search.trim()) {
-//       mustQueries.push({
-//         query_string: {
-//           fields: ['name', 'description'],
-//           default_operator: 'AND',
-//           query: `*${search.trim().split('-').join('* *')}*`,
-//         },
-//       });
-//     }
-//     if (indices.trim()) {
-//       mustQueries.push({
-//         query_string: {
-//           fields: ['indices'],
-//           default_operator: 'OR',
-//           query: `*${indices.trim().split(' ').join('* *')}*`,
-//         },
-//       });
-//     }
-//     //Allowed sorting columns
-//     const sortQueryMap = {
-//       name: { 'name.keyword': sortDirection },
-//       indices: { 'indices.keyword': sortDirection },
-//       lastUpdateTime: { last_update_time: sortDirection },
-//     } as { [key: string]: object };
-//     let sort = {};
-//     const sortQuery = sortQueryMap[sortField];
-//     if (sortQuery) {
-//       sort = sortQuery;
-//     }
-//     //Preparing search request
-//     const requestBody = {
-//       sort,
-//       size,
-//       from,
-//       query: {
-//         bool: {
-//           must: mustQueries,
-//         },
-//       },
-//     };
-//     const response: SearchResponse<Detector> = await callWithRequest(
-//       req,
-//       'ad.searchDetector',
-//       { body: requestBody }
-//     );
-//     const totalDetectors = get(response, 'hits.total.value', 0);
-//     //Get all detectors from search detector API
-//     const allDetectors = get(response, 'hits.hits', []).reduce(
-//       (acc: any, detector: any) => ({
-//         ...acc,
-//         [detector._id]: {
-//           id: detector._id,
-//           description: get(detector, '_source.description', ''),
-//           indices: get(detector, '_source.indices', []),
-//           lastUpdateTime: get(detector, '_source.last_update_time', 0),
-//           ...convertDetectorKeysToCamelCase(get(detector, '_source', {})),
-//         },
-//       }),
-//       {}
-//     );
-//     //Given each detector from previous result, get aggregation to power list
-//     const allDetectorIds = Object.keys(allDetectors);
-//     const aggregationResult = await callWithRequest(req, 'ad.searchResults', {
-//       body: getResultAggregationQuery(allDetectorIds, {
-//         from,
-//         size,
-//         sortField,
-//         sortDirection,
-//         search,
-//         indices,
-//       }),
-//     });
-//     const aggsDetectors = get(
-//       aggregationResult,
-//       'aggregations.unique_detectors.buckets',
-//       []
-//     ).reduce((acc: any, agg: any) => {
-//       return {
-//         ...acc,
-//         [agg.key]: {
-//           ...allDetectors[agg.key],
-//           totalAnomalies: agg.total_anomalies_in_24hr.doc_count,
-//           lastActiveAnomaly: agg.latest_anomaly_time.value,
-//         },
-//       };
-//     }, {});
-
-//     // Aggregation will not return values where anomalies for detectors are not generated, loop through it and fill values with 0
-//     const unUsedDetectors = pullAll(
-//       allDetectorIds,
-//       Object.keys(aggsDetectors)
-//     ).reduce((acc: any, unusedDetector: string) => {
-//       return {
-//         ...acc,
-//         [unusedDetector]: {
-//           ...allDetectors[unusedDetector],
-//           totalAnomalies: 0,
-//           lastActiveAnomaly: 0,
-//         },
-//       };
-//     }, {});
-
-//     // If sorting criteria is from the aggregation manage pagination in memory.
-//     let finalDetectors = orderBy<any>(
-//       { ...aggsDetectors, ...unUsedDetectors },
-//       [sortField],
-//       [sortDirection]
-//     );
-//     if (!sortQueryMap[sortField]) {
-//       finalDetectors = Object.values(finalDetectors)
-//         .slice(from, from + size)
-//         .reduce(
-//           (acc, detector: any) => ({ ...acc, [detector.id]: detector }),
-//           {}
-//         );
-//     }
-
-//     // Get detector state as well: loop through the ids to get each detector's state using profile api
-//     const allIds = finalDetectors.map((detector) => detector.id);
-
-//     const detectorStatePromises = allIds.map(async (id: string) => {
-//       try {
-//         const detectorStateResp = await callWithRequest(
-//           req,
-//           'ad.detectorProfile',
-//           {
-//             detectorId: id,
-//           }
-//         );
-//         return detectorStateResp;
-//       } catch (err) {
-//         console.log('Error getting detector profile ', err);
-//         return Promise.reject(
-//           new Error('Error retrieving all detector states')
-//         );
-//       }
-//     });
-//     const detectorStateResponses = await Promise.all(
-//       detectorStatePromises
-//     ).catch((err) => {
-//       throw err;
-//     });
-//     const finalDetectorStates = getFinalDetectorStates(
-//       detectorStateResponses,
-//       finalDetectors
-//     );
-//     // update the final detectors to include the detector state
-//     finalDetectors.forEach((detector, i) => {
-//       detector.curState = finalDetectorStates[i].state;
-//     });
-
-//     // get ad job
-//     const detectorsWithJobPromises = allIds.map(async (id: string) => {
-//       try {
-//         const detectorResp = await callWithRequest(req, 'ad.getDetector', {
-//           detectorId: id,
-//         });
-//         return detectorResp;
-//       } catch (err) {
-//         console.log('Error getting detector ', err);
-//         return Promise.reject(new Error('Error retrieving all detectors'));
-//       }
-//     });
-//     const detectorsWithJobResponses = await Promise.all(
-//       detectorsWithJobPromises
-//     ).catch((err) => {
-//       throw err;
-//     });
-//     const finalDetectorsWithJob = getDetectorsWithJob(
-//       detectorsWithJobResponses
-//     );
-
-//     // update the final detectors to include the detector enabledTime
-//     finalDetectors.forEach((detector, i) => {
-//       detector.enabledTime = finalDetectorsWithJob[i].enabledTime;
-//     });
-
-//     return {
-//       ok: true,
-//       response: {
-//         totalDetectors,
-//         detectorList: Object.values(finalDetectors),
-//       },
-//     };
-//   } catch (err) {
-//     console.log('Anomaly detector - Unable to search detectors', err);
-//     if (isIndexNotFoundError(err)) {
-//       return { ok: true, response: { totalDetectors: 0, detectorList: [] } };
 //     }
 //     return { ok: false, error: err.message };
 //   }

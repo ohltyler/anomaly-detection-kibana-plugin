@@ -75,6 +75,28 @@ const reducer = handleActions<Tasks>(
         errorMessage: action.error,
       }),
     },
+    [GET_TASK]: {
+      REQUEST: (state: Tasks): Tasks => ({
+        ...state,
+        requesting: true,
+        errorMessage: '',
+      }),
+      SUCCESS: (state: Tasks, action: APIResponseAction): Tasks => ({
+        ...state,
+        requesting: false,
+        tasks: {
+          ...state.tasks,
+          [action.taskId]: {
+            ...cloneDeep(action.result.data.response),
+          },
+        },
+      }),
+      FAILURE: (state: Tasks, action: APIErrorAction): Tasks => ({
+        ...state,
+        requesting: false,
+        errorMessage: action.error,
+      }),
+    },
     [GET_TASK_LIST]: {
       REQUEST: (state: Tasks): Tasks => ({
         ...state,
@@ -93,28 +115,6 @@ const reducer = handleActions<Tasks>(
         errorMessage: action.error,
       }),
     },
-    // [GET_TASK]: {
-    //   REQUEST: (state: Tasks): Tasks => ({
-    //     ...state,
-    //     requesting: true,
-    //     errorMessage: '',
-    //   }),
-    //   SUCCESS: (state: Tasks, action: APIResponseAction): Tasks => ({
-    //     ...state,
-    //     requesting: false,
-    //     tasks: {
-    //       ...state.tasks,
-    //       [action.taskId]: {
-    //         ...cloneDeep(action.result.data.response),
-    //       },
-    //     },
-    //   }),
-    //   FAILURE: (state: Tasks, action: APIErrorAction): Tasks => ({
-    //     ...state,
-    //     requesting: false,
-    //     errorMessage: action.error,
-    //   }),
-    // },
     //   [START_DETECTOR]: {
     //     REQUEST: (state: Detectors): Detectors => {
     //       const newState = { ...state, requesting: true, errorMessage: '' };
@@ -268,18 +268,18 @@ export const createTask = (requestBody: Task): APIAction => ({
     client.post(`..${AD_NODE_API.TASK}`, requestBody),
 });
 
+export const getTask = (taskId: string): APIAction => ({
+  type: GET_TASK,
+  request: (client: IHttpService) =>
+    client.get(`..${AD_NODE_API.TASK}/${taskId}`),
+  taskId,
+});
+
 export const getTaskList = (queryParams: GetTasksQueryParams): APIAction => ({
   type: GET_TASK_LIST,
   request: (client: IHttpService) =>
     client.get(`..${AD_NODE_API.TASK}`, { params: queryParams }),
 });
-
-// export const getTask = (taskId: string): APIAction => ({
-//   type: GET_TASK,
-//   request: (client: IHttpService) =>
-//     client.get(`..${AD_NODE_API.TASK}/${taskId}`),
-//   taskId,
-// });
 
 //   export const searchDetector = (requestBody: any): APIAction => ({
 //     type: SEARCH_DETECTOR,

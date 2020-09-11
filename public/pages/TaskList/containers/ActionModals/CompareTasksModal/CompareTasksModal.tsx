@@ -19,6 +19,9 @@ import {
   EuiOverlayMask,
   EuiButton,
   EuiButtonEmpty,
+  EuiFlexGroup,
+  EuiFlexItem,
+  EuiCallOut,
   EuiModal,
   EuiModalHeader,
   EuiModalFooter,
@@ -45,7 +48,18 @@ export const CompareTasksModal = (props: CompareTasksModalProps) => {
     <EuiOverlayMask>
       <EuiModal onClose={props.onHide}>
         <EuiModalHeader>
-          <EuiModalHeaderTitle>{'Compare tasks'}&nbsp;</EuiModalHeaderTitle>
+          <EuiFlexGroup direction="column" gutterSize="s">
+            <EuiFlexItem>
+              <EuiCallOut
+                title="Only finished tasks are currently eligible for comparison"
+                color="primary"
+                iconType="iInCircle"
+              ></EuiCallOut>
+            </EuiFlexItem>
+            <EuiFlexItem>
+              <EuiModalHeaderTitle>{'Compare tasks'}&nbsp;</EuiModalHeaderTitle>
+            </EuiFlexItem>
+          </EuiFlexGroup>
         </EuiModalHeader>
         <EuiModalBody>
           <EuiText>The following tasks will be compared.</EuiText>

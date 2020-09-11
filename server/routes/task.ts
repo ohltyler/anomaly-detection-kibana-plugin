@@ -35,8 +35,8 @@ type PutDetectorParams = {
 
 export default function (apiRouter: Router) {
   apiRouter.post('/tasks', createTask);
+  apiRouter.get('/tasks/{taskId}', getTask);
   apiRouter.get('/tasks', getTasks);
-  //apiRouter.get('/tasks/{taskId}', getTask);
   //   apiRouter.put('/detectors/{detectorId}', updateTask);
   //   apiRouter.post('/detectors/_search', searchDetector);
   //   apiRouter.get('/detectors', getDetectors);
@@ -87,6 +87,53 @@ const createTask = async (
     return {
       ok: true,
       response: respInCamel,
+      //response: convertTaskKeysToCamelCase(resp) as Task,
+    };
+  } catch (err) {
+    console.log('Anomaly detector - CreateDetector', err);
+    return { ok: false, error: err.message };
+  }
+};
+
+const getTask = async (
+  req: Request,
+  h: ResponseToolkit,
+  callWithRequest: CallClusterWithRequest
+): Promise<ServerResponse<Task>> => {
+  try {
+    const { taskId } = req.params;
+    const { ifSeqNo, ifPrimaryTerm } = req.query as {
+      ifSeqNo?: string;
+      ifPrimaryTerm?: string;
+    };
+    const params = {
+      taskId: taskId,
+      ifSeqNo: ifSeqNo,
+      ifPrimaryTerm: ifPrimaryTerm,
+    };
+
+    // let response;
+    // response = await callWithRequest(req, 'ad.updateDetector', params);
+
+    // const resp = {
+    //   ...response.anomaly_detector,
+    //   id: response._id,
+    //   primaryTerm: response._primary_term,
+    //   seqNo: response._seq_no,
+    // };
+    const mockResp = {
+      id: taskId,
+      name: 'some-task-name',
+      detectorId: '2EC_VHQBuKdlEiSG71H8',
+      description: 'some task description',
+      dataStartTime: 1593864000,
+      dataEndTime: 1596542400,
+      lastUpdateTime: 1593864000,
+    };
+
+    return {
+      ok: true,
+      response: mockResp,
       //response: convertTaskKeysToCamelCase(resp) as Task,
     };
   } catch (err) {
@@ -186,6 +233,20 @@ const getTasks = async (
               data_start_time: 1593975000,
               data_end_time: 1595974000,
               last_update_time: 1594995000,
+            },
+          },
+          {
+            _index: '.opendistro-task-executions',
+            _type: 'doc',
+            _id: 'dummy-id-5',
+            _source: {
+              name: 'some-failed-task',
+              description: 'dummy-description-5',
+              detector_id: 'rEC_VHQBuKdlEiSGQVFN',
+              state: 'RUNNING_FAILURE',
+              data_start_time: 1593974000,
+              data_end_time: 1595971000,
+              last_update_time: 1594985000,
             },
           },
         ],

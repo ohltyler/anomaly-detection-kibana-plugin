@@ -28,6 +28,7 @@ import { EuiSideNav, EuiPage, EuiPageBody, EuiPageSideBar } from '@elastic/eui';
 import { useSelector } from 'react-redux';
 import { APP_PATH } from '../../utils/constants';
 import { DetectorDetail } from '../DetectorDetail';
+import { TaskDetail } from '../TaskDetail';
 import { EditFeatures } from '../EditFeatures/containers/EditFeatures';
 import { DashboardOverview } from '../Dashboard/Container/DashboardOverview';
 
@@ -140,6 +141,10 @@ export function Main(props: MainProps) {
             render={(props: RouteComponentProps) => (
               <DetectorDetail {...props} />
             )}
+          />
+          <Route
+            path={APP_PATH.TASK_DETAIL}
+            render={(props: RouteComponentProps) => <TaskDetail {...props} />}
           />
           <Route
             exact

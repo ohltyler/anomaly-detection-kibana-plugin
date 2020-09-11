@@ -119,3 +119,10 @@ export const taskListColumns = [
     render: renderTime,
   },
 ] as EuiBasicTableColumn<any>[];
+
+export enum TASK_ACTION {
+  COMPARE,
+  START,
+  STOP,
+  DELETE,
+}

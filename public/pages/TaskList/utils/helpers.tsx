@@ -17,6 +17,7 @@ import queryString from 'query-string';
 import { SORT_DIRECTION } from '../../../../server/utils/constants';
 import { DEFAULT_QUERY_PARAMS } from '../../utils/constants';
 import { TASK_STATE } from '../../../utils/constants';
+import { TASK_ACTION } from './constants';
 import { TaskListItem, DetectorListItem } from '../../../models/interfaces';
 
 export const getURLQueryParams = (location: { search: string }): any => {
@@ -58,4 +59,22 @@ export const getTasksWithDetectorName = (
     });
   }
   return tasks;
+};
+
+export const getTasksForAction = (
+  tasks: TaskListItem[],
+  action: TASK_ACTION
+) => {
+  console.log('tasks passed: ', tasks);
+  switch (action) {
+    case TASK_ACTION.COMPARE: {
+      const tasksForAction = tasks.filter(
+        (task) => task.curState === TASK_STATE.FINISHED
+      );
+      console.log('tasks for action: ', tasksForAction);
+      return tasksForAction;
+    }
+    default:
+      return [];
+  }
 };

@@ -31,14 +31,18 @@ import { RouteComponentProps } from 'react-router';
 import chrome from 'ui/chrome';
 // @ts-ignore
 import { toastNotifications } from 'ui/notify';
-import { TaskListItem } from '../../../../models/interfaces';
+import { TaskListItem, DetectorListItem } from '../../../../models/interfaces';
 import { SORT_DIRECTION } from '../../../../../server/utils/constants';
 import ContentPanel from '../../../../components/ContentPanel/ContentPanel';
 import { AppState } from '../../../../redux/reducers';
 import { getTaskList } from '../../../../redux/reducers/task';
 import { getDetectorList } from '../../../../redux/reducers/ad';
-import { APP_PATH, PLUGIN_NAME, TASK_STATE } from '../../../../utils/constants';
-import { BREADCRUMBS } from '../../../../utils/constants';
+import {
+  BREADCRUMBS,
+  APP_PATH,
+  PLUGIN_NAME,
+  TASK_STATE,
+} from '../../../../utils/constants';
 import { getTitleWithCount } from '../../../../utils/utils';
 import { MAX_TASKS, ALL_TASK_STATES } from '../../../utils/constants';
 import {
@@ -47,12 +51,15 @@ import {
 } from '../../utils/helpers';
 import { filterAndSortTasks, getTasksToDisplay } from '../../../utils/helpers';
 import { EmptyTaskMessage } from '../../components/EmptyTaskMessage/EmptyTaskMessage';
-import { taskListColumns } from '../../utils/constants';
+import { TASK_ACTION, taskListColumns } from '../../utils/constants';
 import { TaskFilters } from '../../components/TaskFilters/TaskFilters';
 import {
   GET_ALL_TASKS_QUERY_PARAMS,
   GET_ALL_DETECTORS_QUERY_PARAMS,
 } from '../../../utils/constants';
+import { getTasksForAction } from '../../utils/helpers';
+import { TaskListActions } from '../../components/TaskListActions/TaskListActions';
+import { CompareTasksModal } from '../ActionModals/CompareTasksModal/CompareTasksModal';
 
 export interface TaskListRouterParams {
   from: string;
@@ -66,6 +73,18 @@ interface TaskListState {
   page: number;
   queryParams: any;
   selectedTaskStates: TASK_STATE[];
+}
+interface ActionModalState {
+  isOpen: boolean;
+  action: TASK_ACTION;
+  isListLoading: boolean;
+  isRequestingToClose: boolean;
+  affectedTasks: TaskListItem[];
+  affectedDetectors: DetectorListItem[];
+}
+interface TaskListActionsState {
+  isDisabled: boolean;
+  isCompareDisabled: boolean;
 }
 
 export function TaskList(props: TaskListProps) {
@@ -98,6 +117,21 @@ export function TaskList(props: TaskListProps) {
     page: 0,
     queryParams: getURLQueryParams(props.location),
     selectedTaskStates: ALL_TASK_STATES,
+  });
+  const [actionModalState, setActionModalState] = useState<ActionModalState>({
+    isOpen: false,
+    //@ts-ignore
+    action: null,
+    isListLoading: false,
+    isRequestingToClose: false,
+    affectedTasks: [],
+    affectedDetectors: [],
+  });
+  const [taskListActionsState, setTaskListActionsState] = useState<
+    TaskListActionsState
+  >({
+    isDisabled: true,
+    isCompareDisabled: false,
   });
 
   // Set breadcrumbs on page initialization
@@ -145,7 +179,6 @@ export function TaskList(props: TaskListProps) {
       allDetectors
     );
 
-    console.log('cur tasks to display: ', tasksToDisplayWithDetectorName);
     setTasksToDisplay(tasksToDisplayWithDetectorName);
 
     setIsLoadingFinalTasks(false);
@@ -207,6 +240,39 @@ export function TaskList(props: TaskListProps) {
     }));
   };
 
+  const handleCompareTasksAction = () => {
+    const validTasks = getTasksForAction(
+      selectedTasksForAction,
+      TASK_ACTION.COMPARE
+    );
+    if (!isEmpty(validTasks)) {
+      setActionModalState({
+        isOpen: true,
+        action: TASK_ACTION.COMPARE,
+        isListLoading: false,
+        isRequestingToClose: false,
+        affectedTasks: validTasks,
+        affectedDetectors: [],
+      });
+    } else {
+      toastNotifications.addWarning(
+        'All selected detectors are unable to start. Make sure selected \
+          detectors have features and are not already running'
+      );
+    }
+  };
+
+  const handleSelectionChange = (currentSelected: TaskListItem[]) => {
+    setSelectedTasksForAction(currentSelected);
+    setTaskListActionsState({
+      ...taskListActionsState,
+      isDisabled: isEmpty(currentSelected),
+      isCompareDisabled: isEmpty(
+        getTasksForAction(currentSelected, TASK_ACTION.COMPARE)
+      ),
+    });
+  };
+
   const handleResetFilter = () => {
     setState((state) => ({
       ...state,
@@ -221,6 +287,44 @@ export function TaskList(props: TaskListProps) {
   const getItemId = (item: any) => {
     return `${item.id}-${item.currentTime}`;
   };
+
+  const handleHideModal = () => {
+    setActionModalState({
+      ...actionModalState,
+      isOpen: false,
+    });
+  };
+
+  const handleConfirmModal = () => {
+    setActionModalState({
+      ...actionModalState,
+      isRequestingToClose: true,
+    });
+  };
+
+  const getActionModal = () => {
+    if (actionModalState.isOpen) {
+      //@ts-ignore
+      switch (actionModalState.action) {
+        case TASK_ACTION.COMPARE: {
+          return (
+            <CompareTasksModal
+              tasks={actionModalState.affectedTasks}
+              onHide={handleHideModal}
+              isListLoading={isLoading}
+            />
+          );
+        }
+        default: {
+          return null;
+        }
+      }
+    } else {
+      return null;
+    }
+  };
+
+  const actionModal = getActionModal();
 
   const sorting = {
     sort: {
@@ -239,6 +343,10 @@ export function TaskList(props: TaskListProps) {
     pageSizeOptions: [5, 10, 20, 50],
   };
 
+  const selection = {
+    onSelectionChange: handleSelectionChange,
+  };
+
   return (
     <EuiPage>
       <EuiPageBody>
@@ -249,8 +357,13 @@ export function TaskList(props: TaskListProps) {
               : getTitleWithCount('Tasks', selectedTasks.length)
           }
           actions={[
+            <TaskListActions
+              onCompareTasks={handleCompareTasksAction}
+              isActionsDisabled={taskListActionsState.isDisabled}
+              isCompareDisabled={taskListActionsState.isCompareDisabled}
+            />,
             <EuiButton
-              style={{ width: '150px', marginBottom: '12px' }}
+              style={{ width: '150px' }}
               data-test-subj="createTaskButton"
               fill
               href={`${PLUGIN_NAME}#${APP_PATH.CREATE_TASK}`}
@@ -259,6 +372,7 @@ export function TaskList(props: TaskListProps) {
             </EuiButton>,
           ]}
         >
+          {getActionModal()}
           <TaskFilters
             activePage={state.page}
             pageCount={
@@ -276,8 +390,18 @@ export function TaskList(props: TaskListProps) {
           <EuiHorizontalRule margin="s" style={{ marginBottom: '0px' }} />
           <EuiBasicTable<any>
             items={isLoading ? [] : tasksToDisplay}
+            /*
+              itemId here is used to keep track of the selected detectors and render appropriately.
+              Because the item id is dependent on the current time (see getItemID() above), all selected
+              detectors will be deselected once new detectors are retrieved because the page will
+              re-render with a new timestamp. This logic is borrowed from Alerting Kibana plugins'
+              monitors list page.
+            */
+            itemId={getItemId}
             columns={taskListColumns}
             onChange={handleTableChange}
+            isSelectable={true}
+            selection={selection}
             sorting={sorting}
             pagination={pagination}
             noItemsMessage={

@@ -79,6 +79,7 @@ export enum DETECTOR_STATE {
 export enum TASK_STATE {
   DISABLED = 'Stopped',
   RUNNING = 'Running',
+  FINISHED = 'Finished',
   RUNNING_FAILURE = 'Running failure',
 }
 

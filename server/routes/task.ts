@@ -129,7 +129,7 @@ const getTasks = async (
     const response = {
       hits: {
         total: {
-          value: 2,
+          value: 4,
         },
         hits: [
           {
@@ -137,7 +137,7 @@ const getTasks = async (
             _type: 'doc',
             _id: 'dummy-id-1',
             _source: {
-              name: 'dummy-task-1',
+              name: 'some-running-task',
               description: 'dummy-description-1',
               detector_id: '2EC_VHQBuKdlEiSG71H8',
               state: 'RUNNING',
@@ -151,13 +151,41 @@ const getTasks = async (
             _type: 'doc',
             _id: 'dummy-id-2',
             _source: {
-              name: 'dummy-task-2',
+              name: 'some-disabled-task',
               description: 'dummy-description-2',
               detector_id: 'rEC_VHQBuKdlEiSGQVFN',
               state: 'DISABLED',
               data_start_time: 1593874000,
               data_end_time: 1594964000,
               last_update_time: 1594994000,
+            },
+          },
+          {
+            _index: '.opendistro-task-executions',
+            _type: 'doc',
+            _id: 'dummy-id-3',
+            _source: {
+              name: 'some-finished-task-1',
+              description: 'dummy-description-3',
+              detector_id: '2EC_VHQBuKdlEiSG71H8',
+              state: 'FINISHED',
+              data_start_time: 1593974000,
+              data_end_time: 1595964000,
+              last_update_time: 1594995000,
+            },
+          },
+          {
+            _index: '.opendistro-task-executions',
+            _type: 'doc',
+            _id: 'dummy-id-4',
+            _source: {
+              name: 'some-finished-task-2',
+              description: 'dummy-description-4',
+              detector_id: 'rEC_VHQBuKdlEiSGQVFN',
+              state: 'FINISHED',
+              data_start_time: 1593975000,
+              data_end_time: 1595974000,
+              last_update_time: 1594995000,
             },
           },
         ],

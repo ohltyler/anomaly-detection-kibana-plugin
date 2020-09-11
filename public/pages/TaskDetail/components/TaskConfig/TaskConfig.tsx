@@ -74,6 +74,7 @@ export const TaskConfig = (props: TaskConfigProps) => {
     <ContentPanel
       title="Task configuration"
       titleSize="s"
+      panelStyles={{ margin: '24px' }}
       actions={[<EuiButton onClick={props.onEditTask}>Edit</EuiButton>]}
     >
       <EuiFlexGrid columns={3} gutterSize="l" style={{ border: 'none' }}>

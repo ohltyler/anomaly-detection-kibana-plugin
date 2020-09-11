@@ -61,7 +61,9 @@ export const taskListColumns = [
     textOnly: true,
     align: 'left',
     render: (name: string, task: Task) => (
-      <EuiLink href={`${PLUGIN_NAME}#/tasks/${task.id}`}>{name}</EuiLink>
+      <EuiLink href={`${PLUGIN_NAME}#/tasks/${task.id}/details`}>
+        {name}
+      </EuiLink>
     ),
   },
   {

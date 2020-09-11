@@ -50,13 +50,21 @@ import { BREADCRUMBS, TASK_STATE } from '../../../utils/constants';
 import moment from 'moment';
 import { TASK_STATE_COLOR } from '../../utils/constants';
 import { TaskConfig } from '../components/TaskConfig/TaskConfig';
+import { TASK_ACTION } from '../../TaskList/utils/constants';
 
 export interface TaskRouterProps {
   taskId?: string;
 }
 interface TaskDetailProps extends RouteComponentProps<TaskRouterProps> {}
 
+interface TaskDetailModalState {
+  isOpen: boolean;
+  action: TASK_ACTION;
+}
+
 export const TaskDetail = (props: TaskDetailProps) => {
+  const isDark = darkModeEnabled();
+  useHideSideNavBar(true, false);
   const dispatch = useDispatch();
   const taskId: string = get(props, 'match.params.taskId', '');
   const taskState = useSelector((state: AppState) => state.task);
@@ -64,17 +72,21 @@ export const TaskDetail = (props: TaskDetailProps) => {
   const errorGettingTasks = taskState.errorMessage;
   const task = allTasks[taskId];
 
-  console.log('task id (from url): ', taskId);
-  console.log('all tasks: ', allTasks);
+  console.log('rendering task detail page with task ', task);
 
-  const isDark = darkModeEnabled();
+  const [taskDetailModalState, setTaskDetailModalState] = useState<
+    TaskDetailModalState
+  >({
+    isOpen: false,
+    action: TASK_ACTION.COMPARE,
+  });
 
-  useHideSideNavBar(true, false);
+  console.log('modal state: ', taskDetailModalState);
 
   useEffect(() => {
     if (errorGettingTasks) {
       toastNotifications.addDanger('Unable to get task');
-      props.history.push('/detectors');
+      props.history.push('/tasks');
     }
   }, [errorGettingTasks]);
 
@@ -100,7 +112,13 @@ export const TaskDetail = (props: TaskDetailProps) => {
   }, []);
 
   const onEditTask = () => {
-    console.log('placeholder for editing the task');
+    task.curState === TASK_STATE.RUNNING
+      ? setTaskDetailModalState({
+          ...taskDetailModalState,
+          isOpen: true,
+          action: TASK_ACTION.STOP,
+        })
+      : props.history.push(`/tasks/${taskId}/edit`);
   };
 
   const lightStyles = {

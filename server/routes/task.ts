@@ -23,7 +23,8 @@ import { isIndexNotFoundError } from './utils/adHelpers';
 import {
   convertTaskKeysToCamelCase,
   convertTaskKeysToSnakeCase,
-  getFinalTaskStates,
+  getFinalStatesFromTaskList,
+  getFinalStateFromTask,
 } from './utils/taskHelpers';
 
 type PutDetectorParams = {
@@ -129,11 +130,14 @@ const getTask = async (
       dataStartTime: 1593864000,
       dataEndTime: 1596542400,
       lastUpdateTime: 1593864000,
+      curState: 'DISABLED',
     };
+
+    const mockRespWithFinalState = getFinalStateFromTask(mockResp);
 
     return {
       ok: true,
-      response: mockResp,
+      response: mockRespWithFinalState,
       //response: convertTaskKeysToCamelCase(resp) as Task,
     };
   } catch (err) {
@@ -276,7 +280,7 @@ const getTasks = async (
     );
 
     // Get the final task states
-    const allTasksWithFinalStates = getFinalTaskStates(allTasks);
+    const allTasksWithFinalStates = getFinalStatesFromTaskList(allTasks);
 
     return {
       ok: true,

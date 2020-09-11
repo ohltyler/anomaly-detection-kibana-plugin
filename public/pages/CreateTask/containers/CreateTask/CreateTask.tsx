@@ -44,7 +44,7 @@ import chrome from 'ui/chrome';
 //@ts-ignore
 import { toastNotifications } from 'ui/notify';
 import { getDetector, updateDetector } from '../../../../redux/reducers/ad';
-import { createTask } from '../../../../redux/reducers/task';
+import { createTask, getTask } from '../../../../redux/reducers/task';
 import moment from 'moment';
 import { Task, DateRange } from '../../../../models/interfaces';
 
@@ -62,8 +62,9 @@ export function CreateTask(props: CreateTaskProps) {
   const taskState = useSelector((state: AppState) => state.task);
   const tasks = taskState.tasks;
   const task = tasks[taskId];
+  const errorGettingTask = taskState.errorMessage;
 
-  console.log('all tasks: ', tasks);
+  console.log('task id: ', taskId);
 
   // const task = {
   //   dataStartTime: 1598400591419,
@@ -77,7 +78,7 @@ export function CreateTask(props: CreateTaskProps) {
     endDate: moment().valueOf(),
   });
 
-  console.log('re-rendering create task page...');
+  console.log('create task - task: ', task);
 
   useHideSideNavBar(true, false);
 
@@ -95,17 +96,23 @@ export function CreateTask(props: CreateTaskProps) {
       breadCrumbs.splice(2, 0, {
         text: task.name,
         //@ts-ignore
-        href: `#/tasks/${detectorId}`,
+        href: `#/tasks/${taskId}/details`,
       });
     }
     chrome.breadcrumbs.set(breadCrumbs);
   });
+  // If no detector found with ID, redirect it to list
+  useEffect(() => {
+    if (props.isEdit && errorGettingTask) {
+      toastNotifications.addDanger('Unable to find task for editing');
+      props.history.push(`/tasks`);
+    }
+  }, [props.isEdit]);
 
   // Try to get the task initially
   useEffect(() => {
     const fetchTask = async (taskId: string) => {
-      // TODO: change to getTask() when implemented
-      dispatch(getDetector(taskId));
+      dispatch(getTask(taskId));
     };
     if (taskId) {
       fetchTask(taskId);
@@ -149,9 +156,7 @@ export function CreateTask(props: CreateTaskProps) {
       toastNotifications.addSuccess(
         `Task created: ${taskResp.data.response.name}`
       );
-      // props.history.push(
-      //   `/detectors/${detectorResp.data.response.id}/configurations/`
-      // );
+      props.history.push(`/tasks/${taskResp.data.response.id}`);
     } catch (err) {
       toastNotifications.addDanger(
         `There was a problem creating the task: ${err}`

@@ -16,7 +16,7 @@
 import { cloneDeep } from 'lodash';
 import { mapKeysDeep, toCamel, toSnake } from '../../utils/helpers';
 import { TASK_STATE } from '../../../public/utils/constants';
-import { TaskListItem } from 'public/models/interfaces';
+import { TaskListItem, Task } from 'public/models/interfaces';
 
 export const convertTaskKeysToSnakeCase = (payload: any) => {
   return {
@@ -30,7 +30,9 @@ export const convertTaskKeysToCamelCase = (response: any) => {
   return obj.response;
 };
 
-export const getFinalTaskStates = (tasks: { [key: string]: TaskListItem }) => {
+export const getFinalStatesFromTaskList = (tasks: {
+  [key: string]: TaskListItem;
+}) => {
   let taskIds = Object.keys(tasks);
   let finalTasks = cloneDeep(tasks);
   taskIds.forEach((taskId) => {
@@ -38,4 +40,10 @@ export const getFinalTaskStates = (tasks: { [key: string]: TaskListItem }) => {
     finalTasks[taskId].curState = TASK_STATE[finalTasks[taskId].curState];
   });
   return finalTasks;
+};
+
+export const getFinalStateFromTask = (task: Task) => {
+  //@ts-ignore
+  task.curState = TASK_STATE[task.curState];
+  return task;
 };

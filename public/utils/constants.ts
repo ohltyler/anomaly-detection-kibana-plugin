@@ -46,7 +46,7 @@ export const APP_PATH = {
   LIST_TASKS: '/tasks',
   CREATE_TASK: '/create-task/',
   EDIT_TASK: '/tasks/:taskId/edit',
-  TASK_DETAIL: '/tasks/:taskId/',
+  TASK_DETAIL: '/tasks/:taskId/details',
 };
 
 export const KIBANA_PATH = {

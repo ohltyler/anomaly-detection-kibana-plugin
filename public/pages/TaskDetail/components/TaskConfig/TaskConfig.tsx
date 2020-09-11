@@ -20,18 +20,16 @@ import {
   EuiFlexItem,
   EuiText,
   EuiFormRow,
-  EuiLink,
   EuiButton,
   EuiFormRowProps,
 } from '@elastic/eui';
-import { PLUGIN_NAME } from '../../../../utils/constants';
-import { Task } from '../../../../models/interfaces';
-import React, { Component, FunctionComponent } from 'react';
+import { Task, Detector } from '../../../../models/interfaces';
+import React from 'react';
 import moment from 'moment';
 
 interface TaskConfigProps {
-  taskId: string;
   task: Task;
+  detector: Detector;
   onEditTask(): void;
 }
 
@@ -39,35 +37,23 @@ const FixedWidthRow = (props: EuiFormRowProps) => (
   <EuiFormRow {...props} style={{ width: '250px' }} />
 );
 
-interface ConfigCellProps {
-  title: string;
-  description: string;
-}
-
-const ConfigCell: FunctionComponent<ConfigCellProps> = (
-  props: ConfigCellProps
-) => {
+const renderCell = (title: string, description: string) => {
   return (
-    <FixedWidthRow label={props.title}>
+    <FixedWidthRow label={title}>
       <EuiText>
-        <p className="enabled">{props.description}</p>
+        <p className="enabled">{description}</p>
       </EuiText>
     </FixedWidthRow>
   );
 };
 
-export function toString(obj: any): string {
-  if (typeof obj != 'undefined') {
-    if (obj.hasOwnProperty('period')) {
-      let period = obj.period;
-      return period.interval + ' ' + period.unit;
-    } else if (typeof obj == 'number') {
-      // epoch
-      return moment(obj).format('MM/DD/YY hh:mm A');
-    }
+const renderDate = (obj: any) => {
+  if (typeof obj == 'number') {
+    return moment(obj).format('MM/DD/YYYY hh:mm A');
+  } else {
+    return '-';
   }
-  return '-';
-}
+};
 
 export const TaskConfig = (props: TaskConfigProps) => {
   return (
@@ -78,30 +64,21 @@ export const TaskConfig = (props: TaskConfigProps) => {
       actions={[<EuiButton onClick={props.onEditTask}>Edit</EuiButton>]}
     >
       <EuiFlexGrid columns={3} gutterSize="l" style={{ border: 'none' }}>
+        <EuiFlexItem>{renderCell('Name', props.task.name)}</EuiFlexItem>
+        <EuiFlexItem>{renderCell('ID', props.task.id)}</EuiFlexItem>
         <EuiFlexItem>
-          <ConfigCell title="Name" description={props.task.name} />
-        </EuiFlexItem>
-        <EuiFlexItem>
-          <ConfigCell title="ID" description={props.task.id} />
-        </EuiFlexItem>
-        <EuiFlexItem>
-          <ConfigCell
-            title="Date range"
-            description={
-              toString(props.task.dataStartTime) +
+          {renderCell(
+            'Date range',
+            renderDate(props.task.dataStartTime) +
               '-' +
-              toString(props.task.dataEndTime)
-            }
-          />
+              renderDate(props.task.dataEndTime)
+          )}
         </EuiFlexItem>
         <EuiFlexItem>
-          <ConfigCell
-            title="Description"
-            description={props.task.description}
-          />
+          {renderCell('Description', props.task.description)}
         </EuiFlexItem>
         <EuiFlexItem>
-          <ConfigCell title="Detector" description={props.task.detectorId} />
+          {renderCell('Detector', props.detector ? props.detector.name : '-')}
         </EuiFlexItem>
       </EuiFlexGrid>
     </ContentPanel>

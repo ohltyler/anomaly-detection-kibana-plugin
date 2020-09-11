@@ -46,6 +46,7 @@ import chrome from 'ui/chrome';
 import { darkModeEnabled } from '../../../utils/kibanaUtils';
 import { AppState } from '../../../redux/reducers';
 import { getTask } from '../../../redux/reducers/task';
+import { getDetector } from '../../../redux/reducers/ad';
 import { BREADCRUMBS, TASK_STATE } from '../../../utils/constants';
 import moment from 'moment';
 import { TASK_STATE_COLOR } from '../../utils/constants';
@@ -68,9 +69,12 @@ export const TaskDetail = (props: TaskDetailProps) => {
   const dispatch = useDispatch();
   const taskId: string = get(props, 'match.params.taskId', '');
   const taskState = useSelector((state: AppState) => state.task);
+  const adState = useSelector((state: AppState) => state.ad);
   const allTasks = taskState.tasks;
   const errorGettingTasks = taskState.errorMessage;
   const task = allTasks[taskId];
+  const detector = adState.detectors[task?.detectorId];
+  const isLoading = taskState.requesting || adState.requesting;
 
   console.log('rendering task detail page with task ', task);
 
@@ -103,13 +107,22 @@ export const TaskDetail = (props: TaskDetailProps) => {
   // Try to get the task initially
   useEffect(() => {
     const fetchTask = async (taskId: string) => {
-      // TODO: change to getTask() when implemented
       dispatch(getTask(taskId));
     };
     if (taskId) {
       fetchTask(taskId);
     }
   }, []);
+
+  // Try to get the corresponding detector initially
+  useEffect(() => {
+    const fetchDetector = async (detectorId: string) => {
+      dispatch(getDetector(detectorId));
+    };
+    if (task) {
+      fetchDetector(task.detectorId);
+    }
+  }, [task]);
 
   const onEditTask = () => {
     task.curState === TASK_STATE.RUNNING
@@ -138,7 +151,11 @@ export const TaskDetail = (props: TaskDetailProps) => {
         >
           <EuiFlexGroup
             justifyContent="spaceBetween"
-            style={{ padding: '10px' }}
+            style={{
+              marginLeft: '12px',
+              marginTop: '4px',
+              marginRight: '12px',
+            }}
           >
             <EuiFlexItem grow={false}>
               <EuiTitle size="l">
@@ -181,7 +198,11 @@ export const TaskDetail = (props: TaskDetailProps) => {
           </EuiFlexGroup>
           <EuiFlexGroup>
             <EuiFlexItem>
-              <TaskConfig taskId={taskId} task={task} onEditTask={onEditTask} />
+              <TaskConfig
+                task={task}
+                detector={detector}
+                onEditTask={onEditTask}
+              />
             </EuiFlexItem>
           </EuiFlexGroup>
         </EuiFlexGroup>

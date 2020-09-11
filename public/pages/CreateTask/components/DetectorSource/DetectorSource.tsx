@@ -47,7 +47,7 @@ export function DetectorSource() {
   }, []);
 
   const getDetectorInfo = (detectorId: string) => {
-    if (detectorId && detectorItems[detectorId]) {
+    if (detectorId && detectorItems && detectorItems[detectorId]) {
       dispatch(
         searchDetector({
           query: { term: { 'name.keyword': detectorItems[detectorId].name } },
@@ -99,9 +99,11 @@ export function DetectorSource() {
                   getDetectorInfo(detectorId);
                 }}
                 selectedOptions={
-                  (field.value && [
-                    { label: detectorItems[field.value].name },
-                  ]) ||
+                  (field.value &&
+                    detectorItems &&
+                    detectorItems[field.value] && [
+                      { label: detectorItems[field.value].name },
+                    ]) ||
                   []
                 }
                 singleSelection={true}

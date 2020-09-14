@@ -30,14 +30,18 @@ interface TaskListFiltersProps {
   pageCount: number;
   search: string;
   selectedTaskStates: TASK_STATE[];
-  onTaskStateChange: (options: EuiComboBoxOptionProps[]) => void;
+  selectedDetectors: string[];
+  detectorOptions: EuiComboBoxOptionProps[];
   onSearchTaskChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onTaskStateChange: (options: EuiComboBoxOptionProps[]) => void;
+  onDetectorChange: (options: EuiComboBoxOptionProps[]) => void;
+  onSearchDetectorChange: (searchValue: string) => void;
   onPageClick: (pageNumber: number) => void;
 }
 export function TaskFilters(props: TaskListFiltersProps) {
   return (
     <EuiFlexGroup gutterSize="s">
-      <EuiFlexItem grow={false} style={{ width: '60%' }}>
+      <EuiFlexItem grow={false} style={{ width: '40%' }}>
         <EuiFieldSearch
           fullWidth={true}
           value={props.search}
@@ -58,6 +62,24 @@ export function TaskFilters(props: TaskListFiltersProps) {
           selectedOptions={
             props.selectedTaskStates.length > 0
               ? props.selectedTaskStates.map((state) => ({ label: state }))
+              : []
+          }
+          fullWidth={true}
+        />
+      </EuiFlexItem>
+      <EuiFlexItem>
+        <EuiComboBox
+          id="selectedDetectors"
+          data-test-subj="detectorsFilter"
+          placeholder="All detectors"
+          isClearable={true}
+          singleSelection={false}
+          options={props.detectorOptions}
+          onChange={props.onDetectorChange}
+          onSearchChange={props.onSearchDetectorChange}
+          selectedOptions={
+            props.selectedDetectors.length > 0
+              ? props.selectedDetectors.map((detector) => ({ label: detector }))
               : []
           }
           fullWidth={true}

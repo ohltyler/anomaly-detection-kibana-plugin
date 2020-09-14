@@ -22,7 +22,7 @@ import {
   EuiPageBody,
   EuiSpacer,
 } from '@elastic/eui';
-import { isEmpty } from 'lodash';
+import { isEmpty, debounce } from 'lodash';
 import queryString from 'query-string';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -44,12 +44,22 @@ import {
   TASK_STATE,
 } from '../../../../utils/constants';
 import { getTitleWithCount } from '../../../../utils/utils';
-import { MAX_TASKS, ALL_TASK_STATES } from '../../../utils/constants';
+import {
+  MAX_TASKS,
+  ALL_TASK_STATES,
+  ALL_DETECTORS,
+  MAX_SELECTED_DETECTORS,
+} from '../../../utils/constants';
 import {
   getURLQueryParams,
   getTasksWithDetectorName,
 } from '../../utils/helpers';
-import { filterAndSortTasks, getTasksToDisplay } from '../../../utils/helpers';
+import {
+  filterAndSortTasks,
+  getTasksToDisplay,
+  sanitizeSearchText,
+  getDetectorOptions,
+} from '../../../utils/helpers';
 import { EmptyTaskMessage } from '../../components/EmptyTaskMessage/EmptyTaskMessage';
 import { TASK_ACTION, taskListColumns } from '../../utils/constants';
 import { TaskFilters } from '../../components/TaskFilters/TaskFilters';
@@ -73,6 +83,7 @@ interface TaskListState {
   page: number;
   queryParams: any;
   selectedTaskStates: TASK_STATE[];
+  selectedDetectors: string[];
 }
 interface ActionModalState {
   isOpen: boolean;
@@ -108,6 +119,7 @@ export function TaskList(props: TaskListProps) {
   const [selectedTasksForAction, setSelectedTasksForAction] = useState(
     [] as TaskListItem[]
   );
+  const [detectorQuery, setDetectorQuery] = useState('');
 
   // if loading tasks, detectors, or sorting/filtering: set whole page in loading state
   const isLoading =
@@ -117,6 +129,7 @@ export function TaskList(props: TaskListProps) {
     page: 0,
     queryParams: getURLQueryParams(props.location),
     selectedTaskStates: ALL_TASK_STATES,
+    selectedDetectors: ALL_DETECTORS,
   });
   const [actionModalState, setActionModalState] = useState<ActionModalState>({
     isOpen: false,
@@ -155,14 +168,21 @@ export function TaskList(props: TaskListProps) {
     setIsLoadingFinalTasks(true);
     getUpdatedTasks();
     getUpdatedDetectors();
-  }, [state.page, state.queryParams, state.selectedTaskStates]);
+  }, [
+    state.page,
+    state.queryParams,
+    state.selectedTaskStates,
+    state.selectedDetectors,
+  ]);
 
   // Handle all filtering / sorting of tasks
   useEffect(() => {
     const curSelectedTasks = filterAndSortTasks(
       Object.values(allTasks),
+      allDetectors,
       state.queryParams.search,
       state.selectedTaskStates,
+      state.selectedDetectors,
       state.queryParams.sortField,
       state.queryParams.sortDirection
     );
@@ -181,7 +201,9 @@ export function TaskList(props: TaskListProps) {
 
     setTasksToDisplay(tasksToDisplayWithDetectorName);
 
-    setIsLoadingFinalTasks(false);
+    if (!isRequestingTasks && !isRequestingDetectors) {
+      setIsLoadingFinalTasks(false);
+    }
   }, [allTasks, allDetectors]);
 
   const getUpdatedTasks = async () => {
@@ -238,6 +260,41 @@ export function TaskList(props: TaskListProps) {
       page: 0,
       selectedTaskStates: states,
     }));
+  };
+
+  // Refresh data if user is typing in the detector filter
+  const handleSearchDetectorChange = debounce(async (searchValue: string) => {
+    if (searchValue !== detectorQuery) {
+      const sanitizedQuery = sanitizeSearchText(searchValue);
+      setDetectorQuery(sanitizedQuery);
+      dispatch(
+        getDetectorList({
+          ...GET_ALL_DETECTORS_QUERY_PARAMS,
+          search: sanitizedQuery,
+        })
+      );
+      setState((state) => ({
+        ...state,
+        page: 0,
+      }));
+    }
+  }, 300);
+
+  // Refresh data if user is selecting an index filter
+  const handleDetectorChange = (options: EuiComboBoxOptionProps[]): void => {
+    let detectors: string[];
+    detectors =
+      options.length == 0
+        ? ALL_DETECTORS
+        : options
+            .map((option) => option.label)
+            .slice(0, MAX_SELECTED_DETECTORS);
+
+    setState({
+      ...state,
+      page: 0,
+      selectedDetectors: detectors,
+    });
   };
 
   const handleCompareTasksAction = () => {
@@ -324,8 +381,6 @@ export function TaskList(props: TaskListProps) {
     }
   };
 
-  const actionModal = getActionModal();
-
   const sorting = {
     sort: {
       direction: state.queryParams.sortDirection,
@@ -334,7 +389,9 @@ export function TaskList(props: TaskListProps) {
   };
 
   const isFilterApplied =
-    !isEmpty(state.queryParams.search) || !isEmpty(state.selectedTaskStates);
+    !isEmpty(state.queryParams.search) ||
+    !isEmpty(state.selectedTaskStates) ||
+    !isEmpty(state.selectedDetectors);
 
   const pagination = {
     pageIndex: state.page,
@@ -382,6 +439,10 @@ export function TaskList(props: TaskListProps) {
             }
             search={state.queryParams.search}
             selectedTaskStates={state.selectedTaskStates}
+            selectedDetectors={state.selectedDetectors}
+            detectorOptions={getDetectorOptions(Object.values(allDetectors))}
+            onDetectorChange={handleDetectorChange}
+            onSearchDetectorChange={handleSearchDetectorChange}
             onTaskStateChange={handleTaskStateChange}
             onSearchTaskChange={handleSearchTaskChange}
             onPageClick={handlePageChange}

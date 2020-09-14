@@ -192,14 +192,17 @@ const reducer = handleActions<Detectors>(
       SUCCESS: (state: Detectors, action: APIResponseAction): Detectors => ({
         ...state,
         requesting: false,
-        detectorList: action.result.data.response.detectorList.reduce(
-          (acc: any, detector: DetectorListItem) => ({
-            ...acc,
-            [detector.id]: detector,
-          }),
-          {}
-        ),
-        totalDetectors: action.result.data.response.totalDetectors,
+        detectorList: {
+          ...state.detectorList,
+          ...action.result.data.response.detectorList.reduce(
+            (acc: any, detector: DetectorListItem) => ({
+              ...acc,
+              [detector.id]: detector,
+            }),
+            {}
+          ),
+        },
+        totalDetectors: Object.values(state.detectorList).length,
       }),
       FAILURE: (state: Detectors, action: APIErrorAction): Detectors => ({
         ...state,

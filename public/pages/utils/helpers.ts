@@ -17,7 +17,12 @@ import { CatIndex, IndexAlias } from '../../../server/models/types';
 import sortBy from 'lodash/sortBy';
 import { DetectorListItem, TaskListItem } from '../../models/interfaces';
 import { SORT_DIRECTION } from '../../../server/utils/constants';
-import { ALL_INDICES, ALL_DETECTOR_STATES, ALL_TASK_STATES } from './constants';
+import {
+  ALL_INDICES,
+  ALL_DETECTORS,
+  ALL_DETECTOR_STATES,
+  ALL_TASK_STATES,
+} from './constants';
 import { DETECTOR_STATE, TASK_STATE } from '../../utils/constants';
 import { timeFormatter } from '@elastic/charts';
 
@@ -64,6 +69,14 @@ export function getVisibleOptions(indices: CatIndex[], aliases: IndexAlias[]) {
       options: visibleAliases,
     },
   ];
+}
+
+export function getDetectorOptions(detectors: DetectorListItem[]) {
+  const formattedDetectors = detectors.map((detector) => ({
+    label: detector.name,
+  }));
+
+  return formattedDetectors;
 }
 
 export const filterAndSortDetectors = (
@@ -119,8 +132,10 @@ export const formatNumber = (data: any) => {
 
 export const filterAndSortTasks = (
   tasks: TaskListItem[],
+  detectors: { [key: string]: DetectorListItem },
   search: string,
   selectedTaskStates: TASK_STATE[],
+  selectedDetectors: string[],
   sortField: string,
   sortDirection: string
 ) => {
@@ -132,7 +147,13 @@ export const filterAndSortTasks = (
       : filteredBySearch.filter((task) =>
           selectedTaskStates.includes(task.curState)
         );
-  let sorted = sortBy(filteredBySearchAndState, sortField);
+  let filteredBySearchAndStateAndDetector =
+    selectedDetectors == ALL_DETECTORS
+      ? filteredBySearchAndState
+      : filteredBySearchAndState.filter((task) =>
+          selectedDetectors.includes(detectors[task.detectorId].name)
+        );
+  let sorted = sortBy(filteredBySearchAndStateAndDetector, sortField);
   if (sortDirection == SORT_DIRECTION.DESC) {
     sorted = sorted.reverse();
   }

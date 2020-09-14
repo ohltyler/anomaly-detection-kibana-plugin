@@ -60,9 +60,11 @@ export const taskStateToColorMap = new Map<TASK_STATE, TASK_STATE_COLOR>()
 export const ALL_DETECTOR_STATES = [];
 export const ALL_TASK_STATES = [];
 export const ALL_INDICES = [];
+export const ALL_DETECTORS = [];
 export const MAX_DETECTORS = 1000;
 export const MAX_TASKS = 1000;
 export const MAX_SELECTED_INDICES = 10;
+export const MAX_SELECTED_DETECTORS = 10;
 
 export const DEFAULT_QUERY_PARAMS = {
   from: 0,

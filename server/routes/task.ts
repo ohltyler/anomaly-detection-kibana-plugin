@@ -125,7 +125,7 @@ const getTask = async (
     const mockResp = {
       id: taskId,
       name: 'some-task-name',
-      detectorId: '2EC_VHQBuKdlEiSG71H8',
+      detectorId: 'mln7jXQB7YB_g25Cg7qh',
       description: 'some task description',
       dataStartTime: 1593864000,
       dataEndTime: 1596542400,
@@ -190,7 +190,7 @@ const getTasks = async (
             _source: {
               name: 'some-running-task',
               description: 'dummy-description-1',
-              detector_id: '2EC_VHQBuKdlEiSG71H8',
+              detector_id: 'mln7jXQB7YB_g25Cg7qh',
               state: 'RUNNING',
               data_start_time: 1593864000,
               data_end_time: 1593964000,
@@ -204,7 +204,7 @@ const getTasks = async (
             _source: {
               name: 'some-disabled-task',
               description: 'dummy-description-2',
-              detector_id: 'rEC_VHQBuKdlEiSGQVFN',
+              detector_id: 'mln7jXQB7YB_g25Cg7qh',
               state: 'DISABLED',
               data_start_time: 1593874000,
               data_end_time: 1594964000,
@@ -218,7 +218,7 @@ const getTasks = async (
             _source: {
               name: 'some-finished-task-1',
               description: 'dummy-description-3',
-              detector_id: '2EC_VHQBuKdlEiSG71H8',
+              detector_id: 'mln7jXQB7YB_g25Cg7qh',
               state: 'FINISHED',
               data_start_time: 1593974000,
               data_end_time: 1595964000,
@@ -232,7 +232,7 @@ const getTasks = async (
             _source: {
               name: 'some-finished-task-2',
               description: 'dummy-description-4',
-              detector_id: 'rEC_VHQBuKdlEiSGQVFN',
+              detector_id: 'PVkQjnQB7YB_g25Cb7u5',
               state: 'FINISHED',
               data_start_time: 1593975000,
               data_end_time: 1595974000,
@@ -246,7 +246,7 @@ const getTasks = async (
             _source: {
               name: 'some-failed-task',
               description: 'dummy-description-5',
-              detector_id: 'rEC_VHQBuKdlEiSGQVFN',
+              detector_id: 'PVkQjnQB7YB_g25Cb7u5',
               state: 'RUNNING_FAILURE',
               data_start_time: 1593974000,
               data_end_time: 1595971000,

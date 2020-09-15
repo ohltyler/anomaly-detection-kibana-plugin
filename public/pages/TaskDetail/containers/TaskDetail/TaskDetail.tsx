@@ -35,11 +35,7 @@ import { get, isEmpty } from 'lodash';
 import { RouteComponentProps, Switch, Route, Redirect } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHideSideNavBar } from '../../../main/hooks/useHideSideNavBar';
-import {
-  deleteDetector,
-  startDetector,
-  stopDetector,
-} from '../../../../redux/reducers/ad';
+import { startTask } from '../../../../redux/reducers/task';
 import { getErrorMessage, Listener } from '../../../../utils/utils';
 //@ts-ignore
 import chrome from 'ui/chrome';
@@ -137,8 +133,15 @@ export const TaskDetail = (props: TaskDetailProps) => {
       : props.history.push(`/tasks/${taskId}/edit`);
   };
 
-  const onStartTask = () => {
-    return;
+  const onStartTask = async () => {
+    try {
+      await dispatch(startTask(taskId));
+      toastNotifications.addSuccess(`Task has been started successfully`);
+    } catch (err) {
+      toastNotifications.addDanger(
+        `There was a problem starting the task: ${err}`
+      );
+    }
   };
 
   const onStopTask = () => {

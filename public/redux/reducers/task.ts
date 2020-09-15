@@ -30,7 +30,7 @@ import { TASK_STATE } from '../../utils/constants';
 const CREATE_TASK = 'task/CREATE_TASK';
 const GET_TASK = 'task/GET_TASK';
 const GET_TASK_LIST = 'ad/GET_TASK_LIST';
-//   const UPDATE_DETECTOR = 'ad/UPDATE_DETECTOR';
+const UPDATE_TASK = 'ad/UPDATE_TASK';
 //   const SEARCH_DETECTOR = 'ad/SEARCH_DETECTOR';
 //   const DELETE_DETECTOR = 'ad/DELETE_DETECTOR';
 //   const START_DETECTOR = 'ad/START_DETECTOR';
@@ -115,6 +115,29 @@ const reducer = handleActions<Tasks>(
         errorMessage: action.error,
       }),
     },
+    [UPDATE_TASK]: {
+      REQUEST: (state: Tasks): Tasks => {
+        const newState = { ...state, requesting: true, errorMessage: '' };
+        return newState;
+      },
+      SUCCESS: (state: Tasks, action: APIResponseAction): Tasks => ({
+        ...state,
+        requesting: false,
+        tasks: {
+          ...state.tasks,
+          [action.taskId]: {
+            ...state.tasks[action.taskId],
+            ...action.result.data.response,
+            lastUpdateTime: moment().valueOf(),
+          },
+        },
+      }),
+      FAILURE: (state: Tasks, action: APIErrorAction): Tasks => ({
+        ...state,
+        requesting: false,
+        errorMessage: action.error,
+      }),
+    },
     //   [START_DETECTOR]: {
     //     REQUEST: (state: Detectors): Detectors => {
     //       const newState = { ...state, requesting: true, errorMessage: '' };
@@ -192,30 +215,6 @@ const reducer = handleActions<Tasks>(
     //       requesting: false,
     //     }),
     //   },
-    //   [UPDATE_DETECTOR]: {
-    //     REQUEST: (state: Detectors): Detectors => {
-    //       const newState = { ...state, requesting: true, errorMessage: '' };
-    //       return newState;
-    //     },
-    //     SUCCESS: (state: Detectors, action: APIResponseAction): Detectors => ({
-    //       ...state,
-    //       requesting: false,
-    //       detectors: {
-    //         ...state.detectors,
-    //         [action.detectorId]: {
-    //           ...state.detectors[action.detectorId],
-    //           ...action.result.data.response,
-    //           lastUpdateTime: moment().valueOf(),
-    //         },
-    //       },
-    //     }),
-    //     FAILURE: (state: Detectors, action: APIErrorAction): Detectors => ({
-    //       ...state,
-    //       requesting: false,
-    //       errorMessage: action.error,
-    //     }),
-    //   },
-
     //   [DELETE_DETECTOR]: {
     //     REQUEST: (state: Detectors): Detectors => {
     //       const newState = { ...state, requesting: true, errorMessage: '' };
@@ -281,25 +280,22 @@ export const getTaskList = (queryParams: GetTasksQueryParams): APIAction => ({
     client.get(`..${AD_NODE_API.TASK}`, { params: queryParams }),
 });
 
+export const updateTask = (taskId: string, requestBody: Task): APIAction => ({
+  type: UPDATE_TASK,
+  request: (client: IHttpService) =>
+    client.put(`..${AD_NODE_API.TASK}/${taskId}`, requestBody, {
+      params: {
+        ifPrimaryTerm: requestBody.primaryTerm,
+        ifSeqNo: requestBody.seqNo,
+      },
+    }),
+  taskId,
+});
+
 //   export const searchDetector = (requestBody: any): APIAction => ({
 //     type: SEARCH_DETECTOR,
 //     request: (client: IHttpService) =>
 //       client.post(`..${AD_NODE_API.DETECTOR}/_search`, requestBody),
-//   });
-
-//   export const updateDetector = (
-//     detectorId: string,
-//     requestBody: Detector
-//   ): APIAction => ({
-//     type: UPDATE_DETECTOR,
-//     request: (client: IHttpService) =>
-//       client.put(`..${AD_NODE_API.DETECTOR}/${detectorId}`, requestBody, {
-//         params: {
-//           ifPrimaryTerm: requestBody.primaryTerm,
-//           ifSeqNo: requestBody.seqNo,
-//         },
-//       }),
-//     detectorId,
 //   });
 
 //   export const deleteDetector = (detectorId: string): APIAction => ({

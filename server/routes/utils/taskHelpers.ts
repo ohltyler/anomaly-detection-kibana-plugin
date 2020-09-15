@@ -20,7 +20,7 @@ import { TaskListItem, Task } from 'public/models/interfaces';
 
 export const convertTaskKeysToSnakeCase = (payload: any) => {
   return {
-    ...mapKeysDeep({ payload }, toSnake),
+    ...mapKeysDeep(payload, toSnake),
   };
 };
 

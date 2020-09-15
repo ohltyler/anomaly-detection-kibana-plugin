@@ -139,4 +139,87 @@ export default function adPlugin(Client: any, config: any, components: any) {
     },
     method: 'GET',
   });
+
+  ad.createTask = ca({
+    url: {
+      fmt: API.TASK_BASE,
+    },
+    needBody: true,
+    method: 'POST',
+  });
+
+  // TODO: will want to add task execution here (?execution=true) when it doesn't time out
+  ad.getTask = ca({
+    url: {
+      fmt: `${API.TASK_BASE}/<%=taskId%>`,
+      req: {
+        taskId: {
+          type: 'string',
+          required: true,
+        },
+      },
+    },
+    method: 'GET',
+  });
+
+  ad.startTask = ca({
+    url: {
+      fmt: `${API.TASK_BASE}/<%=taskId%>/_start`,
+      req: {
+        taskId: {
+          type: 'string',
+          required: true,
+        },
+      },
+    },
+    method: 'POST',
+  });
+
+  ad.stopTask = ca({
+    url: {
+      fmt: `${API.TASK_BASE}/<%=taskId%>/_stop`,
+      req: {
+        taskId: {
+          type: 'string',
+          required: true,
+        },
+      },
+    },
+    method: 'POST',
+  });
+
+  ad.deleteTask = ca({
+    url: {
+      fmt: `${API.TASK_BASE}/<%=taskId%>`,
+      req: {
+        taskId: {
+          type: 'string',
+          required: true,
+        },
+      },
+    },
+    method: 'DELETE',
+  });
+
+  ad.updateTask = ca({
+    url: {
+      fmt: `${API.TASK_BASE}/<%=taskId%>?if_seq_no=<%=ifSeqNo%>&if_primary_term=<%=ifPrimaryTerm%>&refresh=wait_for`,
+      req: {
+        taskId: {
+          type: 'string',
+          required: true,
+        },
+        ifSeqNo: {
+          type: 'string',
+          required: true,
+        },
+        ifPrimaryTerm: {
+          type: 'string',
+          required: true,
+        },
+      },
+    },
+    needBody: true,
+    method: 'PUT',
+  });
 }

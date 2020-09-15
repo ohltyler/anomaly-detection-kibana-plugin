@@ -76,7 +76,7 @@ export const TaskDetail = (props: TaskDetailProps) => {
   const detector = adState.detectors[task?.detectorId];
   const isLoading = taskState.requesting || adState.requesting;
 
-  console.log('rendering task detail page with task ', task);
+  console.log('all tasks: ', allTasks);
 
   const [taskDetailModalState, setTaskDetailModalState] = useState<
     TaskDetailModalState

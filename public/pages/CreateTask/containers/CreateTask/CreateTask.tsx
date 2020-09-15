@@ -44,7 +44,11 @@ import chrome from 'ui/chrome';
 //@ts-ignore
 import { toastNotifications } from 'ui/notify';
 import { getDetector, updateDetector } from '../../../../redux/reducers/ad';
-import { createTask, getTask } from '../../../../redux/reducers/task';
+import {
+  createTask,
+  getTask,
+  updateTask,
+} from '../../../../redux/reducers/task';
 import moment from 'moment';
 import { Task, DateRange } from '../../../../models/interfaces';
 
@@ -147,7 +151,15 @@ export function CreateTask(props: CreateTaskProps) {
 
   // TODO: stub for now
   const handleUpdate = async (taskToUpdate: Task) => {
-    return;
+    try {
+      await dispatch(updateTask(taskId, taskToUpdate));
+      toastNotifications.addSuccess(`Task updated: ${taskToUpdate.name}`);
+      props.history.push(`/tasks/${taskId}/details/`);
+    } catch (err) {
+      toastNotifications.addDanger(
+        `There was a problem updating the task: ${err}`
+      );
+    }
   };
 
   const handleCreate = async (taskToCreate: Task) => {
@@ -156,7 +168,7 @@ export function CreateTask(props: CreateTaskProps) {
       toastNotifications.addSuccess(
         `Task created: ${taskResp.data.response.name}`
       );
-      props.history.push(`/tasks/${taskResp.data.response.id}`);
+      props.history.push(`/tasks/${taskResp.data.response.id}/details`);
     } catch (err) {
       toastNotifications.addDanger(
         `There was a problem creating the task: ${err}`

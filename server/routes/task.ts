@@ -27,8 +27,8 @@ import {
   getFinalStateFromTask,
 } from './utils/taskHelpers';
 
-type PutDetectorParams = {
-  detectorId: string;
+type UpdateTaskParams = {
+  taskId: string;
   ifSeqNo?: string;
   ifPrimaryTerm?: string;
   body: string;
@@ -38,7 +38,7 @@ export default function (apiRouter: Router) {
   apiRouter.post('/tasks', createTask);
   apiRouter.get('/tasks/{taskId}', getTask);
   apiRouter.get('/tasks', getTasks);
-  //   apiRouter.put('/detectors/{detectorId}', updateTask);
+  apiRouter.put('/tasks/{taskId}', updateTask);
   //   apiRouter.post('/detectors/_search', searchDetector);
   //   apiRouter.get('/detectors', getDetectors);
   //   apiRouter.post('/detectors/{detectorId}/preview', previewDetector);
@@ -55,43 +55,27 @@ const createTask = async (
   callWithRequest: CallClusterWithRequest
 ): Promise<ServerResponse<Task>> => {
   try {
-    const requestBody = req.payload as Task;
-    // const requestBody = JSON.stringify(
-    //   convertTaskKeysToSnakeCase(req.payload)
-    // );
-    // let response;
-    // response = await callWithRequest(req, 'ad.createTask', {
-    //   body: requestBody,
-    // });
+    const requestBody = JSON.stringify(convertTaskKeysToSnakeCase(req.payload));
 
-    // const resp = {
-    //   ...response.anomaly_detector,
-    //   id: response._id,
-    //   primaryTerm: response._primary_term,
-    //   seqNo: response._seq_no,
-    // };
+    let response;
+    response = await callWithRequest(req, 'ad.createTask', {
+      body: requestBody,
+    });
+
     const resp = {
-      id: `dummy-id-${Math.random()}`,
-      name: requestBody.name,
-      description: requestBody.description,
-      detector_id: requestBody.detectorId,
-      data_start_time: requestBody.dataStartTime,
-      data_end_time: requestBody.dataEndTime,
-      last_update_time: requestBody.lastUpdateTime,
+      ...response.anomaly_detection_task,
+      id: response._id,
+      primaryTerm: response._primary_term,
+      seqNo: response._seq_no,
     };
-
-    const respInCamel = convertTaskKeysToCamelCase(resp) as Task;
-
-    console.log('dummy api response (in snake): ', resp);
-    console.log('\n\ndummy response to return (in camel): ', respInCamel);
 
     return {
       ok: true,
-      response: respInCamel,
-      //response: convertTaskKeysToCamelCase(resp) as Task,
+      //response: respInCamel,
+      response: convertTaskKeysToCamelCase(resp) as Task,
     };
   } catch (err) {
-    console.log('Anomaly detector - CreateDetector', err);
+    console.log('Anomaly detector - CreateTask', err);
     return { ok: false, error: err.message };
   }
 };
@@ -103,49 +87,72 @@ const getTask = async (
 ): Promise<ServerResponse<Task>> => {
   try {
     const { taskId } = req.params;
-    const { ifSeqNo, ifPrimaryTerm } = req.query as {
-      ifSeqNo?: string;
-      ifPrimaryTerm?: string;
-    };
-    const params = {
-      taskId: taskId,
-      ifSeqNo: ifSeqNo,
-      ifPrimaryTerm: ifPrimaryTerm,
-    };
 
-    // let response;
-    // response = await callWithRequest(req, 'ad.updateDetector', params);
+    const response = await callWithRequest(req, 'ad.getTask', {
+      taskId,
+    });
 
-    // const resp = {
-    //   ...response.anomaly_detector,
-    //   id: response._id,
-    //   primaryTerm: response._primary_term,
-    //   seqNo: response._seq_no,
-    // };
-    const mockResp = {
-      id: taskId,
-      name: 'some-task-name',
-      detectorId: 'mln7jXQB7YB_g25Cg7qh',
-      description: 'some task description',
-      dataStartTime: 1593864000,
-      dataEndTime: 1596542400,
-      lastUpdateTime: 1593864000,
-      curState: 'DISABLED',
+    const resp = {
+      ...response.anomaly_detection_task,
+      id: response._id,
+      primaryTerm: response._primary_term,
+      seqNo: response._seq_no,
     };
 
-    const mockRespWithFinalState = getFinalStateFromTask(mockResp);
+    // TODO: need to get executions=true param when calling getTask to get the state
+    //const respWithFinalState = getFinalStateFromTask(resp);
 
     return {
       ok: true,
-      response: mockRespWithFinalState,
-      //response: convertTaskKeysToCamelCase(resp) as Task,
+      //response: mockRespWithFinalState,
+      response: convertTaskKeysToCamelCase(resp) as Task,
     };
   } catch (err) {
-    console.log('Anomaly detector - CreateDetector', err);
+    console.log('Anomaly detector - GetTask', err);
     return { ok: false, error: err.message };
   }
 };
 
+const updateTask = async (
+  req: Request,
+  h: ResponseToolkit,
+  callWithRequest: CallClusterWithRequest
+): Promise<ServerResponse<Task>> => {
+  try {
+    const { taskId } = req.params;
+    const { ifSeqNo, ifPrimaryTerm } = req.query as {
+      ifSeqNo: string;
+      ifPrimaryTerm: string;
+    };
+    const requestBody = JSON.stringify(convertTaskKeysToSnakeCase(req.payload));
+    let params: UpdateTaskParams = {
+      taskId: taskId,
+      ifSeqNo: ifSeqNo,
+      ifPrimaryTerm: ifPrimaryTerm,
+      body: requestBody,
+    };
+
+    let response;
+    response = await callWithRequest(req, 'ad.updateTask', params);
+
+    const resp = {
+      ...response.anomaly_detection_task,
+      id: response._id,
+      primaryTerm: response._primary_term,
+      seqNo: response._seq_no,
+    };
+
+    return {
+      ok: true,
+      response: convertTaskKeysToCamelCase(resp) as Task,
+    };
+  } catch (err) {
+    console.log('Anomaly detector - UpdateTask', err);
+    return { ok: false, error: err.message };
+  }
+};
+
+// API not done for this - leave as a mock for now
 const getTasks = async (
   req: Request,
   h: ResponseToolkit,
@@ -257,8 +264,8 @@ const getTasks = async (
       },
     };
 
-    console.log('request: ', requestBody);
-    console.log('mock response: ', response);
+    //console.log('request: ', requestBody);
+    //console.log('mock response: ', response);
 
     const totalTasks = get(response, 'hits.total.value', 0);
 
@@ -290,7 +297,7 @@ const getTasks = async (
       },
     };
   } catch (err) {
-    console.log('Anomaly detector - Unable to get tasks', err);
+    console.log('Anomaly detector - GetTasks', err);
     if (isIndexNotFoundError(err)) {
       return { ok: true, response: { totalDetectors: 0, taskList: {} } };
     }

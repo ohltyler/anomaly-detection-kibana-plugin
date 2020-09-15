@@ -161,111 +161,38 @@ const getTasks = async (
   try {
     const {
       search = '',
+      from = 0,
+      size = 20,
       //@ts-ignore
     } = req.query as GetTasksQueryParams;
 
     //Preparing search request
     const requestBody = {
+      from,
+      size,
       query: {
-        match: {
-          name: search,
+        bool: {
+          must: [
+            {
+              query_string: {
+                fields: ['name'],
+                default_operator: 'AND',
+                query: `*${search.trim().split('-').join('* *')}*`,
+              },
+            },
+          ],
         },
       },
     };
+
+    const response = await callWithRequest(req, 'ad.searchTask', {
+      body: requestBody,
+    });
 
     // Getting all of the detectors, including info about the execution state and last update time.
     // For detectors, we have to call the (1) get detector and (2) detector profile apis for each individual detector
     // to get this info. This getTasks api will support a param to search on task executions, to include
-    // this information all from one api call. The mock response is a simulation of what may get returned.
-
-    // const response: SearchResponse<Task> = await callWithRequest(
-    //   req,
-    //   'ad.searchTask',
-    //   { body: requestBody }
-    // );
-
-    const response = {
-      hits: {
-        total: {
-          value: 4,
-        },
-        hits: [
-          {
-            _index: '.opendistro-task-executions',
-            _type: 'doc',
-            _id: 'dummy-id-1',
-            _source: {
-              name: 'some-running-task',
-              description: 'dummy-description-1',
-              detector_id: 'mln7jXQB7YB_g25Cg7qh',
-              state: 'RUNNING',
-              data_start_time: 1593864000,
-              data_end_time: 1593964000,
-              last_update_time: 1594964000,
-            },
-          },
-          {
-            _index: '.opendistro-task-executions',
-            _type: 'doc',
-            _id: 'dummy-id-2',
-            _source: {
-              name: 'some-disabled-task',
-              description: 'dummy-description-2',
-              detector_id: 'mln7jXQB7YB_g25Cg7qh',
-              state: 'DISABLED',
-              data_start_time: 1593874000,
-              data_end_time: 1594964000,
-              last_update_time: 1594994000,
-            },
-          },
-          {
-            _index: '.opendistro-task-executions',
-            _type: 'doc',
-            _id: 'dummy-id-3',
-            _source: {
-              name: 'some-finished-task-1',
-              description: 'dummy-description-3',
-              detector_id: 'mln7jXQB7YB_g25Cg7qh',
-              state: 'FINISHED',
-              data_start_time: 1593974000,
-              data_end_time: 1595964000,
-              last_update_time: 1594995000,
-            },
-          },
-          {
-            _index: '.opendistro-task-executions',
-            _type: 'doc',
-            _id: 'dummy-id-4',
-            _source: {
-              name: 'some-finished-task-2',
-              description: 'dummy-description-4',
-              detector_id: 'PVkQjnQB7YB_g25Cb7u5',
-              state: 'FINISHED',
-              data_start_time: 1593975000,
-              data_end_time: 1595974000,
-              last_update_time: 1594995000,
-            },
-          },
-          {
-            _index: '.opendistro-task-executions',
-            _type: 'doc',
-            _id: 'dummy-id-5',
-            _source: {
-              name: 'some-failed-task',
-              description: 'dummy-description-5',
-              detector_id: 'PVkQjnQB7YB_g25Cb7u5',
-              state: 'RUNNING_FAILURE',
-              data_start_time: 1593974000,
-              data_end_time: 1595971000,
-              last_update_time: 1594985000,
-            },
-          },
-        ],
-      },
-    };
-
-    //console.log('request: ', requestBody);
-    //console.log('mock response: ', response);
+    // this information all from one api call.
 
     const totalTasks = get(response, 'hits.total.value', 0);
 
@@ -277,7 +204,7 @@ const getTasks = async (
           name: get(task, '_source.name', ''),
           detectorId: get(task, '_source.detector_id'),
           description: get(task, '_source.description', ''),
-          curState: get(task, '_source.state'),
+          //curState: get(task, '_source.state'),
           dataStartTime: get(task, '_source.data_start_time'),
           dataEndTime: get(task, '_source.data_end_time'),
           lastUpdateTime: get(task, '_source.last_update_time'),
@@ -287,19 +214,19 @@ const getTasks = async (
     );
 
     // Get the final task states
-    const allTasksWithFinalStates = getFinalStatesFromTaskList(allTasks);
+    //const allTasksWithFinalStates = getFinalStatesFromTaskList(allTasks);
 
     return {
       ok: true,
       response: {
         totalTasks,
-        taskList: allTasksWithFinalStates,
+        taskList: Object.values(allTasks),
       },
     };
   } catch (err) {
     console.log('Anomaly detector - GetTasks', err);
     if (isIndexNotFoundError(err)) {
-      return { ok: true, response: { totalDetectors: 0, taskList: {} } };
+      return { ok: true, response: { totalDetectors: 0, taskList: [] } };
     }
     return { ok: false, error: err.message };
   }

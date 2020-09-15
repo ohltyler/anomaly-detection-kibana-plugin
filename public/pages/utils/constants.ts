@@ -94,6 +94,8 @@ export const GET_SAMPLE_DETECTORS_QUERY_PARAMS = {
 };
 
 export const GET_ALL_TASKS_QUERY_PARAMS = {
+  from: 0,
+  size: MAX_TASKS,
   search: '',
 };
 

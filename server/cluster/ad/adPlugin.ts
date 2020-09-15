@@ -222,4 +222,13 @@ export default function adPlugin(Client: any, config: any, components: any) {
     needBody: true,
     method: 'PUT',
   });
+
+  // TODO: Change to _search api once implemented. Currently just querying the system index
+  ad.searchTask = ca({
+    url: {
+      fmt: `/.opendistro-anomaly-detection-tasks/_search`,
+    },
+    needBody: true,
+    method: 'POST',
+  });
 }

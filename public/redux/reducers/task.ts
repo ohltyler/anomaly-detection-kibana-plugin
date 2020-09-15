@@ -106,7 +106,16 @@ const reducer = handleActions<Tasks>(
       SUCCESS: (state: Tasks, action: APIResponseAction): Tasks => ({
         ...state,
         requesting: false,
-        taskList: action.result.data.response.taskList,
+        taskList: {
+          ...state.taskList,
+          ...action.result.data.response.taskList.reduce(
+            (acc: any, task: TaskListItem) => ({
+              ...acc,
+              [task.id]: task,
+            }),
+            {}
+          ),
+        },
         totalTasks: action.result.data.response.totalTasks,
       }),
       FAILURE: (state: Tasks, action: APIErrorAction): Tasks => ({

@@ -13,4 +13,4 @@
  * permissions and limitations under the License.
  */
 
-export { TaskDetail } from './containers/TaskDetail';
+export { TaskDetail } from './containers/TaskDetail/TaskDetail';

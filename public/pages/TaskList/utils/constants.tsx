@@ -123,6 +123,7 @@ export const taskListColumns = [
 ] as EuiBasicTableColumn<any>[];
 
 export enum TASK_ACTION {
+  EDIT,
   COMPARE,
   START,
   STOP,

@@ -204,7 +204,9 @@ const getTasks = async (
           name: get(task, '_source.name', ''),
           detectorId: get(task, '_source.detector_id'),
           description: get(task, '_source.description', ''),
+          // TODO: change back to the state once we can retrieve it from backend
           //curState: get(task, '_source.state'),
+          curState: 'FINISHED',
           dataStartTime: get(task, '_source.data_start_time'),
           dataEndTime: get(task, '_source.data_end_time'),
           lastUpdateTime: get(task, '_source.last_update_time'),
@@ -214,13 +216,13 @@ const getTasks = async (
     );
 
     // Get the final task states
-    //const allTasksWithFinalStates = getFinalStatesFromTaskList(allTasks);
+    const allTasksWithFinalStates = getFinalStatesFromTaskList(allTasks);
 
     return {
       ok: true,
       response: {
         totalTasks,
-        taskList: Object.values(allTasks),
+        taskList: Object.values(allTasksWithFinalStates),
       },
     };
   } catch (err) {

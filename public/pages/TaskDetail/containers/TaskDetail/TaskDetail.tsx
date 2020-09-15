@@ -34,24 +34,27 @@ import { toastNotifications } from 'ui/notify';
 import { get, isEmpty } from 'lodash';
 import { RouteComponentProps, Switch, Route, Redirect } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { useHideSideNavBar } from '../../main/hooks/useHideSideNavBar';
+import { useHideSideNavBar } from '../../../main/hooks/useHideSideNavBar';
 import {
   deleteDetector,
   startDetector,
   stopDetector,
-} from '../../../redux/reducers/ad';
-import { getErrorMessage, Listener } from '../../../utils/utils';
+} from '../../../../redux/reducers/ad';
+import { getErrorMessage, Listener } from '../../../../utils/utils';
 //@ts-ignore
 import chrome from 'ui/chrome';
-import { darkModeEnabled } from '../../../utils/kibanaUtils';
-import { AppState } from '../../../redux/reducers';
-import { getTask } from '../../../redux/reducers/task';
-import { getDetector } from '../../../redux/reducers/ad';
-import { BREADCRUMBS, TASK_STATE } from '../../../utils/constants';
+import { darkModeEnabled } from '../../../../utils/kibanaUtils';
+import { AppState } from '../../../../redux/reducers';
+import { getTask } from '../../../../redux/reducers/task';
+import { getDetector } from '../../../../redux/reducers/ad';
+import { BREADCRUMBS, TASK_STATE } from '../../../../utils/constants';
 import moment from 'moment';
-import { TASK_STATE_COLOR } from '../../utils/constants';
-import { TaskConfig } from '../components/TaskConfig/TaskConfig';
-import { TASK_ACTION } from '../../TaskList/utils/constants';
+import { TASK_STATE_COLOR } from '../../../utils/constants';
+import { TaskConfig } from '../../components/TaskConfig/TaskConfig';
+import { TaskControls } from '../../components/TaskControls/TaskControls';
+import { StopTaskModal } from '../ActionModals/StopTaskModal/StopTaskModal';
+import { DeleteTaskModal } from '../ActionModals/DeleteTaskModal/DeleteTaskModal';
+import { TASK_ACTION } from '../../../TaskList/utils/constants';
 
 export interface TaskRouterProps {
   taskId?: string;
@@ -60,7 +63,7 @@ interface TaskDetailProps extends RouteComponentProps<TaskRouterProps> {}
 
 interface TaskDetailModalState {
   isOpen: boolean;
-  action: TASK_ACTION;
+  action: TASK_ACTION | undefined;
 }
 
 export const TaskDetail = (props: TaskDetailProps) => {
@@ -82,7 +85,7 @@ export const TaskDetail = (props: TaskDetailProps) => {
     TaskDetailModalState
   >({
     isOpen: false,
-    action: TASK_ACTION.COMPARE,
+    action: undefined,
   });
 
   console.log('modal state: ', taskDetailModalState);
@@ -134,12 +137,64 @@ export const TaskDetail = (props: TaskDetailProps) => {
       : props.history.push(`/tasks/${taskId}/edit`);
   };
 
+  const onStartTask = () => {
+    return;
+  };
+
+  const onStopTask = () => {
+    return;
+  };
+
+  const onDeleteTask = () => {
+    return;
+  };
+
+  const onHideModal = () => {
+    setTaskDetailModalState({
+      ...taskDetailModalState,
+      isOpen: false,
+      action: undefined,
+    });
+  };
+
+  const getTaskDetailModal = () => {
+    if (taskDetailModalState.isOpen) {
+      //@ts-ignore
+      switch (taskDetailModalState.action) {
+        case TASK_ACTION.STOP: {
+          return (
+            <StopTaskModal
+              task={task}
+              onHide={onHideModal}
+              isListLoading={isLoading}
+            />
+          );
+        }
+        case TASK_ACTION.DELETE: {
+          return (
+            <DeleteTaskModal
+              task={task}
+              onHide={onHideModal}
+              isListLoading={isLoading}
+            />
+          );
+        }
+        default: {
+          return null;
+        }
+      }
+    } else {
+      return null;
+    }
+  };
+
   const lightStyles = {
     backgroundColor: '#FFF',
   };
 
   return (
     <React.Fragment>
+      {getTaskDetailModal()}
       {!isEmpty(task) && !errorGettingTasks ? (
         <EuiFlexGroup
           direction="column"
@@ -171,29 +226,13 @@ export const TaskDetail = (props: TaskDetailProps) => {
             </EuiFlexItem>
 
             <EuiFlexItem grow={false}>
-              {
-                //TODO: add task controls here}
-              }
-              {/* <DetectorControls
-                onEditDetector={handleEditDetector}
-                onDelete={() =>
-                  setDetectorDetailModel({
-                    ...detectorDetailModel,
-                    showDeleteDetectorModal: true,
-                  })
-                }
-                onStartDetector={() => handleStartAdJob(detectorId)}
-                onStopDetector={() =>
-                  monitor
-                    ? setDetectorDetailModel({
-                        ...detectorDetailModel,
-                        showMonitorCalloutModal: true,
-                      })
-                    : handleStopAdJob(detectorId)
-                }
-                onEditFeatures={handleEditFeature}
-                detector={detector}
-              /> */}
+              <TaskControls
+                task={task}
+                onEditTask={onEditTask}
+                onStartTask={onStartTask}
+                onStopTask={onStopTask}
+                onDeleteTask={onDeleteTask}
+              />
             </EuiFlexItem>
           </EuiFlexGroup>
           <EuiFlexGroup>

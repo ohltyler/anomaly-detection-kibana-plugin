@@ -32,9 +32,9 @@ const GET_TASK = 'task/GET_TASK';
 const GET_TASK_LIST = 'task/GET_TASK_LIST';
 const UPDATE_TASK = 'task/UPDATE_TASK';
 const START_TASK = 'task/START_TASK';
+const STOP_TASK = 'task/STOP_TASK';
 //   const SEARCH_DETECTOR = 'ad/SEARCH_DETECTOR';
 //   const DELETE_DETECTOR = 'ad/DELETE_DETECTOR';
-//   const STOP_DETECTOR = 'ad/STOP_DETECTOR';
 //   const GET_DETECTOR_PROFILE = 'ad/GET_DETECTOR_PROFILE';
 
 export interface Tasks {
@@ -171,33 +171,32 @@ const reducer = handleActions<Tasks>(
         errorMessage: action.error,
       }),
     },
-
-    //   [STOP_DETECTOR]: {
-    //     REQUEST: (state: Detectors): Detectors => {
-    //       const newState = { ...state, requesting: true, errorMessage: '' };
-    //       return newState;
-    //     },
-    //     SUCCESS: (state: Detectors, action: APIResponseAction): Detectors => ({
-    //       ...state,
-    //       requesting: false,
-    //       detectors: {
-    //         ...state.detectors,
-    //         [action.detectorId]: {
-    //           ...state.detectors[action.detectorId],
-    //           enabled: false,
-    //           disabledTime: moment().valueOf(),
-    //           curState: DETECTOR_STATE.DISABLED,
-    //           stateError: '',
-    //           initProgress: undefined,
-    //         },
-    //       },
-    //     }),
-    //     FAILURE: (state: Detectors, action: APIErrorAction): Detectors => ({
-    //       ...state,
-    //       requesting: false,
-    //       errorMessage: action.error,
-    //     }),
-    //   },
+    [STOP_TASK]: {
+      REQUEST: (state: Tasks): Tasks => {
+        const newState = { ...state, requesting: true, errorMessage: '' };
+        return newState;
+      },
+      SUCCESS: (state: Tasks, action: APIResponseAction): Tasks => ({
+        ...state,
+        requesting: false,
+        tasks: {
+          ...state.tasks,
+          [action.taskId]: {
+            ...state.tasks[action.taskId],
+            enabled: false,
+            disabledTime: moment().valueOf(),
+            curState: TASK_STATE.DISABLED,
+            // stateError: '',
+            // initProgress: undefined,
+          },
+        },
+      }),
+      FAILURE: (state: Tasks, action: APIErrorAction): Tasks => ({
+        ...state,
+        requesting: false,
+        errorMessage: action.error,
+      }),
+    },
     //   [SEARCH_DETECTOR]: {
     //     REQUEST: (state: Detectors): Detectors => ({
     //       ...state,
@@ -309,6 +308,15 @@ export const startTask = (taskId: string): APIAction => ({
   taskId,
 });
 
+export const stopTask = (taskId: string): APIAction => ({
+  type: STOP_TASK,
+  request: (client: IHttpService) =>
+    client.post(`..${AD_NODE_API.TASK}/${taskId}/stop`, {
+      detectorId: taskId,
+    }),
+  taskId,
+});
+
 //   export const searchDetector = (requestBody: any): APIAction => ({
 //     type: SEARCH_DETECTOR,
 //     request: (client: IHttpService) =>
@@ -319,15 +327,6 @@ export const startTask = (taskId: string): APIAction => ({
 //     type: DELETE_DETECTOR,
 //     request: (client: IHttpService) =>
 //       client.delete(`..${AD_NODE_API.DETECTOR}/${detectorId}`),
-//     detectorId,
-//   });
-
-//   export const stopDetector = (detectorId: string): APIAction => ({
-//     type: STOP_DETECTOR,
-//     request: (client: IHttpService) =>
-//       client.post(`..${AD_NODE_API.DETECTOR}/${detectorId}/stop`, {
-//         detectorId: detectorId,
-//       }),
 //     detectorId,
 //   });
 

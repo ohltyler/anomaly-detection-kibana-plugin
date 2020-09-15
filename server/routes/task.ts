@@ -40,12 +40,12 @@ export default function (apiRouter: Router) {
   apiRouter.get('/tasks', getTasks);
   apiRouter.put('/tasks/{taskId}', updateTask);
   apiRouter.post('/tasks/{taskId}/start', startTask);
+  apiRouter.post('/tasks/{taskId}/stop', stopTask);
   //   apiRouter.post('/detectors/_search', searchDetector);
   //   apiRouter.get('/detectors', getDetectors);
   //   apiRouter.post('/detectors/{detectorId}/preview', previewDetector);
   //   apiRouter.get('/detectors/{detectorId}/results', getAnomalyResults);
   //   apiRouter.delete('/detectors/{detectorId}', deleteDetector);
-  //   apiRouter.post('/detectors/{detectorId}/stop', stopDetector);
   //   apiRouter.get('/detectors/{detectorId}/_profile', getDetectorProfile);
 }
 
@@ -244,13 +244,32 @@ const startTask = async (
     const response = await callWithRequest(req, 'ad.startTask', {
       taskId,
     });
-    console.log('response: ', response);
     return {
       ok: true,
       response: response,
     };
   } catch (err) {
     console.log('Anomaly detector - StartTask', err);
+    return { ok: false, error: err.message };
+  }
+};
+
+const stopTask = async (
+  req: Request,
+  h: ResponseToolkit,
+  callWithRequest: CallClusterWithRequest
+): Promise<ServerResponse<any>> => {
+  try {
+    const { taskId } = req.params;
+    const response = await callWithRequest(req, 'ad.stopTask', {
+      taskId,
+    });
+    return {
+      ok: true,
+      response: response,
+    };
+  } catch (err) {
+    console.log('Anomaly detector - StopTask', err);
     return { ok: false, error: err.message };
   }
 };
@@ -353,26 +372,6 @@ const startTask = async (
 //   } catch (err) {
 //     console.log('Anomaly detector - previewDetector', err);
 //     return { ok: false, error: err };
-//   }
-// };
-
-// const stopDetector = async (
-//   req: Request,
-//   h: ResponseToolkit,
-//   callWithRequest: CallClusterWithRequest
-// ): Promise<ServerResponse<AnomalyResults>> => {
-//   try {
-//     const { detectorId } = req.params;
-//     const response = await callWithRequest(req, 'ad.stopDetector', {
-//       detectorId,
-//     });
-//     return {
-//       ok: true,
-//       response: response,
-//     };
-//   } catch (err) {
-//     console.log('Anomaly detector - stopDetector', err);
-//     return { ok: false, error: err.body || err.message };
 //   }
 // };
 

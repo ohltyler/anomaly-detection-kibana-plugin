@@ -35,7 +35,7 @@ import { get, isEmpty } from 'lodash';
 import { RouteComponentProps, Switch, Route, Redirect } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHideSideNavBar } from '../../../main/hooks/useHideSideNavBar';
-import { startTask } from '../../../../redux/reducers/task';
+import { startTask, stopTask } from '../../../../redux/reducers/task';
 import { getErrorMessage, Listener } from '../../../../utils/utils';
 //@ts-ignore
 import chrome from 'ui/chrome';
@@ -83,8 +83,6 @@ export const TaskDetail = (props: TaskDetailProps) => {
     isOpen: false,
     action: undefined,
   });
-
-  console.log('modal state: ', taskDetailModalState);
 
   useEffect(() => {
     if (errorGettingTasks) {
@@ -144,8 +142,17 @@ export const TaskDetail = (props: TaskDetailProps) => {
     }
   };
 
-  const onStopTask = () => {
-    return;
+  const onStopTask = async (listener?: Listener) => {
+    try {
+      await dispatch(stopTask(taskId));
+      toastNotifications.addSuccess('Task has been stopped successfully');
+      if (listener) listener.onSuccess;
+    } catch (err) {
+      toastNotifications.addDanger(
+        `There was a problem stopping the task: ${err}`
+      );
+      if (listener) listener.onException;
+    }
   };
 
   const onDeleteTask = () => {

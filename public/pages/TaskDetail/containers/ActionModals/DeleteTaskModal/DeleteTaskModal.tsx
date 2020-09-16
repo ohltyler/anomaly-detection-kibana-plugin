@@ -17,8 +17,6 @@ import React, { useState, Fragment } from 'react';
 import {
   EuiText,
   EuiOverlayMask,
-  EuiButton,
-  EuiButtonEmpty,
   EuiFlexGroup,
   EuiFlexItem,
   EuiFieldText,
@@ -29,17 +27,15 @@ import { toastNotifications } from 'ui/notify';
 //@ts-ignore
 import chrome from 'ui/chrome';
 import { Task } from '../../../../../models/interfaces';
-import { EuiSpacer } from '@elastic/eui';
 import { ConfirmModal } from '../../../../DetectorDetail/components/ConfirmModal/ConfirmModal';
 import { TASK_STATE } from '../../../../../utils/constants';
-import { getErrorMessage, Listener } from '../../../../../utils/utils';
+import { Listener } from '../../../../../utils/utils';
 
 interface DeleteTaskModalProps {
   task: Task;
   onHide(): void;
   onStopTask(listener?: Listener): void;
   onDeleteTask(): void;
-  isListLoading: boolean;
 }
 
 export const DeleteTaskModal = (props: DeleteTaskModalProps) => {

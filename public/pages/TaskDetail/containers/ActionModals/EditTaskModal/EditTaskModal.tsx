@@ -13,58 +13,50 @@
  * permissions and limitations under the License.
  */
 
-import React, { useState } from 'react';
+import React from 'react';
 import {
   EuiText,
   EuiOverlayMask,
-  EuiButton,
-  EuiButtonEmpty,
   EuiFlexGroup,
   EuiFlexItem,
-  EuiCallOut,
-  EuiModal,
-  EuiModalHeader,
-  EuiModalFooter,
-  EuiModalBody,
-  EuiModalHeaderTitle,
-  EuiLoadingSpinner,
 } from '@elastic/eui';
 // @ts-ignore
 import { toastNotifications } from 'ui/notify';
 //@ts-ignore
 import chrome from 'ui/chrome';
 import { Task } from '../../../../../models/interfaces';
-import { EuiSpacer } from '@elastic/eui';
+import { ConfirmModal } from '../../../../DetectorDetail/components/ConfirmModal/ConfirmModal';
 
-interface StopTaskModalProps {
+interface EditTaskModalProps {
   task: Task;
   onHide(): void;
-  isListLoading: boolean;
+  onStopTaskForEditing(): void;
 }
 
-export const StopTaskModal = (props: StopTaskModalProps) => {
+export const EditTaskModal = (props: EditTaskModalProps) => {
   return (
     <EuiOverlayMask>
-      <EuiModal onClose={props.onHide}>
-        <EuiModalHeader>
-          <EuiFlexGroup direction="column" gutterSize="s">
-            <EuiFlexItem></EuiFlexItem>
+      <ConfirmModal
+        title="Stop task to proceed?"
+        description={
+          <EuiFlexGroup direction="column">
             <EuiFlexItem>
-              <EuiModalHeaderTitle>
-                {'Stop task to proceed?'}&nbsp;
-              </EuiModalHeaderTitle>
+              <EuiText>
+                <p>
+                  The task needs to stop before you can edit the configuration.
+                  Make sure to restart the task after making changes.
+                </p>
+              </EuiText>
             </EuiFlexItem>
           </EuiFlexGroup>
-        </EuiModalHeader>
-        <EuiModalBody>
-          <EuiText>Placeholder for stopping task here</EuiText>>
-        </EuiModalBody>
-        <EuiModalFooter>
-          <EuiButtonEmpty data-test-subj="cancelButton" onClick={props.onHide}>
-            Close
-          </EuiButtonEmpty>
-        </EuiModalFooter>
-      </EuiModal>
+        }
+        confirmButtonText="Stop and proceed to edit"
+        confirmButtonColor="primary"
+        confirmButtonDisabled={false}
+        onClose={props.onHide}
+        onCancel={props.onHide}
+        onConfirm={() => props.onStopTaskForEditing()}
+      />
     </EuiOverlayMask>
   );
 };

@@ -23,12 +23,13 @@ import {
   EuiPopover,
 } from '@elastic/eui';
 import { Task } from '../../../../models/interfaces';
+import { Listener } from '../../../../utils/utils';
 
 interface TaskControlsProps {
   task: Task;
   onEditTask(): void;
   onStartTask(): void;
-  onStopTask(): void;
+  onStopTask: (listener?: Listener) => void;
   onDeleteTask(): void;
 }
 export const TaskControls = (props: TaskControlsProps) => {
@@ -75,7 +76,7 @@ export const TaskControls = (props: TaskControlsProps) => {
         {props.task.enabled ? (
           <EuiButton
             data-test-subj="stopTaskButton"
-            onClick={props.onStopTask}
+            onClick={() => props.onStopTask(undefined)}
             iconType={'stop'}
           >
             Stop task

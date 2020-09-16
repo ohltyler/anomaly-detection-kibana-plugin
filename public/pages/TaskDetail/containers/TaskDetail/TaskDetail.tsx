@@ -40,7 +40,7 @@ import {
   stopTask,
   deleteTask,
 } from '../../../../redux/reducers/task';
-import { getErrorMessage, Listener } from '../../../../utils/utils';
+import { Listener } from '../../../../utils/utils';
 //@ts-ignore
 import chrome from 'ui/chrome';
 import { darkModeEnabled } from '../../../../utils/kibanaUtils';
@@ -52,7 +52,7 @@ import moment from 'moment';
 import { TASK_STATE_COLOR } from '../../../utils/constants';
 import { TaskConfig } from '../../components/TaskConfig/TaskConfig';
 import { TaskControls } from '../../components/TaskControls/TaskControls';
-import { StopTaskModal } from '../ActionModals/StopTaskModal/StopTaskModal';
+import { EditTaskModal } from '../ActionModals/EditTaskModal/EditTaskModal';
 import { DeleteTaskModal } from '../ActionModals/DeleteTaskModal/DeleteTaskModal';
 import { TASK_ACTION } from '../../../TaskList/utils/constants';
 
@@ -78,8 +78,6 @@ export const TaskDetail = (props: TaskDetailProps) => {
   const task = allTasks[taskId];
   const detector = adState.detectors[task?.detectorId];
   const isLoading = taskState.requesting || adState.requesting;
-
-  console.log('all tasks: ', allTasks);
 
   const [taskDetailModalState, setTaskDetailModalState] = useState<
     TaskDetailModalState
@@ -138,7 +136,7 @@ export const TaskDetail = (props: TaskDetailProps) => {
       ? setTaskDetailModalState({
           ...taskDetailModalState,
           isOpen: true,
-          action: TASK_ACTION.STOP,
+          action: TASK_ACTION.EDIT,
         })
       : props.history.push(`/tasks/${taskId}/edit`);
   };
@@ -156,7 +154,6 @@ export const TaskDetail = (props: TaskDetailProps) => {
 
   const onStopTask = async (listener?: Listener) => {
     try {
-      console.log('stopping task with id ', taskId);
       await dispatch(stopTask(taskId));
       toastNotifications.addSuccess('Task has been stopped successfully');
       if (listener) listener.onSuccess();
@@ -168,9 +165,19 @@ export const TaskDetail = (props: TaskDetailProps) => {
     }
   };
 
+  const onStopTaskForEditing = async () => {
+    const listener: Listener = {
+      onSuccess: () => {
+        props.history.push(`/tasks/${taskId}/edit`);
+        handleHideModal();
+      },
+      onException: handleHideModal,
+    };
+    onStopTask(listener);
+  };
+
   const onDeleteTask = async () => {
     try {
-      console.log('deleting task with id ', taskId);
       await dispatch(deleteTask(taskId));
       toastNotifications.addSuccess(`Task has been deleted successfully`);
       handleHideModal();
@@ -194,12 +201,12 @@ export const TaskDetail = (props: TaskDetailProps) => {
   const getTaskDetailModal = () => {
     if (taskDetailModalState.isOpen) {
       switch (taskDetailModalState.action) {
-        case TASK_ACTION.STOP: {
+        case TASK_ACTION.EDIT: {
           return (
-            <StopTaskModal
+            <EditTaskModal
               task={task}
               onHide={handleHideModal}
-              isListLoading={isLoading}
+              onStopTaskForEditing={onStopTaskForEditing}
             />
           );
         }
@@ -210,7 +217,6 @@ export const TaskDetail = (props: TaskDetailProps) => {
               onHide={handleHideModal}
               onStopTask={onStopTask}
               onDeleteTask={onDeleteTask}
-              isListLoading={isLoading}
             />
           );
         }
@@ -226,8 +232,6 @@ export const TaskDetail = (props: TaskDetailProps) => {
   const lightStyles = {
     backgroundColor: '#FFF',
   };
-
-  console.log('modal state: ', taskDetailModalState);
 
   return (
     <React.Fragment>

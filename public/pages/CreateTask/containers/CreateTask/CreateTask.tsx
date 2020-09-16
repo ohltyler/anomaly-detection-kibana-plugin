@@ -193,7 +193,7 @@ export function CreateTask(props: CreateTaskProps) {
 
   const handleCancelClick = () => {
     taskId
-      ? props.history.push(`/tasks/${taskId}/configurations`)
+      ? props.history.push(`/tasks/${taskId}/details`)
       : props.history.push('/tasks');
   };
 

@@ -206,7 +206,7 @@ export const prepareDataForChart = (data: any[], dateRange: DateRange) => {
   let anomalies = [];
   if (data && data.length > 0) {
     anomalies = data.filter(
-      anomaly =>
+      (anomaly) =>
         anomaly.plotTime >= dateRange.startDate &&
         anomaly.plotTime <= dateRange.endDate
     );
@@ -253,7 +253,7 @@ export const filterWithDateRange = (
   timeField: string
 ) => {
   const anomalies = data
-    ? data.filter(item => {
+    ? data.filter((item) => {
         const time = get(item, `${timeField}`);
         return time && time >= dateRange.startDate && time <= dateRange.endDate;
       })
@@ -412,7 +412,7 @@ export const parseBucketizedAnomalyResults = (result: any): Anomalies => {
   ) as any[];
   let anomalies = [] as AnomalyData[];
   let featureData = {} as { [key: string]: FeatureAggregationData[] };
-  rawAnomalies.forEach(item => {
+  rawAnomalies.forEach((item) => {
     if (get(item, 'top_anomaly_hits.hits.hits', []).length > 0) {
       const rawAnomaly = get(item, 'top_anomaly_hits.hits.hits.0._source');
       if (get(rawAnomaly, 'anomaly_grade') !== undefined) {
@@ -427,7 +427,7 @@ export const parseBucketizedAnomalyResults = (result: any): Anomalies => {
         });
       }
       if (get(rawAnomaly, 'feature_data', []).length > 0) {
-        get(rawAnomaly, 'feature_data', []).forEach(feature => {
+        get(rawAnomaly, 'feature_data', []).forEach((feature) => {
           if (!get(featureData, get(feature, 'feature_id'))) {
             featureData[get(feature, 'feature_id')] = [];
           }
@@ -546,8 +546,8 @@ export const getFeatureDataPoints = (
   const existingTimes = isEmpty(featureData)
     ? []
     : featureData
-        .map(feature => getRoundedTimeInMin(feature.startTime))
-        .filter(featureTime => featureTime != undefined);
+        .map((feature) => getRoundedTimeInMin(feature.startTime))
+        .filter((featureTime) => featureTime != undefined);
   for (
     let currentTime = getRoundedTimeInMin(dateRange.startDate);
     currentTime <
@@ -648,7 +648,7 @@ const getDataPointsInWindow = (
   timeWindow: DateRange
 ) => {
   return dataPoints.filter(
-    dataPoint =>
+    (dataPoint) =>
       get(dataPoint, 'plotTime', 0) >= timeWindow.startDate &&
       get(dataPoint, 'plotTime', 0) < timeWindow.endDate
   );
@@ -657,7 +657,7 @@ const getDataPointsInWindow = (
 const generateFeatureMissingAnnotations = (
   featureMissingDataPoints: FeatureDataPoint[]
 ) => {
-  return featureMissingDataPoints.map(feature => ({
+  return featureMissingDataPoints.map((feature) => ({
     dataValue: feature.plotTime,
     details: `There is feature data point missing between ${moment(
       feature.startTime
@@ -690,7 +690,7 @@ export const getFeatureMissingDataAnnotations = (
     featureData,
     interval,
     queryDateRange
-  ).filter(dataPoint => get(dataPoint, 'isMissing', false));
+  ).filter((dataPoint) => get(dataPoint, 'isMissing', false));
 
   const featureMissingAnnotations = finalizeFeatureMissingDataAnnotations(
     featureMissingDataPoints,
@@ -718,7 +718,7 @@ export const getFeatureDataPointsForDetector = (
     'featureAttributes',
     [] as FeatureAttributes[]
   );
-  allFeatures.forEach(feature => {
+  allFeatures.forEach((feature) => {
     //@ts-ignore
     const featureData = featuresData[feature.featureId];
     const featureDataPoints = getFeatureDataPoints(
@@ -769,7 +769,7 @@ export const getFeatureMissingSeverities = (featuresDataPoint: {
     const orderedFeatureDataPoints = orderBy(
       featureDataPoints,
       // sort by plot time in desc order
-      dataPoint => get(dataPoint, 'plotTime', 0),
+      (dataPoint) => get(dataPoint, 'plotTime', 0),
       SORT_DIRECTION.DESC
     );
     // feature has >= 3 data points
@@ -825,4 +825,78 @@ export const getFeatureDataMissingMessageAndActionItem = (
         actionItem: '',
       };
   }
+};
+
+export const getTaskAnomalySummaryQuery = (
+  startTime: number,
+  endTime: number,
+  executionId: string
+) => {
+  return {
+    index: '.opendistro-anomaly-results*',
+    size: MAX_ANOMALIES,
+    rawQuery: {
+      query: {
+        bool: {
+          filter: [
+            {
+              term: {
+                task_execution_id: executionId,
+              },
+            },
+            {
+              range: {
+                data_end_time: {
+                  gte: startTime,
+                  lte: endTime,
+                },
+              },
+            },
+            {
+              range: {
+                anomaly_grade: {
+                  gt: 0,
+                },
+              },
+            },
+          ],
+        },
+      },
+      aggs: {
+        count_anomalies: {
+          value_count: {
+            field: 'anomaly_grade',
+          },
+        },
+        max_confidence: {
+          max: {
+            field: 'confidence',
+          },
+        },
+        min_confidence: {
+          min: {
+            field: 'confidence',
+          },
+        },
+        max_anomaly_grade: {
+          max: {
+            field: 'anomaly_grade',
+          },
+        },
+        min_anomaly_grade: {
+          min: {
+            field: 'anomaly_grade',
+          },
+        },
+        max_data_end_time: {
+          max: {
+            field: 'data_end_time',
+          },
+        },
+      },
+      _source: {
+        includes: RETURNED_AD_RESULT_FIELDS,
+      },
+    },
+  };
 };

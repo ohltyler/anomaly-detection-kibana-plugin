@@ -162,6 +162,7 @@ const reducer = handleActions<Tasks>(
             enabled: true,
             enabledTime: moment().valueOf(),
             curState: TASK_STATE.RUNNING,
+            executionId: action.result.data.response.executionId,
           },
         },
       }),

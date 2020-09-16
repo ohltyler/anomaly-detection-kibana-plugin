@@ -51,6 +51,7 @@ import { BREADCRUMBS, TASK_STATE } from '../../../../utils/constants';
 import moment from 'moment';
 import { TASK_STATE_COLOR } from '../../../utils/constants';
 import { TaskConfig } from '../../components/TaskConfig/TaskConfig';
+import { TaskResults } from '../../components/TaskResults/TaskResults';
 import { TaskControls } from '../../components/TaskControls/TaskControls';
 import { EditTaskModal } from '../ActionModals/EditTaskModal/EditTaskModal';
 import { DeleteTaskModal } from '../ActionModals/DeleteTaskModal/DeleteTaskModal';
@@ -85,6 +86,8 @@ export const TaskDetail = (props: TaskDetailProps) => {
     isOpen: false,
     action: undefined,
   });
+
+  console.log('all tasks: ', allTasks);
 
   useEffect(() => {
     if (errorGettingTasks) {
@@ -285,13 +288,16 @@ export const TaskDetail = (props: TaskDetailProps) => {
               />
             </EuiFlexItem>
           </EuiFlexGroup>
-          <EuiFlexGroup>
+          <EuiFlexGroup direction="column">
             <EuiFlexItem>
               <TaskConfig
                 task={task}
                 detector={detector}
                 onEditTask={handleEditAction}
               />
+            </EuiFlexItem>
+            <EuiFlexItem style={{ marginTop: '-32px' }}>
+              <TaskResults task={task} isLoading={isLoading} />
             </EuiFlexItem>
           </EuiFlexGroup>
         </EuiFlexGroup>

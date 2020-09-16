@@ -76,7 +76,8 @@ export type Task = {
   dataStartTime: number;
   dataEndTime: number;
   lastUpdateTime: number;
-  // enabled?: boolean;
+  enabled?: boolean;
+  executionId?: string;
 };
 
 export type Monitor = {

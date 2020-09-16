@@ -125,7 +125,6 @@ export function CreateTask(props: CreateTaskProps) {
 
   // Using the task-specified date range (if it exists)
   useEffect(() => {
-    console.log('task changed');
     if (task?.dataStartTime && task?.dataEndTime) {
       setDateRange({
         startDate: task.dataStartTime,

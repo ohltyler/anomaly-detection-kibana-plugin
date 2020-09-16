@@ -246,7 +246,7 @@ const startTask = async (
     });
     return {
       ok: true,
-      response: response,
+      response: { executionId: response.taskExecutionId },
     };
   } catch (err) {
     console.log('Anomaly detector - StartTask', err);

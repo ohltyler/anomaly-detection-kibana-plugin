@@ -138,6 +138,7 @@ export type Task = {
   dataEndTime: number;
   lastUpdateTime: number;
   enabled?: boolean;
+  executionId?: string;
 };
 
 export type TaskListItem = {
@@ -150,6 +151,7 @@ export type TaskListItem = {
   dataStartTime: number;
   dataEndTime: number;
   lastUpdateTime: number;
+  executionId?: string;
 };
 
 export type AnomalyData = {

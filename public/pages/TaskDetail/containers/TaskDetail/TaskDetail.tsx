@@ -35,7 +35,11 @@ import { get, isEmpty } from 'lodash';
 import { RouteComponentProps, Switch, Route, Redirect } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHideSideNavBar } from '../../../main/hooks/useHideSideNavBar';
-import { startTask, stopTask } from '../../../../redux/reducers/task';
+import {
+  startTask,
+  stopTask,
+  deleteTask,
+} from '../../../../redux/reducers/task';
 import { getErrorMessage, Listener } from '../../../../utils/utils';
 //@ts-ignore
 import chrome from 'ui/chrome';
@@ -121,7 +125,15 @@ export const TaskDetail = (props: TaskDetailProps) => {
     }
   }, [task]);
 
-  const onEditTask = () => {
+  const handleDeleteAction = () => {
+    setTaskDetailModalState({
+      ...taskDetailModalState,
+      isOpen: true,
+      action: TASK_ACTION.DELETE,
+    });
+  };
+
+  const handleEditAction = () => {
     task.curState === TASK_STATE.RUNNING
       ? setTaskDetailModalState({
           ...taskDetailModalState,
@@ -144,22 +156,34 @@ export const TaskDetail = (props: TaskDetailProps) => {
 
   const onStopTask = async (listener?: Listener) => {
     try {
+      console.log('stopping task with id ', taskId);
       await dispatch(stopTask(taskId));
       toastNotifications.addSuccess('Task has been stopped successfully');
-      if (listener) listener.onSuccess;
+      if (listener) listener.onSuccess();
     } catch (err) {
       toastNotifications.addDanger(
         `There was a problem stopping the task: ${err}`
       );
-      if (listener) listener.onException;
+      if (listener) listener.onException();
     }
   };
 
-  const onDeleteTask = () => {
-    return;
+  const onDeleteTask = async () => {
+    try {
+      console.log('deleting task with id ', taskId);
+      await dispatch(deleteTask(taskId));
+      toastNotifications.addSuccess(`Task has been deleted successfully`);
+      handleHideModal();
+      props.history.push('/tasks');
+    } catch (err) {
+      toastNotifications.addDanger(
+        `There was a problem deleting the task: ${err}`
+      );
+      handleHideModal();
+    }
   };
 
-  const onHideModal = () => {
+  const handleHideModal = () => {
     setTaskDetailModalState({
       ...taskDetailModalState,
       isOpen: false,
@@ -169,13 +193,12 @@ export const TaskDetail = (props: TaskDetailProps) => {
 
   const getTaskDetailModal = () => {
     if (taskDetailModalState.isOpen) {
-      //@ts-ignore
       switch (taskDetailModalState.action) {
         case TASK_ACTION.STOP: {
           return (
             <StopTaskModal
               task={task}
-              onHide={onHideModal}
+              onHide={handleHideModal}
               isListLoading={isLoading}
             />
           );
@@ -184,7 +207,9 @@ export const TaskDetail = (props: TaskDetailProps) => {
           return (
             <DeleteTaskModal
               task={task}
-              onHide={onHideModal}
+              onHide={handleHideModal}
+              onStopTask={onStopTask}
+              onDeleteTask={onDeleteTask}
               isListLoading={isLoading}
             />
           );
@@ -202,9 +227,11 @@ export const TaskDetail = (props: TaskDetailProps) => {
     backgroundColor: '#FFF',
   };
 
+  console.log('modal state: ', taskDetailModalState);
+
   return (
     <React.Fragment>
-      {getTaskDetailModal()}
+      {!isEmpty(task) && !errorGettingTasks ? getTaskDetailModal() : null}
       {!isEmpty(task) && !errorGettingTasks ? (
         <EuiFlexGroup
           direction="column"
@@ -238,10 +265,10 @@ export const TaskDetail = (props: TaskDetailProps) => {
             <EuiFlexItem grow={false}>
               <TaskControls
                 task={task}
-                onEditTask={onEditTask}
+                onEditTask={handleEditAction}
                 onStartTask={onStartTask}
                 onStopTask={onStopTask}
-                onDeleteTask={onDeleteTask}
+                onDeleteTask={handleDeleteAction}
               />
             </EuiFlexItem>
           </EuiFlexGroup>
@@ -250,7 +277,7 @@ export const TaskDetail = (props: TaskDetailProps) => {
               <TaskConfig
                 task={task}
                 detector={detector}
-                onEditTask={onEditTask}
+                onEditTask={handleEditAction}
               />
             </EuiFlexItem>
           </EuiFlexGroup>

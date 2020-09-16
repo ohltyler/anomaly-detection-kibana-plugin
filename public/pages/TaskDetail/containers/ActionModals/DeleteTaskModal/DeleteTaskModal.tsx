@@ -13,7 +13,7 @@
  * permissions and limitations under the License.
  */
 
-import React, { useState } from 'react';
+import React, { useState, Fragment } from 'react';
 import {
   EuiText,
   EuiOverlayMask,
@@ -21,13 +21,8 @@ import {
   EuiButtonEmpty,
   EuiFlexGroup,
   EuiFlexItem,
+  EuiFieldText,
   EuiCallOut,
-  EuiModal,
-  EuiModalHeader,
-  EuiModalFooter,
-  EuiModalBody,
-  EuiModalHeaderTitle,
-  EuiLoadingSpinner,
 } from '@elastic/eui';
 // @ts-ignore
 import { toastNotifications } from 'ui/notify';
@@ -35,36 +30,78 @@ import { toastNotifications } from 'ui/notify';
 import chrome from 'ui/chrome';
 import { Task } from '../../../../../models/interfaces';
 import { EuiSpacer } from '@elastic/eui';
+import { ConfirmModal } from '../../../../DetectorDetail/components/ConfirmModal/ConfirmModal';
+import { TASK_STATE } from '../../../../../utils/constants';
+import { getErrorMessage, Listener } from '../../../../../utils/utils';
 
 interface DeleteTaskModalProps {
   task: Task;
   onHide(): void;
+  onStopTask(listener?: Listener): void;
+  onDeleteTask(): void;
   isListLoading: boolean;
 }
 
 export const DeleteTaskModal = (props: DeleteTaskModalProps) => {
+  const [deleteTyped, setDeleteTyped] = useState<boolean>(false);
+
+  const taskIsRunningCallout =
+    props.task.curState === TASK_STATE.RUNNING ? (
+      <EuiCallOut
+        title="The task is running. Are you sure you want to proceed?"
+        color="warning"
+        iconType="alert"
+      ></EuiCallOut>
+    ) : null;
+
   return (
     <EuiOverlayMask>
-      <EuiModal onClose={props.onHide}>
-        <EuiModalHeader>
-          <EuiFlexGroup direction="column" gutterSize="s">
-            <EuiFlexItem></EuiFlexItem>
+      <ConfirmModal
+        title="Delete task?"
+        description={
+          <EuiFlexGroup direction="column">
             <EuiFlexItem>
-              <EuiModalHeaderTitle>
-                {'Are you sure you want to delete the task?'}&nbsp;
-              </EuiModalHeaderTitle>
+              <EuiText>
+                <p>
+                  The task and task configuration will be permanently removed.
+                  This action is irreversible. To confirm deletion, type{' '}
+                  <i>delete</i> in the field.
+                </p>
+              </EuiText>
+            </EuiFlexItem>
+            <EuiFlexItem grow={true}>
+              <EuiFieldText
+                fullWidth={true}
+                placeholder="delete"
+                onChange={(e) => {
+                  if (e.target.value === 'delete') {
+                    setDeleteTyped(true);
+                  } else {
+                    setDeleteTyped(false);
+                  }
+                }}
+              />
             </EuiFlexItem>
           </EuiFlexGroup>
-        </EuiModalHeader>
-        <EuiModalBody>
-          <EuiText>Placeholder for deleting task here</EuiText>>
-        </EuiModalBody>
-        <EuiModalFooter>
-          <EuiButtonEmpty data-test-subj="cancelButton" onClick={props.onHide}>
-            Close
-          </EuiButtonEmpty>
-        </EuiModalFooter>
-      </EuiModal>
+        }
+        callout={<Fragment>{taskIsRunningCallout}</Fragment>}
+        confirmButtonText="Delete"
+        confirmButtonColor="danger"
+        confirmButtonDisabled={!deleteTyped}
+        onClose={props.onHide}
+        onCancel={props.onHide}
+        onConfirm={() => {
+          if (props.task.enabled) {
+            const listener: Listener = {
+              onSuccess: props.onDeleteTask,
+              onException: props.onHide,
+            };
+            props.onStopTask(listener);
+          } else {
+            props.onDeleteTask();
+          }
+        }}
+      />
     </EuiOverlayMask>
   );
 };

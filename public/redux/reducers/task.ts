@@ -33,8 +33,8 @@ const GET_TASK_LIST = 'task/GET_TASK_LIST';
 const UPDATE_TASK = 'task/UPDATE_TASK';
 const START_TASK = 'task/START_TASK';
 const STOP_TASK = 'task/STOP_TASK';
+const DELETE_TASK = 'task/DELETE_TASK';
 //   const SEARCH_DETECTOR = 'ad/SEARCH_DETECTOR';
-//   const DELETE_DETECTOR = 'ad/DELETE_DETECTOR';
 //   const GET_DETECTOR_PROFILE = 'ad/GET_DETECTOR_PROFILE';
 
 export interface Tasks {
@@ -197,6 +197,25 @@ const reducer = handleActions<Tasks>(
         errorMessage: action.error,
       }),
     },
+    [DELETE_TASK]: {
+      REQUEST: (state: Tasks): Tasks => {
+        const newState = { ...state, requesting: true, errorMessage: '' };
+        return newState;
+      },
+      SUCCESS: (state: Tasks, action: APIResponseAction): Tasks => ({
+        ...state,
+        requesting: false,
+        tasks: {
+          ...state.tasks,
+          [action.taskId]: undefined,
+        },
+      }),
+      FAILURE: (state: Tasks, action: APIErrorAction): Tasks => ({
+        ...state,
+        requesting: false,
+        errorMessage: action.error,
+      }),
+    },
     //   [SEARCH_DETECTOR]: {
     //     REQUEST: (state: Detectors): Detectors => ({
     //       ...state,
@@ -220,25 +239,6 @@ const reducer = handleActions<Tasks>(
     //     FAILURE: (state: Detectors): Detectors => ({
     //       ...state,
     //       requesting: false,
-    //     }),
-    //   },
-    //   [DELETE_DETECTOR]: {
-    //     REQUEST: (state: Detectors): Detectors => {
-    //       const newState = { ...state, requesting: true, errorMessage: '' };
-    //       return newState;
-    //     },
-    //     SUCCESS: (state: Detectors, action: APIResponseAction): Detectors => ({
-    //       ...state,
-    //       requesting: false,
-    //       detectors: {
-    //         ...state.detectors,
-    //         [action.detectorId]: undefined,
-    //       },
-    //     }),
-    //     FAILURE: (state: Detectors, action: APIErrorAction): Detectors => ({
-    //       ...state,
-    //       requesting: false,
-    //       errorMessage: action.error,
     //     }),
     //   },
 
@@ -303,7 +303,7 @@ export const startTask = (taskId: string): APIAction => ({
   type: START_TASK,
   request: (client: IHttpService) =>
     client.post(`..${AD_NODE_API.TASK}/${taskId}/start`, {
-      detectorId: taskId,
+      taskId: taskId,
     }),
   taskId,
 });
@@ -312,8 +312,15 @@ export const stopTask = (taskId: string): APIAction => ({
   type: STOP_TASK,
   request: (client: IHttpService) =>
     client.post(`..${AD_NODE_API.TASK}/${taskId}/stop`, {
-      detectorId: taskId,
+      taskId: taskId,
     }),
+  taskId,
+});
+
+export const deleteTask = (taskId: string): APIAction => ({
+  type: DELETE_TASK,
+  request: (client: IHttpService) =>
+    client.delete(`..${AD_NODE_API.TASK}/${taskId}`),
   taskId,
 });
 
@@ -321,13 +328,6 @@ export const stopTask = (taskId: string): APIAction => ({
 //     type: SEARCH_DETECTOR,
 //     request: (client: IHttpService) =>
 //       client.post(`..${AD_NODE_API.DETECTOR}/_search`, requestBody),
-//   });
-
-//   export const deleteDetector = (detectorId: string): APIAction => ({
-//     type: DELETE_DETECTOR,
-//     request: (client: IHttpService) =>
-//       client.delete(`..${AD_NODE_API.DETECTOR}/${detectorId}`),
-//     detectorId,
 //   });
 
 //   export const getDetectorProfile = (detectorId: string): APIAction => ({

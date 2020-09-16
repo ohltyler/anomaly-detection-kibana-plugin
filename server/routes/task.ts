@@ -41,11 +41,11 @@ export default function (apiRouter: Router) {
   apiRouter.put('/tasks/{taskId}', updateTask);
   apiRouter.post('/tasks/{taskId}/start', startTask);
   apiRouter.post('/tasks/{taskId}/stop', stopTask);
+  apiRouter.delete('/tasks/{taskId}', deleteTask);
   //   apiRouter.post('/detectors/_search', searchDetector);
   //   apiRouter.get('/detectors', getDetectors);
   //   apiRouter.post('/detectors/{detectorId}/preview', previewDetector);
   //   apiRouter.get('/detectors/{detectorId}/results', getAnomalyResults);
-  //   apiRouter.delete('/detectors/{detectorId}', deleteDetector);
   //   apiRouter.get('/detectors/{detectorId}/_profile', getDetectorProfile);
 }
 
@@ -274,6 +274,27 @@ const stopTask = async (
   }
 };
 
+const deleteTask = async (
+  req: Request,
+  h: ResponseToolkit,
+  callWithRequest: CallClusterWithRequest
+): Promise<ServerResponse<any>> => {
+  try {
+    const { taskId } = req.params;
+    const response = await callWithRequest(req, 'ad.deleteTask', {
+      taskId,
+    });
+    console.log('response: ', response);
+    return {
+      ok: true,
+      response: response,
+    };
+  } catch (err) {
+    console.log('Anomaly detector - DeleteTask', err);
+    return { ok: false, error: err.message };
+  }
+};
+
 // NOTE: the ad.getDetector api call here will want to add the optional ?execution=true here to retrieve the execution state.
 // We will not call the profile api to get the state here, as it is heavy and should just be used for debugging to get a lot of details.
 
@@ -325,26 +346,6 @@ const stopTask = async (
 //   } catch (err) {
 //     console.log('Anomaly detector - Unable to get detector', err);
 //     return { ok: false, error: err.message };
-//   }
-// };
-
-// const deleteDetector = async (
-//   req: Request,
-//   h: ResponseToolkit,
-//   callWithRequest: CallClusterWithRequest
-// ): Promise<ServerResponse<AnomalyResults>> => {
-//   try {
-//     const { detectorId } = req.params;
-//     const response = await callWithRequest(req, 'ad.deleteDetector', {
-//       detectorId,
-//     });
-//     return {
-//       ok: true,
-//       response: response,
-//     };
-//   } catch (err) {
-//     console.log('Anomaly detector - deleteDetector', err);
-//     return { ok: false, error: err.body || err.message };
 //   }
 // };
 

@@ -29,7 +29,7 @@ interface TaskControlsProps {
   task: Task;
   onEditTask(): void;
   onStartTask(): void;
-  onStopTask: (listener?: Listener) => void;
+  onStopTask: (isDelete: boolean, listener?: Listener) => void;
   onDeleteTask(): void;
 }
 export const TaskControls = (props: TaskControlsProps) => {
@@ -76,7 +76,7 @@ export const TaskControls = (props: TaskControlsProps) => {
         {props.task.enabled ? (
           <EuiButton
             data-test-subj="stopTaskButton"
-            onClick={() => props.onStopTask(undefined)}
+            onClick={() => props.onStopTask(false, undefined)}
             iconType={'stop'}
           >
             Stop task

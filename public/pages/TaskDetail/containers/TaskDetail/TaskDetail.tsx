@@ -152,10 +152,12 @@ export const TaskDetail = (props: TaskDetailProps) => {
     }
   };
 
-  const onStopTask = async (listener?: Listener) => {
+  const onStopTask = async (isDelete: boolean, listener?: Listener) => {
     try {
       await dispatch(stopTask(taskId));
-      toastNotifications.addSuccess('Task has been stopped successfully');
+      if (!isDelete) {
+        toastNotifications.addSuccess('Task has been stopped successfully');
+      }
       if (listener) listener.onSuccess();
     } catch (err) {
       toastNotifications.addDanger(
@@ -163,17 +165,6 @@ export const TaskDetail = (props: TaskDetailProps) => {
       );
       if (listener) listener.onException();
     }
-  };
-
-  const onStopTaskForEditing = async () => {
-    const listener: Listener = {
-      onSuccess: () => {
-        props.history.push(`/tasks/${taskId}/edit`);
-        handleHideModal();
-      },
-      onException: handleHideModal,
-    };
-    onStopTask(listener);
   };
 
   const onDeleteTask = async () => {
@@ -188,6 +179,25 @@ export const TaskDetail = (props: TaskDetailProps) => {
       );
       handleHideModal();
     }
+  };
+
+  const onStopTaskForEditing = async () => {
+    const listener: Listener = {
+      onSuccess: () => {
+        props.history.push(`/tasks/${taskId}/edit`);
+        handleHideModal();
+      },
+      onException: handleHideModal,
+    };
+    onStopTask(false, listener);
+  };
+
+  const onStopTaskForDeleting = async () => {
+    const listener: Listener = {
+      onSuccess: onDeleteTask,
+      onException: handleHideModal,
+    };
+    onStopTask(true, listener);
   };
 
   const handleHideModal = () => {
@@ -215,8 +225,7 @@ export const TaskDetail = (props: TaskDetailProps) => {
             <DeleteTaskModal
               task={task}
               onHide={handleHideModal}
-              onStopTask={onStopTask}
-              onDeleteTask={onDeleteTask}
+              onStopTaskForDeleting={onStopTaskForDeleting}
             />
           );
         }

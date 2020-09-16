@@ -29,13 +29,11 @@ import chrome from 'ui/chrome';
 import { Task } from '../../../../../models/interfaces';
 import { ConfirmModal } from '../../../../DetectorDetail/components/ConfirmModal/ConfirmModal';
 import { TASK_STATE } from '../../../../../utils/constants';
-import { Listener } from '../../../../../utils/utils';
 
 interface DeleteTaskModalProps {
   task: Task;
   onHide(): void;
-  onStopTask(listener?: Listener): void;
-  onDeleteTask(): void;
+  onStopTaskForDeleting(): void;
 }
 
 export const DeleteTaskModal = (props: DeleteTaskModalProps) => {
@@ -86,17 +84,7 @@ export const DeleteTaskModal = (props: DeleteTaskModalProps) => {
         confirmButtonDisabled={!deleteTyped}
         onClose={props.onHide}
         onCancel={props.onHide}
-        onConfirm={() => {
-          if (props.task.enabled) {
-            const listener: Listener = {
-              onSuccess: props.onDeleteTask,
-              onException: props.onHide,
-            };
-            props.onStopTask(listener);
-          } else {
-            props.onDeleteTask();
-          }
-        }}
+        onConfirm={() => props.onStopTaskForDeleting()}
       />
     </EuiOverlayMask>
   );

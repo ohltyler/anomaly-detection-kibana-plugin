@@ -239,14 +239,14 @@ const reducer = handleActions<Detectors>(
         const newState = { ...state, requesting: true, errorMessage: '' };
         return newState;
       },
-      SUCCESS: (state: Detectors, action: APIResponseAction): Detectors => ({
-        ...state,
-        requesting: false,
-        detectors: {
-          ...state.detectors,
-          [action.detectorId]: undefined,
-        },
-      }),
+      SUCCESS: (state: Detectors, action: APIResponseAction): Detectors => {
+        delete state.detectors[action.detectorId];
+        delete state.detectorList[action.detectorId];
+        return {
+          ...state,
+          requesting: false,
+        };
+      },
       FAILURE: (state: Detectors, action: APIErrorAction): Detectors => ({
         ...state,
         requesting: false,

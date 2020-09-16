@@ -202,14 +202,14 @@ const reducer = handleActions<Tasks>(
         const newState = { ...state, requesting: true, errorMessage: '' };
         return newState;
       },
-      SUCCESS: (state: Tasks, action: APIResponseAction): Tasks => ({
-        ...state,
-        requesting: false,
-        tasks: {
-          ...state.tasks,
-          [action.taskId]: undefined,
-        },
-      }),
+      SUCCESS: (state: Tasks, action: APIResponseAction): Tasks => {
+        delete state.tasks[action.taskId];
+        delete state.taskList[action.taskId];
+        return {
+          ...state,
+          requesting: false,
+        };
+      },
       FAILURE: (state: Tasks, action: APIErrorAction): Tasks => ({
         ...state,
         requesting: false,

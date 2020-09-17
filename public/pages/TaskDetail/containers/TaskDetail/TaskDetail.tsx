@@ -56,6 +56,7 @@ import { TaskControls } from '../../components/TaskControls/TaskControls';
 import { EditTaskModal } from '../ActionModals/EditTaskModal/EditTaskModal';
 import { DeleteTaskModal } from '../ActionModals/DeleteTaskModal/DeleteTaskModal';
 import { TASK_ACTION } from '../../../TaskList/utils/constants';
+import { taskStateToColorMap } from '../../../utils/constants';
 
 export interface TaskRouterProps {
   taskId?: string;
@@ -106,23 +107,36 @@ export const TaskDetail = (props: TaskDetailProps) => {
     }
   }, [task]);
 
+  const fetchTask = async () => {
+    console.log('re-fetching task details');
+    dispatch(getTask(taskId));
+  };
+
+  const fetchDetector = async (detectorId: string) => {
+    dispatch(getDetector(detectorId));
+  };
+
   // Try to get the task initially
   useEffect(() => {
-    const fetchTask = async (taskId: string) => {
-      dispatch(getTask(taskId));
-    };
     if (taskId) {
-      fetchTask(taskId);
+      fetchTask();
     }
   }, []);
 
   // Try to get the corresponding detector initially
   useEffect(() => {
-    const fetchDetector = async (detectorId: string) => {
-      dispatch(getDetector(detectorId));
-    };
-    if (task) {
+    if (task?.detectorId) {
       fetchDetector(task.detectorId);
+    }
+  }, [task]);
+
+  // If task is running: keep fetching every second to quickly update state/results/percentage bar, etc.
+  useEffect(() => {
+    if (task?.curState === TASK_STATE.RUNNING) {
+      const intervalId = setInterval(fetchTask, 1000);
+      return () => {
+        clearInterval(intervalId);
+      };
     }
   }, [task]);
 
@@ -269,11 +283,11 @@ export const TaskDetail = (props: TaskDetailProps) => {
               <EuiTitle size="l">
                 <h1>
                   {task && task.name}{' '}
-                  {
-                    <EuiHealth color={TASK_STATE_COLOR.RUNNING}>
-                      Placeholder for handling state logic
+                  {task?.curState ? (
+                    <EuiHealth color={taskStateToColorMap.get(task.curState)}>
+                      {task.curState}
                     </EuiHealth>
-                  }
+                  ) : null}
                 </h1>
               </EuiTitle>
             </EuiFlexItem>

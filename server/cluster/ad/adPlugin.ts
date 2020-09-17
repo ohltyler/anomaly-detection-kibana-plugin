@@ -148,10 +148,9 @@ export default function adPlugin(Client: any, config: any, components: any) {
     method: 'POST',
   });
 
-  // TODO: will want to add task execution here (?execution=true) when it doesn't time out
   ad.getTask = ca({
     url: {
-      fmt: `${API.TASK_BASE}/<%=taskId%>`,
+      fmt: `${API.TASK_BASE}/<%=taskId%>?execution=true`,
       req: {
         taskId: {
           type: 'string',

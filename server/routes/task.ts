@@ -92,20 +92,22 @@ const getTask = async (
       taskId,
     });
 
+    // Get the optional execution info (execution id, task state) if applicable
     const resp = {
       ...response.anomaly_detection_task,
       id: response._id,
       primaryTerm: response._primary_term,
       seqNo: response._seq_no,
+      taskExecutionId:
+        response.anomaly_detection_task_execution?.task_execution_id,
+      curState: response.anomaly_detection_task_execution?.state,
     };
-
-    // TODO: need to get executions=true param when calling getTask to get the state
-    //const respWithFinalState = getFinalStateFromTask(resp);
+    const respWithFinalState = getFinalStateFromTask(resp);
 
     return {
       ok: true,
       //response: mockRespWithFinalState,
-      response: convertTaskKeysToCamelCase(resp) as Task,
+      response: convertTaskKeysToCamelCase(respWithFinalState) as Task,
     };
   } catch (err) {
     console.log('Anomaly detector - GetTask', err);

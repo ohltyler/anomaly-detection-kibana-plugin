@@ -93,7 +93,7 @@ export const TaskResults = (props: TaskResultsProps) => {
     <ContentPanel
       title={`${props.task.name} results`}
       titleSize="s"
-      panelStyles={{ margin: '24px' }}
+      panelStyles={{ margin: '0px' }}
       actions={datePicker()}
     >
       <EuiText>Some results here</EuiText>

@@ -81,6 +81,7 @@ export function CreateTask(props: CreateTaskProps) {
     startDate: moment().subtract(7, 'days').valueOf(),
     endDate: moment().valueOf(),
   });
+  const [showConfirmModal, setShowConfirmModal] = useState<boolean>(false);
 
   console.log('create task - task: ', task);
 
@@ -236,7 +237,9 @@ export function CreateTask(props: CreateTaskProps) {
                     //@ts-ignore
                     onClick={formikProps.handleSubmit}
                   >
-                    {props.isEdit ? 'Save changes' : 'Create'}
+                    {props.isEdit
+                      ? 'Save and start task'
+                      : 'Create and start task'}
                   </EuiButton>
                 </EuiFlexItem>
               </EuiFlexGroup>

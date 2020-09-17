@@ -57,6 +57,8 @@ import { EditTaskModal } from '../ActionModals/EditTaskModal/EditTaskModal';
 import { DeleteTaskModal } from '../ActionModals/DeleteTaskModal/DeleteTaskModal';
 import { TASK_ACTION } from '../../../TaskList/utils/constants';
 import { taskStateToColorMap } from '../../../utils/constants';
+import { TASK_RESULT_REFRESH_RATE } from '../../utils/constants';
+import { getCallout } from '../../utils/helpers';
 
 export interface TaskRouterProps {
   taskId?: string;
@@ -80,6 +82,7 @@ export const TaskDetail = (props: TaskDetailProps) => {
   const task = allTasks[taskId];
   const detector = adState.detectors[task?.detectorId];
   const isLoading = taskState.requesting || adState.requesting;
+  const callout = getCallout(task);
 
   const [taskDetailModalState, setTaskDetailModalState] = useState<
     TaskDetailModalState
@@ -87,8 +90,6 @@ export const TaskDetail = (props: TaskDetailProps) => {
     isOpen: false,
     action: undefined,
   });
-
-  console.log('all tasks: ', allTasks);
 
   useEffect(() => {
     if (errorGettingTasks) {
@@ -133,7 +134,7 @@ export const TaskDetail = (props: TaskDetailProps) => {
   // If task is running: keep fetching every second to quickly update state/results/percentage bar, etc.
   useEffect(() => {
     if (task?.curState === TASK_STATE.RUNNING) {
-      const intervalId = setInterval(fetchTask, 1000);
+      const intervalId = setInterval(fetchTask, TASK_RESULT_REFRESH_RATE);
       return () => {
         clearInterval(intervalId);
       };
@@ -302,7 +303,23 @@ export const TaskDetail = (props: TaskDetailProps) => {
               />
             </EuiFlexItem>
           </EuiFlexGroup>
-          <EuiFlexGroup direction="column">
+          <EuiFlexGroup
+            direction="column"
+            justifyContent="spaceBetween"
+            style={{
+              marginLeft: '12px',
+              marginTop: '4px',
+              marginRight: '12px',
+            }}
+          >
+            {callout ? (
+              <EuiFlexItem
+                grow={false}
+                style={{ marginLeft: '12px', marginRight: '12px' }}
+              >
+                {callout}
+              </EuiFlexItem>
+            ) : null}
             <EuiFlexItem>
               <TaskConfig
                 task={task}
@@ -310,7 +327,7 @@ export const TaskDetail = (props: TaskDetailProps) => {
                 onEditTask={handleEditAction}
               />
             </EuiFlexItem>
-            <EuiFlexItem style={{ marginTop: '-32px' }}>
+            <EuiFlexItem>
               <TaskResults task={task} isLoading={isLoading} />
             </EuiFlexItem>
           </EuiFlexGroup>

@@ -40,3 +40,8 @@ export const TASK_DATE_RANGE_COMMON_OPTIONS = [
   { start: 'now/M', end: 'now', label: 'Month to date' },
   { start: 'now/y', end: 'now', label: 'Year to date' },
 ];
+
+export enum SAVE_TASK_OPTIONS {
+  START_TASK = 'start_task',
+  KEEP_TASK_STOPPED = 'keep_task_stopped',
+}

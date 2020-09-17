@@ -37,17 +37,18 @@ import { useHideSideNavBar } from '../../../main/hooks/useHideSideNavBar';
 import { TaskInfo } from '../../components/TaskInfo/TaskInfo';
 import { DetectorSource } from '../../components/DetectorSource/DetectorSource';
 import { DateRangePicker } from '../../components/DateRangePicker/DateRangePicker';
-import { TaskFormikValues } from '../../utils/constants';
+import { ConfirmStartModal } from '../../components/ConfirmStartModal/ConfirmStartModal';
+import { TaskFormikValues, SAVE_TASK_OPTIONS } from '../../utils/constants';
 import { formikToTask, taskToFormik } from '../../utils/helpers';
 //@ts-ignore
 import chrome from 'ui/chrome';
 //@ts-ignore
 import { toastNotifications } from 'ui/notify';
-import { getDetector, updateDetector } from '../../../../redux/reducers/ad';
 import {
   createTask,
   getTask,
   updateTask,
+  startTask,
 } from '../../../../redux/reducers/task';
 import moment from 'moment';
 import { Task, DateRange } from '../../../../models/interfaces';
@@ -82,6 +83,9 @@ export function CreateTask(props: CreateTaskProps) {
     endDate: moment().valueOf(),
   });
   const [showConfirmModal, setShowConfirmModal] = useState<boolean>(false);
+  const [saveTaskOption, setSaveTaskOption] = useState<SAVE_TASK_OPTIONS>(
+    SAVE_TASK_OPTIONS.START_TASK
+  );
 
   console.log('create task - task: ', task);
 
@@ -149,30 +153,56 @@ export function CreateTask(props: CreateTaskProps) {
     return undefined;
   };
 
-  // TODO: stub for now
-  const handleUpdate = async (taskToUpdate: Task) => {
+  const handleUpdate = async (
+    taskToUpdate: Task,
+    option: SAVE_TASK_OPTIONS
+  ) => {
     try {
       await dispatch(updateTask(taskId, taskToUpdate));
-      toastNotifications.addSuccess(`Task updated: ${taskToUpdate.name}`);
+      if (option === SAVE_TASK_OPTIONS.KEEP_TASK_STOPPED) {
+        toastNotifications.addSuccess(`Task updated: ${taskToUpdate.name}`);
+      } else {
+        await dispatch(startTask(taskId));
+        toastNotifications.addSuccess(`Task has been started successfully`);
+      }
       props.history.push(`/tasks/${taskId}/details/`);
     } catch (err) {
-      toastNotifications.addDanger(
-        `There was a problem updating the task: ${err}`
-      );
+      if (option === SAVE_TASK_OPTIONS.KEEP_TASK_STOPPED) {
+        toastNotifications.addDanger(
+          `There was a problem updating the task: ${err}`
+        );
+      } else {
+        toastNotifications.addDanger(
+          `There was a problem updating and starting the task: ${err}`
+        );
+      }
     }
   };
 
-  const handleCreate = async (taskToCreate: Task) => {
+  const handleCreate = async (
+    taskToCreate: Task,
+    option: SAVE_TASK_OPTIONS
+  ) => {
     try {
-      const taskResp = await dispatch(createTask(taskToCreate));
-      toastNotifications.addSuccess(
-        `Task created: ${taskResp.data.response.name}`
-      );
-      props.history.push(`/tasks/${taskResp.data.response.id}/details`);
+      const response = await dispatch(createTask(taskToCreate));
+      const createdTaskId = response.data.response.id;
+      if (option === SAVE_TASK_OPTIONS.KEEP_TASK_STOPPED) {
+        toastNotifications.addSuccess(`Task created: ${taskToCreate.name}`);
+      } else {
+        await dispatch(startTask(createdTaskId));
+        toastNotifications.addSuccess(`Task has been started successfully`);
+      }
+      props.history.push(`/tasks/${createdTaskId}/details/`);
     } catch (err) {
-      toastNotifications.addDanger(
-        `There was a problem creating the task: ${err}`
-      );
+      if (option === SAVE_TASK_OPTIONS.KEEP_TASK_STOPPED) {
+        toastNotifications.addDanger(
+          `There was a problem creating the task: ${err}`
+        );
+      } else {
+        toastNotifications.addDanger(
+          `There was a problem creating and starting the task: ${err}`
+        );
+      }
     }
   };
 
@@ -181,9 +211,9 @@ export function CreateTask(props: CreateTaskProps) {
     console.log('api request: ', apiRequest);
     try {
       if (props.isEdit) {
-        await handleUpdate(apiRequest);
+        await handleUpdate(apiRequest, saveTaskOption);
       } else {
-        await handleCreate(apiRequest);
+        await handleCreate(apiRequest, saveTaskOption);
       }
       formikBag.setSubmitting(false);
     } catch (e) {
@@ -195,6 +225,14 @@ export function CreateTask(props: CreateTaskProps) {
     taskId
       ? props.history.push(`/tasks/${taskId}/details`)
       : props.history.push('/tasks');
+  };
+
+  const handleHideConfirmModal = () => {
+    setShowConfirmModal(false);
+  };
+
+  const handleSaveTaskOptionChange = (option: SAVE_TASK_OPTIONS) => {
+    setSaveTaskOption(option);
   };
 
   return (
@@ -214,6 +252,17 @@ export function CreateTask(props: CreateTaskProps) {
         >
           {(formikProps) => (
             <Fragment>
+              {showConfirmModal ? (
+                <ConfirmStartModal
+                  selectedOption={saveTaskOption}
+                  onCancel={handleHideConfirmModal}
+                  onConfirm={() => {
+                    formikProps.handleSubmit();
+                    handleHideConfirmModal();
+                  }}
+                  onOptionChange={handleSaveTaskOptionChange}
+                />
+              ) : null}
               <TaskInfo
                 onValidateTaskName={handleValidateName}
                 onValidateTaskDescription={handleValidateDescription}
@@ -235,7 +284,10 @@ export function CreateTask(props: CreateTaskProps) {
                     type="submit"
                     isLoading={formikProps.isSubmitting}
                     //@ts-ignore
-                    onClick={formikProps.handleSubmit}
+                    onClick={() => {
+                      //formikProps.handleSubmit();
+                      setShowConfirmModal(true);
+                    }}
                   >
                     {props.isEdit
                       ? 'Save and start task'

@@ -24,62 +24,154 @@ import {
   EuiFormRowProps,
   EuiSuperDatePicker,
 } from '@elastic/eui';
-import { Task, Detector } from '../../../../models/interfaces';
+import { get } from 'lodash';
+import {
+  Task,
+  Detector,
+  TaskAnomalySummary,
+  Anomalies,
+  DateRange,
+} from '../../../../models/interfaces';
 import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import moment from 'moment';
 import { TASK_DATE_RANGE_COMMON_OPTIONS } from '../../../CreateTask/utils/constants';
 import { searchES } from '../../../../redux/reducers/elasticsearch';
-import { getTaskAnomalySummaryQuery } from '../../../utils/anomalyResultUtils';
+import {
+  filterWithDateRange,
+  getAnomalySummaryQuery,
+  getBucketizedAnomalyResultsQuery,
+  parseBucketizedAnomalyResults,
+  parseAnomalySummary,
+  parsePureAnomalies,
+  buildParamsForGetAnomalyResultsWithDateRange,
+  FEATURE_DATA_CHECK_WINDOW_OFFSET,
+  getTaskAnomalySummaryQuery,
+  getTaskAnomalyResults,
+} from '../../../utils/anomalyResultUtils';
+import { INITIAL_TASK_ANOMALY_SUMMARY } from '../../utils/constants';
+import { MAX_ANOMALIES } from '../../../../utils/constants';
+import { getDetectorResults } from '../../../../redux/reducers/anomalyResults';
+import {
+  convertTimestampToString,
+  convertTimestampToNumber,
+} from '../../../CreateTask/utils/helpers';
 
 interface TaskResultsProps {
   task: Task;
+  detector: Detector;
   isLoading: boolean;
 }
 
 export const TaskResults = (props: TaskResultsProps) => {
   const dispatch = useDispatch();
-
-  const [isLoadingAnomalyResults, setIsLoadingAnomalyResults] = useState<
-    boolean
-  >(false);
-  const [datePickerRange, setDatePickerRange] = useState({
-    start: 'now-7d',
-    end: 'now',
-  });
-
   const startDate = moment().subtract(7, 'days').valueOf();
   const endDate = moment().valueOf();
 
-  //   useEffect(() => {
-  //     const getTaskAnomalyResults = async () => {
-  //       try {
-  //         setIsLoadingAnomalyResults(true);
-  //         const anomalySummaryResult = await dispatch(
-  //           searchES(
-  //             getTaskAnomalySummaryQuery(
-  //               startDate,
-  //               endDate,
-  //               props.detector.id
-  //             )
-  //           )
-  //         );
-  //       } catch (err) {
-  //         console.error(
-  //           `Failed to get anomaly results for ${props.task.id}`,
-  //           err
-  //         );
-  //       }
-  //     };
-  //   });
+  const [anomalySummary, setAnomalySummary] = useState<TaskAnomalySummary>(
+    INITIAL_TASK_ANOMALY_SUMMARY
+  );
+  const [isLoadingAnomalyResults, setIsLoadingAnomalyResults] = useState<
+    boolean
+  >(false);
+  const [dateRange, setDateRange] = useState<DateRange>({
+    startDate: props.task.dataStartTime,
+    endDate: props.task.dataEndTime,
+  });
+  const [rawAnomalyResults, setRawAnomalyResults] = useState<Anomalies>();
+  const [shouldFetchRawResults, setShouldFetchRawResults] = useState<boolean>(
+    true
+  );
+
+  // If the user changes the date range: determine if we should get bucketized results
+  // or raw results. We load at most 10k AD result data points for one call.
+  useEffect(() => {
+    if (
+      !props.isLoading &&
+      dateRange.endDate - dateRange.startDate >
+        props.detector.detectionInterval.period.interval * 60000 * MAX_ANOMALIES
+    ) {
+      console.log('too many - fetching bucketized results');
+      fetchBucketizedAnomalyResults();
+    } else {
+      console.log('enough to display raw');
+      fetchRawAnomalyResults();
+    }
+  }, [dateRange]);
+
+  const fetchBucketizedAnomalyResults = async () => {
+    try {
+      setIsLoadingAnomalyResults(true);
+      const anomalySummaryResult = await dispatch(
+        searchES(
+          getAnomalySummaryQuery(
+            props.task.dataStartTime,
+            props.task.dataEndTime,
+            props.task.detectorId
+          )
+        )
+      );
+      // setPureAnomalies(parsePureAnomalies(anomalySummaryResult));
+      // setBucketizedAnomalySummary(parseAnomalySummary(anomalySummaryResult));
+      const result = await dispatch(
+        searchES(
+          getBucketizedAnomalyResultsQuery(
+            dateRange.startDate,
+            dateRange.endDate,
+            1,
+            props.task.detectorId
+          )
+        )
+      );
+      //setBucketizedAnomalyResults(parseBucketizedAnomalyResults(result));
+    } catch (err) {
+      console.error(
+        `Failed to get anomaly results for ${props.detector.id}`,
+        err
+      );
+    } finally {
+      // setIsLoadingAnomalyResults(false);
+      // fetchRawAnomalyResults(false);
+    }
+  };
+
+  // fetching the raw anomaly results
+  const fetchRawAnomalyResults = async () => {
+    try {
+      const params = buildParamsForGetAnomalyResultsWithDateRange(
+        dateRange.startDate,
+        dateRange.endDate
+      );
+      const taskResultResponse = await dispatch(
+        getDetectorResults(props.task.detectorId, params)
+      );
+      const anomaliesData = get(taskResultResponse, 'data.response', []);
+
+      console.log('raw anomalies data: ', anomaliesData);
+
+      setRawAnomalyResults({
+        anomalies: get(anomaliesData, 'results', []),
+        featureData: get(anomaliesData, 'featureResults', []),
+      });
+    } catch (err) {
+      console.error(
+        `Failed to get raw anomaly results for ${props.task.detectorId}`,
+        err
+      );
+    }
+  };
 
   const datePicker = () => (
     <EuiSuperDatePicker
       isLoading={props.isLoading}
-      start={datePickerRange.start}
-      end={datePickerRange.end}
+      showUpdateButton={false}
+      start={convertTimestampToString(dateRange.startDate)}
+      end={convertTimestampToString(dateRange.endDate)}
       onTimeChange={({ start, end, isInvalid, isQuickSelection }) => {
-        setDatePickerRange({ start: start, end: end });
+        setDateRange({
+          startDate: convertTimestampToNumber(start) || 0,
+          endDate: convertTimestampToNumber(end) || 0,
+        });
         //handleDatePickerDateRangeChange(start, end);
       }}
       onRefresh={({ start, end, refreshInterval }) => {

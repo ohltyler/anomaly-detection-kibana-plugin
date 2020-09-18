@@ -13,11 +13,18 @@
  * permissions and limitations under the License.
  */
 
-//@ts-ignore
-import moment from 'moment';
 import React from 'react';
 import { EuiIcon } from '@elastic/eui';
+import { TaskAnomalySummary } from '../../../models/interfaces';
 
 // Current backend implementation (not finalized): limited to running model on 1000 intervals every 6s.
 // Frontend should refresh at this rate to always show updated task progress / partial anomaly results, etc.
 export const TASK_RESULT_REFRESH_RATE = 6000;
+
+export const INITIAL_TASK_ANOMALY_SUMMARY = {
+  anomalyOccurrence: 0,
+  minAnomalyGrade: 0.0,
+  maxAnomalyGrade: 0.0,
+  minConfidence: 0.0,
+  maxConfidence: 0.0,
+} as TaskAnomalySummary;

@@ -207,6 +207,14 @@ export type AnomalySummary = {
   lastAnomalyOccurrence: string;
 };
 
+export type TaskAnomalySummary = {
+  anomalyOccurrence: number;
+  minAnomalyGrade: number;
+  maxAnomalyGrade: number;
+  minConfidence: number;
+  maxConfidence: number;
+};
+
 export type DateRange = {
   startDate: number;
   endDate: number;

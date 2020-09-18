@@ -81,9 +81,10 @@ export const TaskDetail = (props: TaskDetailProps) => {
   const errorGettingTasks = taskState.errorMessage;
   const task = allTasks[taskId];
   const detector = adState.detectors[task?.detectorId];
-  const isLoading = taskState.requesting || adState.requesting;
   const callout = getCallout(task);
 
+  const [isLoadingTask, setIsLoadingTask] = useState<boolean>(true);
+  const [isLoadingDetector, setIsLoadingDetector] = useState<boolean>(true);
   const [taskDetailModalState, setTaskDetailModalState] = useState<
     TaskDetailModalState
   >({
@@ -109,17 +110,28 @@ export const TaskDetail = (props: TaskDetailProps) => {
   }, [task]);
 
   const fetchTask = async () => {
-    console.log('re-fetching task details');
-    dispatch(getTask(taskId));
+    try {
+      await dispatch(getTask(taskId));
+      setIsLoadingTask(false);
+    } catch {
+      toastNotifications.addDanger('Error retrieving task');
+      props.history.push('/tasks');
+    }
   };
 
   const fetchDetector = async (detectorId: string) => {
-    dispatch(getDetector(detectorId));
+    try {
+      await dispatch(getDetector(detectorId));
+      setIsLoadingDetector(false);
+    } catch {
+      toastNotifications.addDanger('Error retrieving detector');
+    }
   };
 
   // Try to get the task initially
   useEffect(() => {
     if (taskId) {
+      setIsLoadingTask(true);
       fetchTask();
     }
   }, []);
@@ -127,6 +139,7 @@ export const TaskDetail = (props: TaskDetailProps) => {
   // Try to get the corresponding detector initially
   useEffect(() => {
     if (task?.detectorId) {
+      setIsLoadingDetector(true);
       fetchDetector(task.detectorId);
     }
   }, [task]);
@@ -260,6 +273,12 @@ export const TaskDetail = (props: TaskDetailProps) => {
     backgroundColor: '#FFF',
   };
 
+  const isLoading =
+    taskState.requesting ||
+    adState.requesting ||
+    isLoadingTask ||
+    isLoadingDetector;
+
   return (
     <React.Fragment>
       {!isEmpty(task) && !errorGettingTasks ? getTaskDetailModal() : null}
@@ -328,7 +347,11 @@ export const TaskDetail = (props: TaskDetailProps) => {
               />
             </EuiFlexItem>
             <EuiFlexItem>
-              <TaskResults task={task} isLoading={isLoading} />
+              <TaskResults
+                task={task}
+                detector={detector}
+                isLoading={isLoading}
+              />
             </EuiFlexItem>
           </EuiFlexGroup>
         </EuiFlexGroup>

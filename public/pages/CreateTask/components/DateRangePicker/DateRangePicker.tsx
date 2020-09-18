@@ -37,6 +37,7 @@ export function DateRangePicker(props: DateRangePickerProps) {
               onTimeChange={({ start, end, isInvalid, isQuickSelection }) => {
                 form.setFieldValue('startTime', start);
                 form.setFieldValue('endTime', end);
+                form.setFieldValue('rangeValid', !isInvalid);
               }}
               isPaused={true}
               showUpdateButton={false}

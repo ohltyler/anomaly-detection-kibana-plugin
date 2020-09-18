@@ -19,6 +19,7 @@ export interface TaskFormikValues {
   detectorId: string;
   startTime: number | string;
   endTime: number | string;
+  rangeValid: boolean;
 }
 
 export const INITIAL_TASK_VALUES: TaskFormikValues = {
@@ -27,6 +28,7 @@ export const INITIAL_TASK_VALUES: TaskFormikValues = {
   detectorId: '',
   startTime: 'now-7d',
   endTime: 'now',
+  rangeValid: true,
 };
 
 export const TASK_DATE_RANGE_COMMON_OPTIONS = [

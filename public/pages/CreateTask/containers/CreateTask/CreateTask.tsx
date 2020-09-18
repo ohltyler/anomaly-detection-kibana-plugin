@@ -28,7 +28,7 @@ import {
 import { Formik } from 'formik';
 import { get, isEmpty } from 'lodash';
 import React, { Fragment, useEffect, useState } from 'react';
-import { BREADCRUMBS } from '../../../../utils/constants';
+import { BREADCRUMBS, TASK_STATE } from '../../../../utils/constants';
 import { MAX_TASKS } from '../../../utils/constants';
 import { AppState } from '../../../../redux/reducers';
 import { RouteComponentProps } from 'react-router';
@@ -153,6 +153,27 @@ export function CreateTask(props: CreateTaskProps) {
     return undefined;
   };
 
+  // // Will run a validation on all of the inputs. This gets ran when the submit button calls formikProps.validateForm().
+  // const validateInputs = async (values: TaskFormikValues) => {
+  //   let errors = [];
+  //   const errorFromName = await handleValidateName(values.taskName);
+  //   const errorFromDescription = await handleValidateDescription(
+  //     values.taskDescription
+  //   );
+  //   // TODO: we will not be using existing detector in the future
+  //   const errorFromDetector =
+  //     values.detectorId?.length < 1 ? 'Please choose a detector' : undefined;
+  //   const errorFromDatePicker =
+  //     values.rangeValid === false ? 'Invalid date range' : undefined;
+  //   console.log('error from date picker: ', errorFromDatePicker);
+  //   errors.push(errorFromName);
+  //   errors.push(errorFromDescription);
+  //   errors.push(errorFromDetector);
+  //   errors.push(errorFromDatePicker);
+  //   console.log('total errors: ', errors);
+  //   return errors.length > 0 ? errors : undefined;
+  // };
+
   const handleUpdate = async (
     taskToUpdate: Task,
     option: SAVE_TASK_OPTIONS
@@ -227,10 +248,6 @@ export function CreateTask(props: CreateTaskProps) {
       : props.history.push('/tasks');
   };
 
-  const handleHideConfirmModal = () => {
-    setShowConfirmModal(false);
-  };
-
   const handleSaveTaskOptionChange = (option: SAVE_TASK_OPTIONS) => {
     setSaveTaskOption(option);
   };
@@ -249,16 +266,18 @@ export function CreateTask(props: CreateTaskProps) {
           enableReinitialize={true}
           initialValues={taskToFormik(task)}
           onSubmit={handleSubmit}
+          isInitialValid={props.isEdit ? true : false}
+          //validate={validateInputs}
         >
           {(formikProps) => (
             <Fragment>
               {showConfirmModal ? (
                 <ConfirmStartModal
                   selectedOption={saveTaskOption}
-                  onCancel={handleHideConfirmModal}
+                  onCancel={() => setShowConfirmModal(false)}
                   onConfirm={() => {
                     formikProps.handleSubmit();
-                    handleHideConfirmModal();
+                    setShowConfirmModal(false);
                   }}
                   onOptionChange={handleSaveTaskOptionChange}
                 />
@@ -285,8 +304,27 @@ export function CreateTask(props: CreateTaskProps) {
                     isLoading={formikProps.isSubmitting}
                     //@ts-ignore
                     onClick={() => {
-                      //formikProps.handleSubmit();
-                      setShowConfirmModal(true);
+                      if (
+                        props.isEdit &&
+                        task.curState === TASK_STATE.RUNNING
+                      ) {
+                        toastNotifications.addDanger(
+                          'Task cannot be updated while the task is running'
+                        );
+                      } else {
+                        // validate on all of the fields (except date range)
+                        formikProps.validateForm();
+                        if (
+                          formikProps.isValid &&
+                          formikProps.values.rangeValid
+                        ) {
+                          setShowConfirmModal(true);
+                        } else {
+                          toastNotifications.addDanger(
+                            'One or more input fields is invalid'
+                          );
+                        }
+                      }
                     }}
                   >
                     {props.isEdit

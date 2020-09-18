@@ -24,6 +24,7 @@ import {
 } from '@elastic/eui';
 import { Task } from '../../../../models/interfaces';
 import { Listener } from '../../../../utils/utils';
+import { TASK_STATE } from '../../../../utils/constants';
 
 interface TaskControlsProps {
   task: Task;
@@ -73,7 +74,7 @@ export const TaskControls = (props: TaskControlsProps) => {
         </EuiPopover>
       </EuiFlexItem>
       <EuiFlexItem grow={false} style={{ marginLeft: '0px' }}>
-        {props.task.enabled ? (
+        {props.task.curState === TASK_STATE.RUNNING ? (
           <EuiButton
             data-test-subj="stopTaskButton"
             onClick={() => props.onStopTask(false, undefined)}

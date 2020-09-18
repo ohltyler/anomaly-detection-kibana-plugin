@@ -42,6 +42,9 @@ export function TaskInfo(props: TaskInfoProps) {
               id="taskName"
               placeholder="Enter task name"
               isInvalid={isInvalid(field.name, form)}
+              onBlur={() => {
+                form.setFieldTouched('taskName', true);
+              }}
               {...field}
             />
           </FormattedFormRow>
@@ -64,8 +67,11 @@ export function TaskInfo(props: TaskInfoProps) {
               id="taskDescription"
               rows={3}
               placeholder="Enter task description"
-              {...field}
               isInvalid={isInvalid(field.name, form)}
+              onBlur={() => {
+                form.setFieldTouched('taskDescription', true);
+              }}
+              {...field}
             />
           </FormattedFormRow>
         )}

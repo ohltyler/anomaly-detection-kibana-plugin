@@ -35,8 +35,9 @@ import { RouteComponentProps } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHideSideNavBar } from '../../../main/hooks/useHideSideNavBar';
 import { TaskInfo } from '../../components/TaskInfo/TaskInfo';
-import { DetectorSource } from '../../components/DetectorSource/DetectorSource';
-import { DateRangePicker } from '../../components/DateRangePicker/DateRangePicker';
+import { DataSource } from '../../components/DataSource/DataSource';
+import { Features } from '../../components/Features/Features';
+import { Settings } from '../../components/Settings/Settings';
 import { ConfirmStartModal } from '../../components/ConfirmStartModal/ConfirmStartModal';
 import { TaskFormikValues, SAVE_TASK_OPTIONS } from '../../utils/constants';
 import { formikToTask, taskToFormik } from '../../utils/helpers';
@@ -287,9 +288,11 @@ export function CreateTask(props: CreateTaskProps) {
                 onValidateTaskDescription={handleValidateDescription}
               />
               <EuiSpacer />
-              <DetectorSource />
+              <DataSource isLoading={isRequesting} formikProps={formikProps} />
               <EuiSpacer />
-              <DateRangePicker isLoading={isRequesting} />
+              <Features isLoading={isRequesting} formikProps={formikProps} />
+              <EuiSpacer />
+              <Settings isLoading={isRequesting} formikProps={formikProps} />
               <EuiSpacer />
               <EuiFlexGroup alignItems="center" justifyContent="flexEnd">
                 <EuiFlexItem grow={false}>

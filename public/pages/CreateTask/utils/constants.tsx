@@ -13,19 +13,29 @@
  * permissions and limitations under the License.
  */
 
+import { SHINGLE_SIZE } from '../../../utils/constants';
+
 export interface TaskFormikValues {
-  taskName: string;
-  taskDescription: string;
-  detectorId: string;
+  name: string;
+  description: string;
+  index: { label: string }[];
+  timeField: string;
+  detectionInterval: number;
+  //windowDelay: number;
+  shingleSize: number;
   startTime: number | string;
   endTime: number | string;
   rangeValid: boolean;
 }
 
 export const INITIAL_TASK_VALUES: TaskFormikValues = {
-  taskName: '',
-  taskDescription: '',
-  detectorId: '',
+  name: '',
+  description: '',
+  index: [],
+  timeField: '',
+  detectionInterval: 10,
+  //windowDelay: 1,
+  shingleSize: SHINGLE_SIZE,
   startTime: 'now-7d',
   endTime: 'now',
   rangeValid: true,

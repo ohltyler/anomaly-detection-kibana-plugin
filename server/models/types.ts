@@ -72,7 +72,13 @@ export type Task = {
   id: string;
   name: string;
   description: string;
-  detectorId: string;
+  indices: string[];
+  timeField: string;
+  filterQuery?: { [key: string]: any };
+  featureAttributes?: FeatureAttributes[];
+  windowDelay?: { period: Schedule };
+  detectionInterval?: { period: Schedule };
+  shingleSize?: number;
   dataStartTime: number;
   dataEndTime: number;
   lastUpdateTime: number;

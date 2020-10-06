@@ -131,7 +131,13 @@ export type Task = {
   seqNo: number;
   id: string;
   name: string;
-  detectorId: string;
+  timeField: string;
+  indices: string[];
+  filterQuery?: { [key: string]: any };
+  featureAttributes: FeatureAttributes[];
+  windowDelay?: { period: Schedule };
+  detectionInterval: { period: Schedule };
+  shingleSize: number;
   description: string;
   curState: TASK_STATE;
   dataStartTime: number;

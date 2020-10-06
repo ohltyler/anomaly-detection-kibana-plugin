@@ -13,8 +13,9 @@
  * permissions and limitations under the License.
  */
 
-import { cloneDeep, isEmpty } from 'lodash';
-import { Task } from '../../../models/interfaces';
+import { get, cloneDeep, isEmpty } from 'lodash';
+import { Task, UNITS } from '../../../models/interfaces';
+import { SHINGLE_SIZE } from '../../../utils/constants';
 import { TaskFormikValues, INITIAL_TASK_VALUES } from './constants';
 import datemath from '@elastic/datemath';
 import moment from 'moment';
@@ -22,9 +23,14 @@ import moment from 'moment';
 export function formikToTask(values: TaskFormikValues, task: Task) {
   let apiRequest = {
     ...task,
-    name: values.taskName,
-    description: values.taskDescription,
-    detectorId: values.detectorId,
+    name: values.name,
+    description: values.description,
+    index: values.index,
+    timeField: values.timeField,
+    detectionInterval: {
+      period: { interval: values.detectionInterval, unit: UNITS.MINUTES },
+    },
+    shingleSize: values.shingleSize,
     dataStartTime: convertTimestampToNumber(values.startTime),
     dataEndTime: convertTimestampToNumber(values.endTime),
   } as Task;
@@ -39,9 +45,12 @@ export function taskToFormik(task: Task) {
   }
   return {
     ...initialValues,
-    taskName: task.name,
-    taskDescription: task.description,
-    detectorId: task.detectorId,
+    name: task.name,
+    description: task.description,
+    index: [{ label: task.indices[0] }],
+    timeField: task.timeField,
+    detectionInterval: get(task, 'detectionInterval.period.interval', 10),
+    shingleSize: get(task, 'shingleSize', SHINGLE_SIZE),
     startTime: task.dataStartTime,
     endTime: task.dataEndTime,
   };

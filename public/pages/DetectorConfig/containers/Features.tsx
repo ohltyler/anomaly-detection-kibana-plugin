@@ -37,7 +37,6 @@ interface FeaturesProps {
   detectorId: string;
   detector: Detector;
   onEditFeatures(): void;
-  tableOnly?: boolean;
 }
 
 interface FeaturesState {
@@ -192,15 +191,7 @@ export class Features extends Component<FeaturesProps, FeaturesState> {
     const previewText = `After you set the model features and other optional parameters, you can
                          preview your anomalies from a sample feature output.`;
 
-    return this.props.tableOnly ? (
-      <EuiBasicTable
-        items={sortedItems}
-        columns={columns}
-        cellProps={getCellProps}
-        sorting={sorting}
-        onChange={this.handleTableChange}
-      />
-    ) : (
+    return (
       <ContentPanel
         title="Model configuration"
         titleSize="s"

@@ -25,7 +25,7 @@ import {
   EuiSpacer,
   EuiTitle,
 } from '@elastic/eui';
-import { Formik } from 'formik';
+import { Formik, FormikProps } from 'formik';
 import { get, isEmpty } from 'lodash';
 import React, { Fragment, useEffect, useState } from 'react';
 import { BREADCRUMBS, TASK_STATE } from '../../../../utils/constants';
@@ -42,6 +42,7 @@ import { Settings } from '../../components/Settings/Settings';
 import { ConfirmStartModal } from '../../components/ConfirmStartModal/ConfirmStartModal';
 import { TaskFormikValues, SAVE_TASK_OPTIONS } from '../../utils/constants';
 import { formikToTask, taskToFormik } from '../../utils/helpers';
+import { focusOnFirstWrongFeature } from '../../../EditFeatures/utils/helpers';
 //@ts-ignore
 import chrome from 'ui/chrome';
 //@ts-ignore
@@ -229,6 +230,29 @@ export function CreateTask(props: CreateTaskProps) {
     }
   };
 
+  const handleFormValidation = (formikProps: FormikProps<TaskFormikValues>) => {
+    if (props.isEdit && task.curState === TASK_STATE.RUNNING) {
+      toastNotifications.addDanger(
+        'Task cannot be updated while the task is running'
+      );
+    } else {
+      formikProps.validateForm();
+      if (formikProps.isValid && formikProps.values.rangeValid) {
+        if (formikProps.values.featureList.length === 0) {
+          toastNotifications.addDanger('No features have been created');
+        } else {
+          setShowConfirmModal(true);
+        }
+      } else {
+        focusOnFirstWrongFeature(
+          formikProps.errors,
+          formikProps.setFieldTouched
+        );
+        toastNotifications.addDanger('One or more input fields is invalid');
+      }
+    }
+  };
+
   const handleCancelClick = () => {
     taskId
       ? props.history.push(`/tasks/${taskId}/details`)
@@ -297,27 +321,7 @@ export function CreateTask(props: CreateTaskProps) {
                     isLoading={formikProps.isSubmitting}
                     //@ts-ignore
                     onClick={() => {
-                      if (
-                        props.isEdit &&
-                        task.curState === TASK_STATE.RUNNING
-                      ) {
-                        toastNotifications.addDanger(
-                          'Task cannot be updated while the task is running'
-                        );
-                      } else {
-                        // validate on all of the fields (except date range)
-                        formikProps.validateForm();
-                        if (
-                          formikProps.isValid &&
-                          formikProps.values.rangeValid
-                        ) {
-                          setShowConfirmModal(true);
-                        } else {
-                          toastNotifications.addDanger(
-                            'One or more input fields is invalid'
-                          );
-                        }
-                      }
+                      handleFormValidation(formikProps);
                     }}
                   >
                     {props.isEdit

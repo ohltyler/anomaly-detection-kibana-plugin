@@ -236,6 +236,10 @@ export function CreateTask(props: CreateTaskProps) {
         'Task cannot be updated while the task is running'
       );
     } else {
+      formikProps.setFieldTouched('name');
+      formikProps.setFieldTouched('description');
+      formikProps.setFieldTouched('index');
+      formikProps.setFieldTouched('timeField');
       formikProps.validateForm();
       if (formikProps.isValid && formikProps.values.rangeValid) {
         if (formikProps.values.featureList.length === 0) {

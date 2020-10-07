@@ -14,13 +14,14 @@
  */
 
 import { SHINGLE_SIZE } from '../../../utils/constants';
+import { FeaturesFormikValues } from '../../EditFeatures/containers/utils/formikToFeatures';
 
 export interface TaskFormikValues {
   name: string;
   description: string;
   index: { label: string }[];
   timeField: string;
-  featureList: [];
+  featureList: FeaturesFormikValues[];
   detectionInterval: number;
   windowDelay: number;
   shingleSize: number;

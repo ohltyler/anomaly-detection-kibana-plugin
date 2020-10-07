@@ -31,6 +31,7 @@ import React, { Fragment, useEffect, useState } from 'react';
 import { BREADCRUMBS, TASK_STATE } from '../../../../utils/constants';
 import { MAX_TASKS } from '../../../utils/constants';
 import { AppState } from '../../../../redux/reducers';
+import { getMappings } from '../../../../redux/reducers/elasticsearch';
 import { RouteComponentProps } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHideSideNavBar } from '../../../main/hooks/useHideSideNavBar';
@@ -125,6 +126,16 @@ export function CreateTask(props: CreateTaskProps) {
     }
   }, []);
 
+  // Get corresponding index mappings if there is an existing task
+  useEffect(() => {
+    const fetchIndexMappings = async (index: string) => {
+      dispatch(getMappings(index));
+    };
+    if (task) {
+      fetchIndexMappings(task.indices[0]);
+    }
+  }, [task]);
+
   // Using the task-specified date range (if it exists)
   useEffect(() => {
     if (task?.dataStartTime && task?.dataEndTime) {
@@ -149,27 +160,6 @@ export function CreateTask(props: CreateTaskProps) {
     }
     return undefined;
   };
-
-  // // Will run a validation on all of the inputs. This gets ran when the submit button calls formikProps.validateForm().
-  // const validateInputs = async (values: TaskFormikValues) => {
-  //   let errors = [];
-  //   const errorFromName = await handleValidateName(values.taskName);
-  //   const errorFromDescription = await handleValidateDescription(
-  //     values.taskDescription
-  //   );
-  //   // TODO: we will not be using existing detector in the future
-  //   const errorFromDetector =
-  //     values.detectorId?.length < 1 ? 'Please choose a detector' : undefined;
-  //   const errorFromDatePicker =
-  //     values.rangeValid === false ? 'Invalid date range' : undefined;
-  //   console.log('error from date picker: ', errorFromDatePicker);
-  //   errors.push(errorFromName);
-  //   errors.push(errorFromDescription);
-  //   errors.push(errorFromDetector);
-  //   errors.push(errorFromDatePicker);
-  //   console.log('total errors: ', errors);
-  //   return errors.length > 0 ? errors : undefined;
-  // };
 
   const handleUpdate = async (
     taskToUpdate: Task,

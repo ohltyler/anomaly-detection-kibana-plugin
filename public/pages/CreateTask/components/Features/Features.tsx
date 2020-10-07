@@ -61,7 +61,7 @@ export function Features(props: FeaturesProps) {
   const dispatch = useDispatch();
   const [firstLoad, setFirstLoad] = useState<boolean>(true);
 
-  console.log('formik props: ', props.formikProps);
+  console.log('formik values: ', props.formikProps.values);
 
   return (
     <ContentPanel title="Features" titleSize="s">

@@ -55,6 +55,7 @@ export function DataSource(props: DataSourceProps) {
   const elasticsearchState = useSelector(
     (state: AppState) => state.elasticsearch
   );
+
   useEffect(() => {
     const getInitialIndices = async () => {
       await dispatch(getIndices(queryText));
@@ -90,11 +91,7 @@ export function DataSource(props: DataSourceProps) {
   const visibleAliases = get(elasticsearchState, 'aliases', []) as IndexAlias[];
 
   const isRemoteIndex = () => {
-    const initialIndex = get(
-      props.formikProps,
-      'initialValues.index.0.label',
-      ''
-    );
+    const initialIndex = get(props.formikProps, 'values.index.0.label', '');
     return indexName !== undefined
       ? indexName.includes(':')
       : initialIndex.includes(':');

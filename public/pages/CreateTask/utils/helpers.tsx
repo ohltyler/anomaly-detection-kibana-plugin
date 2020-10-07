@@ -51,7 +51,7 @@ export function formikToTask(values: TaskFormikValues, task: Task): Task {
   return apiRequest;
 }
 
-export function taskToFormik(task: Task) {
+export function taskToFormik(task: Task): TaskFormikValues {
   const initialValues = cloneDeep(INITIAL_TASK_VALUES);
   if (isEmpty(task)) {
     return initialValues;

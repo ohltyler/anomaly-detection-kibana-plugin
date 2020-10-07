@@ -135,9 +135,10 @@ export type Task = {
   indices: string[];
   filterQuery?: { [key: string]: any };
   featureAttributes: FeatureAttributes[];
-  windowDelay?: { period: Schedule };
+  windowDelay: { period: Schedule };
   detectionInterval: { period: Schedule };
   shingleSize: number;
+  uiMetadata: UiMetaData;
   description: string;
   curState: TASK_STATE;
   dataStartTime: number;

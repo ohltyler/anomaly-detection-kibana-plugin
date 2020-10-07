@@ -72,10 +72,6 @@ export function CreateTask(props: CreateTaskProps) {
 
   console.log('task id: ', taskId);
 
-  // const task = {
-  //   dataStartTime: 1598400591419,
-  //   dataEndTime: 1599610191420,
-  // } as Task;
   const isRequesting = useSelector((state: AppState) => state.ad.requesting);
 
   const initialStartDate = moment().subtract(7, 'days').valueOf();
@@ -290,7 +286,11 @@ export function CreateTask(props: CreateTaskProps) {
               <EuiSpacer />
               <DataSource isLoading={isRequesting} formikProps={formikProps} />
               <EuiSpacer />
-              <Features isLoading={isRequesting} formikProps={formikProps} />
+              <Features
+                task={task}
+                isLoading={isRequesting}
+                formikProps={formikProps}
+              />
               <EuiSpacer />
               <Settings isLoading={isRequesting} formikProps={formikProps} />
               <EuiSpacer />

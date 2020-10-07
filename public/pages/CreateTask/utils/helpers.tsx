@@ -14,21 +14,34 @@
  */
 
 import { get, cloneDeep, isEmpty } from 'lodash';
-import { Task, UNITS } from '../../../models/interfaces';
+import { Task, UNITS, FEATURE_TYPE } from '../../../models/interfaces';
 import { SHINGLE_SIZE } from '../../../utils/constants';
 import { TaskFormikValues, INITIAL_TASK_VALUES } from './constants';
 import datemath from '@elastic/datemath';
 import moment from 'moment';
+import {
+  FeaturesFormikValues,
+  formikToFeatures,
+  formikToUIMetadata,
+} from '../../EditFeatures/containers/utils/formikToFeatures';
 
-export function formikToTask(values: TaskFormikValues, task: Task) {
+export function formikToTask(values: TaskFormikValues, task: Task): Task {
   let apiRequest = {
     ...task,
     name: values.name,
     description: values.description,
-    index: values.index,
+    indices: values.index.map((index) => index.label),
     timeField: values.timeField,
+    featureAttributes: formikToFeatures(values.featureList, false),
+    uiMetadata: {
+      ...task?.uiMetadata,
+      features: { ...formikToUIMetadata(values.featureList) },
+    },
     detectionInterval: {
       period: { interval: values.detectionInterval, unit: UNITS.MINUTES },
+    },
+    windowDelay: {
+      period: { interval: values.windowDelay, unit: UNITS.MINUTES },
     },
     shingleSize: values.shingleSize,
     dataStartTime: convertTimestampToNumber(values.startTime),
@@ -49,11 +62,42 @@ export function taskToFormik(task: Task) {
     description: task.description,
     index: [{ label: task.indices[0] }],
     timeField: task.timeField,
+    featureList: featuresToFormik(task),
     detectionInterval: get(task, 'detectionInterval.period.interval', 10),
     shingleSize: get(task, 'shingleSize', SHINGLE_SIZE),
     startTime: task.dataStartTime,
     endTime: task.dataEndTime,
   };
+}
+
+function featuresToFormik(task: Task): FeaturesFormikValues[] {
+  const featureUiMetaData = get(task, 'uiMetadata.features', []);
+  const features = get(task, 'featureAttributes', []);
+  console.log('features: ', features);
+  // @ts-ignore
+  return features.map((feature: FeatureAttributes) => {
+    return {
+      ...featureUiMetaData[feature.featureName],
+      ...feature,
+      aggregationQuery: JSON.stringify(feature['aggregationQuery'], null, 4),
+      aggregationOf: get(
+        featureUiMetaData,
+        `${feature.featureName}.aggregationOf`
+      )
+        ? [
+            {
+              label: get(
+                featureUiMetaData,
+                `${feature.featureName}.aggregationOf`
+              ),
+            },
+          ]
+        : [],
+      featureType: get(featureUiMetaData, `${feature.featureName}.featureType`)
+        ? get(featureUiMetaData, `${feature.featureName}.featureType`)
+        : FEATURE_TYPE.CUSTOM,
+    };
+  });
 }
 
 export function convertTimestampToString(timestamp: number | string) {

@@ -27,7 +27,7 @@ interface TaskInfoProps {
 export function TaskInfo(props: TaskInfoProps) {
   return (
     <ContentPanel title="Name and description" titleSize="s">
-      <Field name="taskName" validate={props.onValidateTaskName}>
+      <Field name="name" validate={props.onValidateTaskName}>
         {({ field, form }: FieldProps) => (
           <FormattedFormRow
             title="Name"
@@ -38,19 +38,19 @@ export function TaskInfo(props: TaskInfoProps) {
             error={getError(field.name, form)}
           >
             <EuiFieldText
-              name="taskName"
-              id="taskName"
+              name="name"
+              id="name"
               placeholder="Enter task name"
               isInvalid={isInvalid(field.name, form)}
               onBlur={() => {
-                form.setFieldTouched('taskName', true);
+                form.setFieldTouched('name', true);
               }}
               {...field}
             />
           </FormattedFormRow>
         )}
       </Field>
-      <Field name="taskDescription" validate={props.onValidateTaskDescription}>
+      <Field name="description" validate={props.onValidateTaskDescription}>
         {({ field, form }: FieldProps) => (
           <FormattedFormRow
             formattedTitle={
@@ -63,13 +63,13 @@ export function TaskInfo(props: TaskInfoProps) {
             error={getError(field.name, form)}
           >
             <EuiTextArea
-              name="taskDescription"
-              id="taskDescription"
+              name="description"
+              id="description"
               rows={3}
               placeholder="Enter task description"
               isInvalid={isInvalid(field.name, form)}
               onBlur={() => {
-                form.setFieldTouched('taskDescription', true);
+                form.setFieldTouched('description', true);
               }}
               {...field}
             />

@@ -20,8 +20,9 @@ export interface TaskFormikValues {
   description: string;
   index: { label: string }[];
   timeField: string;
+  featureList: [];
   detectionInterval: number;
-  //windowDelay: number;
+  windowDelay: number;
   shingleSize: number;
   startTime: number | string;
   endTime: number | string;
@@ -33,8 +34,9 @@ export const INITIAL_TASK_VALUES: TaskFormikValues = {
   description: '',
   index: [],
   timeField: '',
+  featureList: [],
   detectionInterval: 10,
-  //windowDelay: 1,
+  windowDelay: 1,
   shingleSize: SHINGLE_SIZE,
   startTime: 'now-7d',
   endTime: 'now',

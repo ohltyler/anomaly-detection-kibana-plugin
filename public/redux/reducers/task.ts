@@ -34,8 +34,8 @@ const UPDATE_TASK = 'task/UPDATE_TASK';
 const START_TASK = 'task/START_TASK';
 const STOP_TASK = 'task/STOP_TASK';
 const DELETE_TASK = 'task/DELETE_TASK';
-//   const SEARCH_DETECTOR = 'ad/SEARCH_DETECTOR';
-//   const GET_DETECTOR_PROFILE = 'ad/GET_DETECTOR_PROFILE';
+const SEARCH_TASK = 'task/SEARCH_TASK';
+//   const GET_DETECTOR_PROFILE = 'task/GET_DETECTOR_PROFILE';
 
 export interface Tasks {
   requesting: boolean;
@@ -217,31 +217,23 @@ const reducer = handleActions<Tasks>(
         errorMessage: action.error,
       }),
     },
-    //   [SEARCH_DETECTOR]: {
-    //     REQUEST: (state: Detectors): Detectors => ({
-    //       ...state,
-    //       requesting: true,
-    //       errorMessage: '',
-    //     }),
-    //     SUCCESS: (state: Detectors, action: APIResponseAction): Detectors => ({
-    //       ...state,
-    //       requesting: false,
-    //       detectors: {
-    //         ...state.detectors,
-    //         ...action.result.data.response.detectors.reduce(
-    //           (acc: any, detector: Detector) => ({
-    //             ...acc,
-    //             [detector.id]: detector,
-    //           }),
-    //           {}
-    //         ),
-    //       },
-    //     }),
-    //     FAILURE: (state: Detectors): Detectors => ({
-    //       ...state,
-    //       requesting: false,
-    //     }),
-    //   },
+    [SEARCH_TASK]: {
+      REQUEST: (state: Tasks): Tasks => ({
+        ...state,
+        requesting: true,
+        errorMessage: '',
+      }),
+      SUCCESS: (state: Tasks, action: APIResponseAction): Tasks => ({
+        ...state,
+        requesting: false,
+        errorMessage: '',
+      }),
+      FAILURE: (state: Tasks, action: APIErrorAction): Tasks => ({
+        ...state,
+        requesting: false,
+        errorMessage: action.error,
+      }),
+    },
 
     //   [GET_DETECTOR_PROFILE]: {
     //     REQUEST: (state: Detectors): Detectors => {
@@ -325,11 +317,11 @@ export const deleteTask = (taskId: string): APIAction => ({
   taskId,
 });
 
-//   export const searchDetector = (requestBody: any): APIAction => ({
-//     type: SEARCH_DETECTOR,
-//     request: (client: IHttpService) =>
-//       client.post(`..${AD_NODE_API.DETECTOR}/_search`, requestBody),
-//   });
+export const searchTask = (requestBody: any): APIAction => ({
+  type: SEARCH_TASK,
+  request: (client: IHttpService) =>
+    client.post(`..${AD_NODE_API.TASK}/_search`, requestBody),
+});
 
 //   export const getDetectorProfile = (detectorId: string): APIAction => ({
 //     type: GET_DETECTOR_PROFILE,

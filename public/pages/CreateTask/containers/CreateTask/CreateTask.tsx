@@ -43,6 +43,7 @@ import { ConfirmStartModal } from '../../components/ConfirmStartModal/ConfirmSta
 import { TaskFormikValues, SAVE_TASK_OPTIONS } from '../../utils/constants';
 import { formikToTask, taskToFormik } from '../../utils/helpers';
 import { focusOnFirstWrongFeature } from '../../../EditFeatures/utils/helpers';
+import { validateName } from '../../../../utils/utils';
 //@ts-ignore
 import chrome from 'ui/chrome';
 //@ts-ignore
@@ -52,6 +53,7 @@ import {
   getTask,
   updateTask,
   startTask,
+  searchTask,
 } from '../../../../redux/reducers/task';
 import moment from 'moment';
 import { Task, DateRange } from '../../../../models/interfaces';
@@ -109,7 +111,7 @@ export function CreateTask(props: CreateTaskProps) {
     }
     chrome.breadcrumbs.set(breadCrumbs);
   });
-  // If no detector found with ID, redirect it to list
+  // If no task found with ID, redirect it to list
   useEffect(() => {
     if (props.isEdit && errorGettingTask) {
       toastNotifications.addDanger('Unable to find task for editing');
@@ -147,12 +149,40 @@ export function CreateTask(props: CreateTaskProps) {
     }
   }, [task]);
 
-  // TODO: stub for now. Will want to make sure no duplicates can be created
   const handleValidateName = async (taskName: string) => {
-    if (taskName.length === 0) {
-      return 'Required';
+    const {
+      isEdit,
+      match: {
+        params: { taskId },
+      },
+    } = props;
+    if (isEmpty(taskName)) {
+      throw 'Task name cannot be empty';
+    } else {
+      const error = validateName(taskName);
+      if (error) {
+        throw error;
+      }
+      const resp = await dispatch(
+        searchTask({ query: { term: { 'name.keyword': taskName } } })
+      );
+      const totalTasks = resp.data.response.totalTasks;
+      if (totalTasks === 0) {
+        return undefined;
+      }
+      // Check if task name already exists
+      // If creating a new task:
+      if (!isEdit && totalTasks > 0) {
+        throw 'Duplicate task name';
+      }
+      // If editing an existing task:
+      if (
+        isEdit &&
+        (totalTasks > 1 || get(resp, 'data.response.tasks.0.id', '') !== taskId)
+      ) {
+        throw 'Duplicate task name';
+      }
     }
-    return undefined;
   };
 
   const handleValidateDescription = async (taskDescription: string) => {
@@ -282,7 +312,6 @@ export function CreateTask(props: CreateTaskProps) {
           initialValues={taskToFormik(task)}
           onSubmit={handleSubmit}
           isInitialValid={props.isEdit ? true : false}
-          //validate={validateInputs}
         >
           {(formikProps) => (
             <Fragment>

@@ -42,7 +42,7 @@ export default function (apiRouter: Router) {
   apiRouter.post('/tasks/{taskId}/start', startTask);
   apiRouter.post('/tasks/{taskId}/stop', stopTask);
   apiRouter.delete('/tasks/{taskId}', deleteTask);
-  //   apiRouter.post('/detectors/_search', searchDetector);
+  apiRouter.post('/tasks/_search', searchTask);
   //   apiRouter.get('/detectors', getDetectors);
   //   apiRouter.post('/detectors/{detectorId}/preview', previewDetector);
   //   apiRouter.get('/detectors/{detectorId}/results', getAnomalyResults);
@@ -297,6 +297,40 @@ const deleteTask = async (
   }
 };
 
+const searchTask = async (
+  req: Request,
+  h: ResponseToolkit,
+  callWithRequest: CallClusterWithRequest
+): Promise<ServerResponse<any>> => {
+  try {
+    //@ts-ignore
+    const requestBody = JSON.stringify(req.payload);
+    const response = await callWithRequest(req, 'ad.searchTask', {
+      body: requestBody,
+    });
+    const totalTasks = get(response, 'hits.total.value', 0);
+    const tasks = get(response, 'hits.hits', []).map((task: any) => ({
+      ...convertTaskKeysToCamelCase(task._source),
+      id: task._id,
+      seqNo: task._seq_no,
+      primaryTerm: task._primary_term,
+    }));
+    return {
+      ok: true,
+      response: {
+        tasks,
+        totalTasks,
+      },
+    };
+  } catch (err) {
+    console.log('Anomaly detector - Unable to search tasks', err);
+    if (isIndexNotFoundError(err)) {
+      return { ok: true, response: { tasks: [] } };
+    }
+    return { ok: false, error: err.message };
+  }
+};
+
 // NOTE: the ad.getDetector api call here will want to add the optional ?execution=true here to retrieve the execution state.
 // We will not call the profile api to get the state here, as it is heavy and should just be used for debugging to get a lot of details.
 
@@ -395,42 +429,6 @@ const deleteTask = async (
 //   } catch (err) {
 //     console.log('Anomaly detector - detectorProfile', err);
 //     return { ok: false, error: err.body || err.message };
-//   }
-// };
-
-// const searchDetector = async (
-//   req: Request,
-//   h: ResponseToolkit,
-//   callWithRequest: CallClusterWithRequest
-// ): Promise<ServerResponse<any>> => {
-//   try {
-//     //@ts-ignore
-//     const requestBody = JSON.stringify(req.payload);
-//     const response: SearchResponse<Detector> = await callWithRequest(
-//       req,
-//       'ad.searchDetector',
-//       { body: requestBody }
-//     );
-//     const totalDetectors = get(response, 'hits.total.value', 0);
-//     const detectors = get(response, 'hits.hits', []).map((detector: any) => ({
-//       ...convertDetectorKeysToCamelCase(detector._source),
-//       id: detector._id,
-//       seqNo: detector._seq_no,
-//       primaryTerm: detector._primary_term,
-//     }));
-//     return {
-//       ok: true,
-//       response: {
-//         totalDetectors,
-//         detectors,
-//       },
-//     };
-//   } catch (err) {
-//     console.log('Anomaly detector - Unable to search detectors', err);
-//     if (isIndexNotFoundError(err)) {
-//       return { ok: true, response: { totalDetectors: 0, detectors: [] } };
-//     }
-//     return { ok: false, error: err.message };
 //   }
 // };
 

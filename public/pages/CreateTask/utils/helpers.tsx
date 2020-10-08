@@ -73,7 +73,6 @@ export function taskToFormik(task: Task): TaskFormikValues {
 function featuresToFormik(task: Task): FeaturesFormikValues[] {
   const featureUiMetaData = get(task, 'uiMetadata.features', []);
   const features = get(task, 'featureAttributes', []);
-  console.log('features: ', features);
   // @ts-ignore
   return features.map((feature: FeatureAttributes) => {
     return {

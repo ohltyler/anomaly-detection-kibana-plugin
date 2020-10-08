@@ -38,7 +38,6 @@ import { useHideSideNavBar } from '../../../main/hooks/useHideSideNavBar';
 import { TaskInfo } from '../../components/TaskInfo/TaskInfo';
 import { DataSource } from '../../components/DataSource/DataSource';
 import { Scheduling } from '../../components/Scheduling/Scheduling';
-import { ConfirmStartModal } from '../../components/ConfirmStartModal/ConfirmStartModal';
 import { TaskFormikValues, SAVE_TASK_OPTIONS } from '../../utils/constants';
 import { formikToTask, taskToFormik } from '../../utils/helpers';
 import { focusOnFirstWrongFeature } from '../../../EditFeatures/utils/helpers';
@@ -73,8 +72,6 @@ export function CreateTask(props: CreateTaskProps) {
   const task = tasks[taskId];
   const errorGettingTask = taskState.errorMessage;
 
-  console.log('task id: ', taskId);
-
   const isRequesting = useSelector((state: AppState) => state.ad.requesting);
 
   const initialStartDate = moment().subtract(7, 'days').valueOf();
@@ -82,12 +79,9 @@ export function CreateTask(props: CreateTaskProps) {
     startDate: moment().subtract(7, 'days').valueOf(),
     endDate: moment().valueOf(),
   });
-  const [showConfirmModal, setShowConfirmModal] = useState<boolean>(false);
   const [saveTaskOption, setSaveTaskOption] = useState<SAVE_TASK_OPTIONS>(
-    SAVE_TASK_OPTIONS.START_TASK
+    SAVE_TASK_OPTIONS.KEEP_TASK_STOPPED
   );
-
-  console.log('create task - task: ', task);
 
   useHideSideNavBar(true, false);
 
@@ -246,7 +240,6 @@ export function CreateTask(props: CreateTaskProps) {
 
   const handleSubmit = async (values: TaskFormikValues, formikBag: any) => {
     const apiRequest = formikToTask(values, task);
-    console.log('api request: ', apiRequest);
     try {
       if (props.isEdit) {
         await handleUpdate(apiRequest, saveTaskOption);
@@ -262,7 +255,7 @@ export function CreateTask(props: CreateTaskProps) {
   const handleFormValidation = (formikProps: FormikProps<TaskFormikValues>) => {
     if (props.isEdit && task.curState === TASK_STATE.RUNNING) {
       toastNotifications.addDanger(
-        'Task cannot be updated while the task is running'
+        'Task cannot be updated while it is running'
       );
     } else {
       formikProps.setFieldTouched('name');
@@ -274,7 +267,8 @@ export function CreateTask(props: CreateTaskProps) {
         if (formikProps.values.featureList.length === 0) {
           toastNotifications.addDanger('No features have been created');
         } else {
-          setShowConfirmModal(true);
+          formikProps.setSubmitting(true);
+          handleSubmit(formikProps.values, formikProps);
         }
       } else {
         focusOnFirstWrongFeature(
@@ -314,17 +308,6 @@ export function CreateTask(props: CreateTaskProps) {
         >
           {(formikProps) => (
             <Fragment>
-              {showConfirmModal ? (
-                <ConfirmStartModal
-                  selectedOption={saveTaskOption}
-                  onCancel={() => setShowConfirmModal(false)}
-                  onConfirm={() => {
-                    formikProps.handleSubmit();
-                    setShowConfirmModal(false);
-                  }}
-                  onOptionChange={handleSaveTaskOptionChange}
-                />
-              ) : null}
               <TaskInfo
                 onValidateTaskName={handleValidateName}
                 onValidateTaskDescription={handleValidateDescription}

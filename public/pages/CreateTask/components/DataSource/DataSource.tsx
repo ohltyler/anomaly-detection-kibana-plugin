@@ -13,12 +13,7 @@
  * permissions and limitations under the License.
  */
 
-import {
-  EuiCallOut,
-  EuiComboBox,
-  EuiSpacer,
-  EuiSuperDatePicker,
-} from '@elastic/eui';
+import { EuiCallOut, EuiComboBox, EuiSpacer } from '@elastic/eui';
 import { Field, FieldProps, FormikProps } from 'formik';
 import { debounce, get, isEmpty } from 'lodash';
 import React, { useEffect, useState } from 'react';
@@ -37,11 +32,7 @@ import { getError, isInvalid, required } from '../../../../utils/utils';
 import { IndexOption } from '../../../createDetector/components/Datasource/IndexOption';
 import { Task } from '../../../../models/interfaces';
 import { validateIndex } from '../../../utils/validate';
-import {
-  TaskFormikValues,
-  TASK_DATE_RANGE_COMMON_OPTIONS,
-} from '../../utils/constants';
-import { convertTimestampToString } from '../../utils/helpers';
+import { TaskFormikValues } from '../../utils/constants';
 import { Features } from './components/Features/Features';
 import { Settings } from './components/Settings/Settings';
 
@@ -187,31 +178,6 @@ export function DataSource(props: DataSourceProps) {
               selectedOptions={(field.value && [{ label: field.value }]) || []}
               singleSelection={true}
               isClearable={false}
-            />
-          </FormattedFormRow>
-        )}
-      </Field>
-      <EuiSpacer size="l" />
-      <Field name="dateRange">
-        {({ field, form }: FieldProps) => (
-          <FormattedFormRow
-            title="Date range"
-            hint="Select a date range for your historical data analysis report."
-            isInvalid={isInvalid(field.name, form)}
-            error={getError(field.name, form)}
-          >
-            <EuiSuperDatePicker
-              isLoading={props.isLoading}
-              start={convertTimestampToString(form.values.startTime)}
-              end={convertTimestampToString(form.values.endTime)}
-              onTimeChange={({ start, end, isInvalid, isQuickSelection }) => {
-                form.setFieldValue('startTime', start);
-                form.setFieldValue('endTime', end);
-                form.setFieldValue('rangeValid', !isInvalid);
-              }}
-              isPaused={true}
-              showUpdateButton={false}
-              commonlyUsedRanges={TASK_DATE_RANGE_COMMON_OPTIONS}
             />
           </FormattedFormRow>
         )}

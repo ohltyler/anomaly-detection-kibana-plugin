@@ -20,36 +20,19 @@ import {
   EuiFlexItem,
   EuiFlexGroup,
   EuiButton,
+  EuiTitle,
+  EuiLink,
+  EuiIcon,
 } from '@elastic/eui';
-import {
-  FieldArray,
-  FieldArrayRenderProps,
-  Form,
-  Formik,
-  Field,
-  FieldProps,
-  FormikProps,
-} from 'formik';
+import { FieldArray, FieldArrayRenderProps, FormikProps } from 'formik';
 
-import { debounce, get, isEmpty } from 'lodash';
-import React, { useEffect, useState, Fragment } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import ContentPanel from '../../../../components/ContentPanel/ContentPanel';
-import { AppState } from '../../../../redux/reducers';
-import { Task } from '../../../../models/interfaces';
-import {
-  initialFeatureValue,
-  generateInitialFeatures,
-  validateFeatures,
-  focusOnFirstWrongFeature,
-} from '../../../EditFeatures/utils/helpers';
-import { MAX_FEATURE_NUM } from '../../../../utils/constants';
-import { validateIndex } from '../../../utils/validate';
-import {
-  TaskFormikValues,
-  TASK_DATE_RANGE_COMMON_OPTIONS,
-} from '../../utils/constants';
-import { FeatureAccordion } from '../../../EditFeatures/components/FeatureAccordion/FeatureAccordion';
+import { get } from 'lodash';
+import React, { useState, Fragment } from 'react';
+import { Task } from '../../../../../../models/interfaces';
+import { initialFeatureValue } from '../../../../../EditFeatures/utils/helpers';
+import { MAX_FEATURE_NUM } from '../../../../../../utils/constants';
+import { TaskFormikValues } from '../../../../utils/constants';
+import { FeatureAccordion } from '../../../../../EditFeatures/components/FeatureAccordion/FeatureAccordion';
 
 interface FeaturesProps {
   task: Task | undefined;
@@ -58,13 +41,27 @@ interface FeaturesProps {
 }
 
 export function Features(props: FeaturesProps) {
-  const dispatch = useDispatch();
   const [firstLoad, setFirstLoad] = useState<boolean>(true);
 
-  console.log('formik values: ', props.formikProps.values);
-
   return (
-    <ContentPanel title="Features" titleSize="s">
+    <EuiFlexGroup direction="column" style={{ margin: '0px' }}>
+      <EuiFlexItem style={{ marginLeft: '0px' }}>
+        <EuiTitle size="s">
+          <h3>Features</h3>
+        </EuiTitle>
+      </EuiFlexItem>
+      <EuiFlexItem style={{ marginLeft: '0px', marginTop: '-8px' }}>
+        <EuiText className="content-panel-subTitle">
+          Specify an index field that you want to find anomalies for by defining
+          features. You can add up to 5 features.{' '}
+          <EuiLink
+            href="https://opendistro.github.io/for-elasticsearch-docs/docs/ad/"
+            target="_blank"
+          >
+            Learn more <EuiIcon size="s" type="popout" />
+          </EuiLink>
+        </EuiText>
+      </EuiFlexItem>
       <FieldArray name="featureList" validateOnChange={true}>
         {({ push, remove, form: { values } }: FieldArrayRenderProps) => {
           // @ts-ignore
@@ -126,6 +123,6 @@ export function Features(props: FeaturesProps) {
           );
         }}
       </FieldArray>
-    </ContentPanel>
+    </EuiFlexGroup>
   );
 }

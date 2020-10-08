@@ -37,8 +37,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useHideSideNavBar } from '../../../main/hooks/useHideSideNavBar';
 import { TaskInfo } from '../../components/TaskInfo/TaskInfo';
 import { DataSource } from '../../components/DataSource/DataSource';
-import { Features } from '../../components/Features/Features';
-import { Settings } from '../../components/Settings/Settings';
+import { Scheduling } from '../../components/Scheduling/Scheduling';
 import { ConfirmStartModal } from '../../components/ConfirmStartModal/ConfirmStartModal';
 import { TaskFormikValues, SAVE_TASK_OPTIONS } from '../../utils/constants';
 import { formikToTask, taskToFormik } from '../../utils/helpers';
@@ -331,15 +330,18 @@ export function CreateTask(props: CreateTaskProps) {
                 onValidateTaskDescription={handleValidateDescription}
               />
               <EuiSpacer />
-              <DataSource isLoading={isRequesting} formikProps={formikProps} />
-              <EuiSpacer />
-              <Features
+              <DataSource
                 task={task}
                 isLoading={isRequesting}
                 formikProps={formikProps}
               />
               <EuiSpacer />
-              <Settings isLoading={isRequesting} formikProps={formikProps} />
+              <Scheduling
+                isLoading={isRequesting}
+                formikProps={formikProps}
+                selectedOption={saveTaskOption}
+                onOptionChange={handleSaveTaskOptionChange}
+              />
               <EuiSpacer />
               <EuiFlexGroup alignItems="center" justifyContent="flexEnd">
                 <EuiFlexItem grow={false}>
@@ -357,9 +359,7 @@ export function CreateTask(props: CreateTaskProps) {
                       handleFormValidation(formikProps);
                     }}
                   >
-                    {props.isEdit
-                      ? 'Save and start task'
-                      : 'Create and start task'}
+                    {props.isEdit ? 'Save' : 'Create'}
                   </EuiButton>
                 </EuiFlexItem>
               </EuiFlexGroup>

@@ -35,15 +35,18 @@ import { FormattedFormRow } from '../../../createDetector/components/FormattedFo
 import { getVisibleOptions, sanitizeSearchText } from '../../../utils/helpers';
 import { getError, isInvalid, required } from '../../../../utils/utils';
 import { IndexOption } from '../../../createDetector/components/Datasource/IndexOption';
-
+import { Task } from '../../../../models/interfaces';
 import { validateIndex } from '../../../utils/validate';
 import {
   TaskFormikValues,
   TASK_DATE_RANGE_COMMON_OPTIONS,
 } from '../../utils/constants';
 import { convertTimestampToString } from '../../utils/helpers';
+import { Features } from './components/Features/Features';
+import { Settings } from './components/Settings/Settings';
 
 interface DataSourceProps {
+  task: Task;
   isLoading: boolean;
   formikProps: FormikProps<TaskFormikValues>;
 }
@@ -213,6 +216,14 @@ export function DataSource(props: DataSourceProps) {
           </FormattedFormRow>
         )}
       </Field>
+      <EuiSpacer size="s" />
+      <Features
+        task={props.task}
+        isLoading={props.isLoading}
+        formikProps={props.formikProps}
+      />
+      <EuiSpacer size="s" />
+      <Settings isLoading={props.isLoading} formikProps={props.formikProps} />
     </ContentPanel>
   );
 }

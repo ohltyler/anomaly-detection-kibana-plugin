@@ -14,43 +14,21 @@
  */
 
 import {
-  EuiCallOut,
-  EuiComboBox,
-  EuiSpacer,
-  EuiSuperDatePicker,
+  EuiTitle,
   EuiText,
   EuiFlexItem,
   EuiFlexGroup,
   EuiFieldNumber,
 } from '@elastic/eui';
 import { Field, FieldProps, FormikProps } from 'formik';
-import { debounce, get, isEmpty } from 'lodash';
-import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { CatIndex, IndexAlias } from '../../../../../server/models/types';
-import ContentPanel from '../../../../components/ContentPanel/ContentPanel';
-import { AppState } from '../../../../redux/reducers';
-import {
-  getIndices,
-  getMappings,
-  getPrioritizedIndices,
-} from '../../../../redux/reducers/elasticsearch';
-import { FormattedFormRow } from '../../../createDetector/components/FormattedFormRow/FormattedFormRow';
-import { getVisibleOptions, sanitizeSearchText } from '../../../utils/helpers';
+import React from 'react';
+import { FormattedFormRow } from '../../../../../createDetector/components/FormattedFormRow/FormattedFormRow';
 import {
   getError,
   isInvalid,
-  required,
   validatePositiveInteger,
-} from '../../../../utils/utils';
-import { IndexOption } from '../../../createDetector/components/Datasource/IndexOption';
-
-import { validateIndex } from '../../../utils/validate';
-import {
-  TaskFormikValues,
-  TASK_DATE_RANGE_COMMON_OPTIONS,
-} from '../../utils/constants';
-import { convertTimestampToString } from '../../utils/helpers';
+} from '../../../../../../utils/utils';
+import { TaskFormikValues } from '../../../../utils/constants';
 
 interface SettingsProps {
   isLoading: boolean;
@@ -58,21 +36,13 @@ interface SettingsProps {
 }
 
 export function Settings(props: SettingsProps) {
-  const dispatch = useDispatch();
-  const [queryText, setQueryText] = useState('');
-  const [indexName, setIndexName] = useState(undefined);
-  const elasticsearchState = useSelector(
-    (state: AppState) => state.elasticsearch
-  );
-  useEffect(() => {
-    const getInitialIndices = async () => {
-      await dispatch(getIndices(queryText));
-    };
-    getInitialIndices();
-  }, []);
-
   return (
-    <ContentPanel title="Task operation settings" titleSize="s">
+    <EuiFlexGroup direction="column" style={{ margin: '0px' }}>
+      <EuiFlexItem style={{ marginLeft: '0px' }}>
+        <EuiTitle size="s">
+          <h3>Task operation settings</h3>
+        </EuiTitle>
+      </EuiFlexItem>
       <Field name="detectionInterval" validate={validatePositiveInteger}>
         {({ field, form }: FieldProps) => (
           <EuiFlexGroup>
@@ -108,6 +78,6 @@ export function Settings(props: SettingsProps) {
           </EuiFlexGroup>
         )}
       </Field>
-    </ContentPanel>
+    </EuiFlexGroup>
   );
 }

@@ -19,8 +19,6 @@ import {
   EuiOverlayMask,
   EuiFlexGroup,
   EuiFlexItem,
-  EuiFieldText,
-  EuiCallOut,
   EuiRadioGroup,
 } from '@elastic/eui';
 // @ts-ignore

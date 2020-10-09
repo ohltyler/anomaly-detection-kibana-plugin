@@ -60,3 +60,8 @@ export enum SAVE_TASK_OPTIONS {
   START_TASK = 'start_task',
   KEEP_TASK_STOPPED = 'keep_task_stopped',
 }
+
+export enum CREATE_TASK_OPTIONS {
+  USE_EXISTING = 'use_existing_detector',
+  CREATE_NEW = 'create_new_detector',
+}

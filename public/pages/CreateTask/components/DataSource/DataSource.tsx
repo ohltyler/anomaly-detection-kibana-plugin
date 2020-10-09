@@ -35,8 +35,10 @@ import { validateIndex } from '../../../utils/validate';
 import { TaskFormikValues } from '../../utils/constants';
 import { Features } from './components/Features/Features';
 import { Settings } from './components/Settings/Settings';
+import { DetectorChooser } from './components/DetectorChooser/DetectorChooser';
 
 interface DataSourceProps {
+  isEdit: boolean;
   task: Task;
   isLoading: boolean;
   formikProps: FormikProps<TaskFormikValues>;
@@ -102,6 +104,12 @@ export function DataSource(props: DataSourceProps) {
           />
           <EuiSpacer size="m" />
         </div>
+      ) : null}
+      {!props.isEdit ? (
+        <DetectorChooser
+          isLoading={props.isLoading}
+          formikProps={props.formikProps}
+        />
       ) : null}
       <Field name="index" validate={validateIndex}>
         {({ field, form }: FieldProps) => {

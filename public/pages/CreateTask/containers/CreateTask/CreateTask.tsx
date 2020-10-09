@@ -314,6 +314,7 @@ export function CreateTask(props: CreateTaskProps) {
               />
               <EuiSpacer />
               <DataSource
+                isEdit={props.isEdit}
                 task={task}
                 isLoading={isRequesting}
                 formikProps={formikProps}

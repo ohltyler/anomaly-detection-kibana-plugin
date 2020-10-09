@@ -15,11 +15,10 @@
 
 import { EuiSuperDatePicker, EuiRadioGroup, EuiSpacer } from '@elastic/eui';
 import { Field, FieldProps, FormikProps } from 'formik';
-import { debounce, get, isEmpty } from 'lodash';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import ContentPanel from '../../../../components/ContentPanel/ContentPanel';
 import { FormattedFormRow } from '../../../createDetector/components/FormattedFormRow/FormattedFormRow';
-import { getError, isInvalid, required } from '../../../../utils/utils';
+import { getError, isInvalid } from '../../../../utils/utils';
 import {
   TaskFormikValues,
   TASK_DATE_RANGE_COMMON_OPTIONS,
@@ -35,19 +34,16 @@ interface SchedulingProps {
 }
 
 export function Scheduling(props: SchedulingProps) {
-  const runTaskOptions = (disableStartAdJob: boolean) => {
-    return [
-      {
-        id: SAVE_TASK_OPTIONS.START_TASK,
-        label: 'Yes, automatically run task',
-        //disabled: disableStartAdJob,
-      },
-      {
-        id: SAVE_TASK_OPTIONS.KEEP_TASK_STOPPED,
-        label: 'No, manually run task at a later time',
-      },
-    ];
-  };
+  const runTaskOptions = [
+    {
+      id: SAVE_TASK_OPTIONS.START_TASK,
+      label: 'Yes, automatically run task',
+    },
+    {
+      id: SAVE_TASK_OPTIONS.KEEP_TASK_STOPPED,
+      label: 'No, manually run task at a later time',
+    },
+  ];
 
   return (
     <ContentPanel title="Scheduling" titleSize="s">
@@ -82,8 +78,7 @@ export function Scheduling(props: SchedulingProps) {
       >
         <EuiRadioGroup
           name="run task radio group"
-          //options={startAdJobOptions(!props.readyToStartAdJob)}
-          options={runTaskOptions(true)}
+          options={runTaskOptions}
           idSelected={props.selectedOption}
           onChange={props.onOptionChange}
         />

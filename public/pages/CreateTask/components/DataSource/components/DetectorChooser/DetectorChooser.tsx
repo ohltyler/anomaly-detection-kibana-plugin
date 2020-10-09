@@ -48,6 +48,9 @@ import {
 interface DetectorChooserProps {
   isLoading: boolean;
   formikProps: FormikProps<TaskFormikValues>;
+  createTaskSelection: CREATE_TASK_OPTIONS;
+  setCreateTaskSelection(selection: CREATE_TASK_OPTIONS): void;
+  setSelectedDetector(detector: Detector | undefined): void;
 }
 
 export function DetectorChooser(props: DetectorChooserProps) {
@@ -59,12 +62,6 @@ export function DetectorChooser(props: DetectorChooserProps) {
   const [selectedDetectorId, setSelectedDetectorId] = useState<string>('');
   const selectedDetector = detectors[selectedDetectorId];
 
-  console.log('selected detector: ', selectedDetector);
-
-  const [selection, setSelection] = useState<CREATE_TASK_OPTIONS>(
-    CREATE_TASK_OPTIONS.USE_EXISTING
-  );
-
   // Getting all detectors initially
   useEffect(() => {
     const getInitialDetectors = async () => {
@@ -75,6 +72,7 @@ export function DetectorChooser(props: DetectorChooserProps) {
 
   // Update the form if a change in selected detector, and get index mappings
   useEffect(() => {
+    props.setSelectedDetector(selectedDetector);
     if (selectedDetector) {
       populateDetectorFieldsFromDetector(props.formikProps, selectedDetector);
       const indexName = selectedDetector.indices[0];
@@ -125,9 +123,11 @@ export function DetectorChooser(props: DetectorChooserProps) {
               </EuiText>
             }
             value={CREATE_TASK_OPTIONS.USE_EXISTING}
-            checked={selection === CREATE_TASK_OPTIONS.USE_EXISTING}
+            checked={
+              props.createTaskSelection === CREATE_TASK_OPTIONS.USE_EXISTING
+            }
             onChange={() => {
-              setSelection(CREATE_TASK_OPTIONS.USE_EXISTING);
+              props.setCreateTaskSelection(CREATE_TASK_OPTIONS.USE_EXISTING);
               populateDetectorFieldsToInitialValues(props.formikProps);
               untouchDetectorFields(props.formikProps);
             }}
@@ -146,9 +146,11 @@ export function DetectorChooser(props: DetectorChooserProps) {
               </EuiText>
             }
             value={CREATE_TASK_OPTIONS.CREATE_NEW}
-            checked={selection === CREATE_TASK_OPTIONS.CREATE_NEW}
+            checked={
+              props.createTaskSelection === CREATE_TASK_OPTIONS.CREATE_NEW
+            }
             onChange={() => {
-              setSelection(CREATE_TASK_OPTIONS.CREATE_NEW);
+              props.setCreateTaskSelection(CREATE_TASK_OPTIONS.CREATE_NEW);
               setSelectedDetectorId('');
               populateDetectorFieldsToInitialValues(props.formikProps);
               untouchDetectorFields(props.formikProps);
@@ -157,7 +159,7 @@ export function DetectorChooser(props: DetectorChooserProps) {
         </EuiFlexItem>
       </EuiFlexGroup>
       <EuiSpacer size="l" />
-      {selection === CREATE_TASK_OPTIONS.USE_EXISTING ? (
+      {props.createTaskSelection === CREATE_TASK_OPTIONS.USE_EXISTING ? (
         <EuiFlexGroup>
           <EuiFlexItem style={{ maxWidth: '70%' }}>
             <FormattedFormRow
@@ -197,7 +199,8 @@ export function DetectorChooser(props: DetectorChooserProps) {
         </EuiFlexGroup>
       ) : null}
 
-      {selection === CREATE_TASK_OPTIONS.USE_EXISTING ? (
+      {props.createTaskSelection === CREATE_TASK_OPTIONS.USE_EXISTING &&
+      selectedDetector !== undefined ? (
         <EuiSpacer size="l" />
       ) : null}
     </EuiFlexGroup>

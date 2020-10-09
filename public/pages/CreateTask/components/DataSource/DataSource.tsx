@@ -16,7 +16,7 @@
 import { EuiCallOut, EuiComboBox, EuiSpacer } from '@elastic/eui';
 import { Field, FieldProps, FormikProps } from 'formik';
 import { debounce, get, isEmpty } from 'lodash';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Fragment } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { CatIndex, IndexAlias } from '../../../../../server/models/types';
 import ContentPanel from '../../../../components/ContentPanel/ContentPanel';
@@ -30,12 +30,13 @@ import { FormattedFormRow } from '../../../createDetector/components/FormattedFo
 import { getVisibleOptions, sanitizeSearchText } from '../../../utils/helpers';
 import { getError, isInvalid, required } from '../../../../utils/utils';
 import { IndexOption } from '../../../createDetector/components/Datasource/IndexOption';
-import { Task } from '../../../../models/interfaces';
+import { Task, Detector } from '../../../../models/interfaces';
 import { validateIndex } from '../../../utils/validate';
-import { TaskFormikValues } from '../../utils/constants';
+import { TaskFormikValues, INITIAL_TASK_VALUES } from '../../utils/constants';
 import { Features } from './components/Features/Features';
 import { Settings } from './components/Settings/Settings';
 import { DetectorChooser } from './components/DetectorChooser/DetectorChooser';
+import { CREATE_TASK_OPTIONS } from '../../utils/constants';
 
 interface DataSourceProps {
   isEdit: boolean;
@@ -46,11 +47,20 @@ interface DataSourceProps {
 
 export function DataSource(props: DataSourceProps) {
   const dispatch = useDispatch();
-  const [queryText, setQueryText] = useState('');
-  const [indexName, setIndexName] = useState(undefined);
   const elasticsearchState = useSelector(
     (state: AppState) => state.elasticsearch
   );
+
+  const [queryText, setQueryText] = useState('');
+  const [indexName, setIndexName] = useState(undefined);
+  const [createTaskSelection, setCreateTaskSelection] = useState<
+    CREATE_TASK_OPTIONS
+  >(CREATE_TASK_OPTIONS.USE_EXISTING);
+  const [selectedDetector, setSelectedDetector] = useState<Detector>();
+  const hideDetectorConfigFields =
+    !props.isEdit &&
+    createTaskSelection === CREATE_TASK_OPTIONS.USE_EXISTING &&
+    selectedDetector === undefined;
 
   useEffect(() => {
     const getInitialIndices = async () => {
@@ -109,95 +119,111 @@ export function DataSource(props: DataSourceProps) {
         <DetectorChooser
           isLoading={props.isLoading}
           formikProps={props.formikProps}
+          createTaskSelection={createTaskSelection}
+          setCreateTaskSelection={setCreateTaskSelection}
+          setSelectedDetector={setSelectedDetector}
         />
       ) : null}
-      <Field name="index" validate={validateIndex}>
-        {({ field, form }: FieldProps) => {
-          return (
-            <FormattedFormRow
-              title="Index"
-              hint="Choose an index or index pattern as the data source."
-              isInvalid={isInvalid(field.name, form)}
-              error={getError(field.name, form)}
-              helpText="You can use a wildcard (*) in your index pattern"
-            >
-              <EuiComboBox
-                id="index"
-                placeholder="Find indices"
-                async
-                isLoading={elasticsearchState.requesting}
-                options={getVisibleOptions(visibleIndices, visibleAliases)}
-                onSearchChange={handleSearchChange}
-                onCreateOption={(createdOption: string) => {
-                  const normalizedOptions = createdOption.trim();
-                  if (!normalizedOptions) return;
-                  const customOption = [{ label: normalizedOptions }];
-                  form.setFieldValue('index', customOption);
-                  handleIndexNameChange(customOption);
-                }}
-                onBlur={() => {
-                  form.setFieldTouched('index', true);
-                }}
-                onChange={(options) => {
-                  form.setFieldValue('index', options);
-                  form.setFieldValue('timeField', undefined);
-                  handleIndexNameChange(options);
-                }}
-                selectedOptions={field.value}
-                singleSelection={true}
-                isClearable={false}
-                renderOption={(option, searchValue, className) => (
-                  <IndexOption
-                    option={option}
-                    searchValue={searchValue}
-                    contentClassName={className}
+      {hideDetectorConfigFields ? null : (
+        <Fragment>
+          <Field name="index" validate={validateIndex}>
+            {({ field, form }: FieldProps) => {
+              return (
+                <FormattedFormRow
+                  title="Index"
+                  hint="Choose an index or index pattern as the data source."
+                  isInvalid={isInvalid(field.name, form)}
+                  error={getError(field.name, form)}
+                  helpText="You can use a wildcard (*) in your index pattern"
+                >
+                  <EuiComboBox
+                    id="index"
+                    placeholder="Find indices"
+                    async
+                    isLoading={elasticsearchState.requesting}
+                    options={getVisibleOptions(visibleIndices, visibleAliases)}
+                    onSearchChange={handleSearchChange}
+                    onCreateOption={(createdOption: string) => {
+                      const normalizedOptions = createdOption.trim();
+                      if (!normalizedOptions) return;
+                      const customOption = [{ label: normalizedOptions }];
+                      form.setFieldValue('index', customOption);
+                      handleIndexNameChange(customOption);
+                    }}
+                    onBlur={() => {
+                      form.setFieldTouched('index', true);
+                    }}
+                    onChange={(options) => {
+                      form.setFieldValue('index', options);
+                      form.setFieldValue('timeField', undefined);
+                      form.setFieldValue(
+                        'featureList',
+                        INITIAL_TASK_VALUES.featureList
+                      );
+                      handleIndexNameChange(options);
+                    }}
+                    selectedOptions={field.value}
+                    singleSelection={true}
+                    isClearable={false}
+                    renderOption={(option, searchValue, className) => (
+                      <IndexOption
+                        option={option}
+                        searchValue={searchValue}
+                        contentClassName={className}
+                      />
+                    )}
                   />
-                )}
-              />
-            </FormattedFormRow>
-          );
-        }}
-      </Field>
-      <EuiSpacer size="l" />
-      <Field name="timeField" validate={required}>
-        {({ field, form }: FieldProps) => (
-          <FormattedFormRow
-            title="Timestamp field"
-            hint="Choose the time field you want to use for time filter."
-            isInvalid={isInvalid(field.name, form)}
-            error={getError(field.name, form)}
-          >
-            <EuiComboBox
-              id="timeField"
-              placeholder="Find timestamp"
-              options={timeStampFieldOptions}
-              onSearchChange={handleSearchChange}
-              onCreateOption={(createdOption: string) => {
-                const normalizedOptions = createdOption.trim();
-                if (!normalizedOptions) return;
-                form.setFieldValue('timeField', normalizedOptions);
-              }}
-              onBlur={() => {
-                form.setFieldTouched('timeField', true);
-              }}
-              onChange={(options) => {
-                form.setFieldValue('timeField', get(options, '0.label'));
-              }}
-              selectedOptions={(field.value && [{ label: field.value }]) || []}
-              singleSelection={true}
-              isClearable={false}
-            />
-          </FormattedFormRow>
-        )}
-      </Field>
-      <EuiSpacer size="s" />
-      <Features
-        task={props.task}
-        isLoading={props.isLoading}
-        formikProps={props.formikProps}
-      />
-      <EuiSpacer size="s" />
-      <Settings isLoading={props.isLoading} formikProps={props.formikProps} />
+                </FormattedFormRow>
+              );
+            }}
+          </Field>
+          <EuiSpacer size="l" />
+          <Field name="timeField" validate={required}>
+            {({ field, form }: FieldProps) => (
+              <FormattedFormRow
+                title="Timestamp field"
+                hint="Choose the time field you want to use for time filter."
+                isInvalid={isInvalid(field.name, form)}
+                error={getError(field.name, form)}
+              >
+                <EuiComboBox
+                  id="timeField"
+                  placeholder="Find timestamp"
+                  options={timeStampFieldOptions}
+                  onSearchChange={handleSearchChange}
+                  onCreateOption={(createdOption: string) => {
+                    const normalizedOptions = createdOption.trim();
+                    if (!normalizedOptions) return;
+                    form.setFieldValue('timeField', normalizedOptions);
+                  }}
+                  onBlur={() => {
+                    form.setFieldTouched('timeField', true);
+                  }}
+                  onChange={(options) => {
+                    form.setFieldValue('timeField', get(options, '0.label'));
+                  }}
+                  selectedOptions={
+                    (field.value && [{ label: field.value }]) || []
+                  }
+                  singleSelection={true}
+                  isClearable={false}
+                />
+              </FormattedFormRow>
+            )}
+          </Field>
+          <EuiSpacer size="s" />
+          <Features
+            task={props.task}
+            isLoading={props.isLoading}
+            formikProps={props.formikProps}
+          />
+          <EuiSpacer size="s" />
+          <Settings
+            isLoading={props.isLoading}
+            formikProps={props.formikProps}
+          />
+        </Fragment>
+      )}
     </ContentPanel>
   );
 }

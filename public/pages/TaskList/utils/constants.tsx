@@ -23,6 +23,7 @@ import {
 //@ts-ignore
 import moment from 'moment';
 import React from 'react';
+import { get } from 'lodash';
 import { Task } from '../../../models/interfaces';
 import { PLUGIN_NAME, TASK_STATE } from '../../../utils/constants';
 import { taskStateToColorMap } from '../../utils/constants';
@@ -52,8 +53,8 @@ export const taskListColumns = [
   {
     field: 'name',
     name: (
-      <EuiToolTip content="The name of the task">
-        <span style={columnStyle}>Task{''}</span>
+      <EuiToolTip content="The name of the detector">
+        <span style={columnStyle}>Detector{''}</span>
       </EuiToolTip>
     ),
     sortable: true,
@@ -67,25 +68,10 @@ export const taskListColumns = [
     ),
   },
   {
-    field: 'detectorName',
-    name: (
-      <EuiToolTip content="The detector used to create the task">
-        <span style={columnStyle}>Detector{''}</span>
-      </EuiToolTip>
-    ),
-    sortable: true,
-    truncateText: false,
-    textOnly: true,
-    align: 'left',
-    render: (detectorName: string) => (
-      <EuiText size="s">{detectorName}</EuiText>
-    ),
-  },
-  {
     field: 'curState',
     name: (
-      <EuiToolTip content="The current state of the task">
-        <span style={columnStyle}>Task state{''}</span>
+      <EuiToolTip content="The current state of the detector">
+        <span style={columnStyle}>State{''}</span>
       </EuiToolTip>
     ),
     sortable: true,
@@ -95,10 +81,35 @@ export const taskListColumns = [
     render: renderState,
   },
   {
-    field: 'created',
+    field: 'indices',
     name: (
-      <EuiToolTip content="The date the task was created">
-        <span style={columnStyle}>Created{''}</span>
+      <EuiToolTip content="The index used by the detector">
+        <span style={columnStyle}>Index{''}</span>
+      </EuiToolTip>
+    ),
+    sortable: true,
+    dataType: 'string',
+    align: 'left',
+    truncateText: false,
+    render: (indices: string[]) => get(indices, '0', '-'),
+  },
+  {
+    field: 'totalAnomalies',
+    name: (
+      <EuiToolTip content="The total number of anomalies found">
+        <span style={columnStyle}>No. of anomalies{''}</span>
+      </EuiToolTip>
+    ),
+    sortable: true,
+    dataType: 'string',
+    align: 'left',
+    truncateText: false,
+  },
+  {
+    field: 'dataStartTime',
+    name: (
+      <EuiToolTip content="The start time for the detector analysis">
+        <span style={columnStyle}>Analysis start date{''}</span>
       </EuiToolTip>
     ),
     sortable: true,
@@ -108,10 +119,10 @@ export const taskListColumns = [
     render: renderTime,
   },
   {
-    field: 'lastRun',
+    field: 'dataEndTime',
     name: (
-      <EuiToolTip content="The time the task was last run">
-        <span style={columnStyle}>Last run{''}</span>
+      <EuiToolTip content="The end time for the detector analysis">
+        <span style={columnStyle}>Analysis end date{''}</span>
       </EuiToolTip>
     ),
     sortable: true,

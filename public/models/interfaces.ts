@@ -151,14 +151,11 @@ export type Task = {
 export type TaskListItem = {
   id: string;
   name: string;
-  detectorId: string;
-  detectorName: string;
-  description: string;
   curState: TASK_STATE;
+  indices: string[];
+  totalAnomalies: number;
   dataStartTime: number;
   dataEndTime: number;
-  lastUpdateTime: number;
-  executionId?: string;
 };
 
 export type AnomalyData = {

@@ -31,12 +31,11 @@ import { RouteComponentProps } from 'react-router';
 import chrome from 'ui/chrome';
 // @ts-ignore
 import { toastNotifications } from 'ui/notify';
-import { TaskListItem, DetectorListItem } from '../../../../models/interfaces';
+import { TaskListItem } from '../../../../models/interfaces';
 import { SORT_DIRECTION } from '../../../../../server/utils/constants';
 import ContentPanel from '../../../../components/ContentPanel/ContentPanel';
 import { AppState } from '../../../../redux/reducers';
 import { getTaskList } from '../../../../redux/reducers/task';
-import { getDetectorList } from '../../../../redux/reducers/ad';
 import {
   BREADCRUMBS,
   APP_PATH,
@@ -44,29 +43,13 @@ import {
   TASK_STATE,
 } from '../../../../utils/constants';
 import { getTitleWithCount } from '../../../../utils/utils';
-import {
-  MAX_TASKS,
-  ALL_TASK_STATES,
-  ALL_DETECTORS,
-  MAX_SELECTED_DETECTORS,
-} from '../../../utils/constants';
-import {
-  getURLQueryParams,
-  getTasksWithDetectorName,
-} from '../../utils/helpers';
-import {
-  filterAndSortTasks,
-  getTasksToDisplay,
-  sanitizeSearchText,
-  getDetectorOptions,
-} from '../../../utils/helpers';
+import { MAX_TASKS, ALL_TASK_STATES } from '../../../utils/constants';
+import { getURLQueryParams } from '../../utils/helpers';
+import { filterAndSortTasks, getTasksToDisplay } from '../../../utils/helpers';
 import { EmptyTaskMessage } from '../../components/EmptyTaskMessage/EmptyTaskMessage';
 import { TASK_ACTION, taskListColumns } from '../../utils/constants';
 import { TaskFilters } from '../../components/TaskFilters/TaskFilters';
-import {
-  GET_ALL_TASKS_QUERY_PARAMS,
-  GET_ALL_DETECTORS_QUERY_PARAMS,
-} from '../../../utils/constants';
+import { GET_ALL_TASKS_QUERY_PARAMS } from '../../../utils/constants';
 import { getTasksForAction } from '../../utils/helpers';
 import { TaskListActions } from '../../components/TaskListActions/TaskListActions';
 import { CompareTasksModal } from '../ActionModals/CompareTasksModal/CompareTasksModal';
@@ -83,7 +66,6 @@ interface TaskListState {
   page: number;
   queryParams: any;
   selectedTaskStates: TASK_STATE[];
-  selectedDetectors: string[];
 }
 interface ActionModalState {
   isOpen: boolean;
@@ -91,7 +73,6 @@ interface ActionModalState {
   isListLoading: boolean;
   isRequestingToClose: boolean;
   affectedTasks: TaskListItem[];
-  affectedDetectors: DetectorListItem[];
 }
 interface TaskListActionsState {
   isDisabled: boolean;
@@ -107,29 +88,20 @@ export function TaskList(props: TaskListProps) {
   const errorGettingTasks = taskState.errorMessage;
   const isRequestingTasks = taskState.requesting;
 
-  // get AD / detector store
-  const adState = useSelector((state: AppState) => state.ad);
-  const allDetectors = adState.detectorList;
-  const errorGettingDetectors = adState.errorMessage;
-  const isRequestingDetectors = adState.requesting;
-
   const [selectedTasks, setSelectedTasks] = useState([] as TaskListItem[]);
   const [tasksToDisplay, setTasksToDisplay] = useState([] as TaskListItem[]);
   const [isLoadingFinalTasks, setIsLoadingFinalTasks] = useState<boolean>(true);
   const [selectedTasksForAction, setSelectedTasksForAction] = useState(
     [] as TaskListItem[]
   );
-  const [detectorQuery, setDetectorQuery] = useState('');
 
-  // if loading tasks, detectors, or sorting/filtering: set whole page in loading state
-  const isLoading =
-    isRequestingTasks || isRequestingDetectors || isLoadingFinalTasks;
+  // if loading tasks or sorting/filtering: set whole page in loading state
+  const isLoading = isRequestingTasks || isLoadingFinalTasks;
 
   const [state, setState] = useState<TaskListState>({
     page: 0,
     queryParams: getURLQueryParams(props.location),
     selectedTaskStates: ALL_TASK_STATES,
-    selectedDetectors: ALL_DETECTORS,
   });
   const [actionModalState, setActionModalState] = useState<ActionModalState>({
     isOpen: false,
@@ -138,7 +110,6 @@ export function TaskList(props: TaskListProps) {
     isListLoading: false,
     isRequestingToClose: false,
     affectedTasks: [],
-    affectedDetectors: [],
   });
   const [taskListActionsState, setTaskListActionsState] = useState<
     TaskListActionsState
@@ -167,22 +138,14 @@ export function TaskList(props: TaskListProps) {
 
     setIsLoadingFinalTasks(true);
     getUpdatedTasks();
-    getUpdatedDetectors();
-  }, [
-    state.page,
-    state.queryParams,
-    state.selectedTaskStates,
-    state.selectedDetectors,
-  ]);
+  }, [state.page, state.queryParams, state.selectedTaskStates]);
 
   // Handle all filtering / sorting of tasks
   useEffect(() => {
     const curSelectedTasks = filterAndSortTasks(
       Object.values(allTasks),
-      allDetectors,
       state.queryParams.search,
       state.selectedTaskStates,
-      state.selectedDetectors,
       state.queryParams.sortField,
       state.queryParams.sortDirection
     );
@@ -194,24 +157,15 @@ export function TaskList(props: TaskListProps) {
       state.queryParams.size
     );
 
-    const tasksToDisplayWithDetectorName = getTasksWithDetectorName(
-      tasksToDisplay,
-      allDetectors
-    );
+    setTasksToDisplay(tasksToDisplay);
 
-    setTasksToDisplay(tasksToDisplayWithDetectorName);
-
-    if (!isRequestingTasks && !isRequestingDetectors) {
+    if (!isRequestingTasks) {
       setIsLoadingFinalTasks(false);
     }
-  }, [allTasks, allDetectors]);
+  }, [allTasks]);
 
   const getUpdatedTasks = async () => {
     dispatch(getTaskList(GET_ALL_TASKS_QUERY_PARAMS));
-  };
-
-  const getUpdatedDetectors = async () => {
-    dispatch(getDetectorList(GET_ALL_DETECTORS_QUERY_PARAMS));
   };
 
   const handlePageChange = (pageNumber: number) => {
@@ -262,41 +216,6 @@ export function TaskList(props: TaskListProps) {
     }));
   };
 
-  // Refresh data if user is typing in the detector filter
-  const handleSearchDetectorChange = debounce(async (searchValue: string) => {
-    if (searchValue !== detectorQuery) {
-      const sanitizedQuery = sanitizeSearchText(searchValue);
-      setDetectorQuery(sanitizedQuery);
-      dispatch(
-        getDetectorList({
-          ...GET_ALL_DETECTORS_QUERY_PARAMS,
-          search: sanitizedQuery,
-        })
-      );
-      setState((state) => ({
-        ...state,
-        page: 0,
-      }));
-    }
-  }, 300);
-
-  // Refresh data if user is selecting an index filter
-  const handleDetectorChange = (options: EuiComboBoxOptionProps[]): void => {
-    let detectors: string[];
-    detectors =
-      options.length == 0
-        ? ALL_DETECTORS
-        : options
-            .map((option) => option.label)
-            .slice(0, MAX_SELECTED_DETECTORS);
-
-    setState({
-      ...state,
-      page: 0,
-      selectedDetectors: detectors,
-    });
-  };
-
   const handleCompareTasksAction = () => {
     const validTasks = getTasksForAction(
       selectedTasksForAction,
@@ -309,7 +228,6 @@ export function TaskList(props: TaskListProps) {
         isListLoading: false,
         isRequestingToClose: false,
         affectedTasks: validTasks,
-        affectedDetectors: [],
       });
     } else {
       toastNotifications.addWarning(
@@ -389,9 +307,7 @@ export function TaskList(props: TaskListProps) {
   };
 
   const isFilterApplied =
-    !isEmpty(state.queryParams.search) ||
-    !isEmpty(state.selectedTaskStates) ||
-    !isEmpty(state.selectedDetectors);
+    !isEmpty(state.queryParams.search) || !isEmpty(state.selectedTaskStates);
 
   const pagination = {
     pageIndex: state.page,
@@ -439,10 +355,6 @@ export function TaskList(props: TaskListProps) {
             }
             search={state.queryParams.search}
             selectedTaskStates={state.selectedTaskStates}
-            selectedDetectors={state.selectedDetectors}
-            detectorOptions={getDetectorOptions(Object.values(allDetectors))}
-            onDetectorChange={handleDetectorChange}
-            onSearchDetectorChange={handleSearchDetectorChange}
             onTaskStateChange={handleTaskStateChange}
             onSearchTaskChange={handleSearchTaskChange}
             onPageClick={handlePageChange}

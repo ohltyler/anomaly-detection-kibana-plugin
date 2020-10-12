@@ -13,11 +13,10 @@
  * permissions and limitations under the License.
  */
 
-import React, { useState } from 'react';
+import React from 'react';
 import {
   EuiText,
   EuiOverlayMask,
-  EuiButton,
   EuiButtonEmpty,
   EuiFlexGroup,
   EuiFlexItem,

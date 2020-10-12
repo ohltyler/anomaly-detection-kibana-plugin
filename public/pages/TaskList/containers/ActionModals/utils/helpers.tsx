@@ -14,23 +14,23 @@
  */
 
 import React from 'react';
-import { EuiLink, EuiText, EuiIcon, EuiDataGrid } from '@elastic/eui';
+import { EuiLink, EuiIcon, EuiDataGrid } from '@elastic/eui';
 // @ts-ignore
 import { toastNotifications } from 'ui/notify';
 //@ts-ignore
 import chrome from 'ui/chrome';
-import { Monitor } from '../../../../../models/interfaces';
 import { TaskListItem } from '../../../../../models/interfaces';
 import { PLUGIN_NAME } from '../../../../../utils/constants';
-import { get, isEmpty } from 'lodash';
-import { TASK_STATE } from '../../../../../utils/constants';
 
 const getNames = (tasks: TaskListItem[]) => {
   let data = [];
   for (let i = 0; i < tasks.length; i++) {
     data.push({
       Task: (
-        <EuiLink href={`${PLUGIN_NAME}#/tasks/${tasks[i].id}`} target="_blank">
+        <EuiLink
+          href={`${PLUGIN_NAME}#/tasks/${tasks[i].id}/details`}
+          target="_blank"
+        >
           {tasks[i].name} <EuiIcon type="popout" size="s" />
         </EuiLink>
       ),

@@ -71,7 +71,7 @@ const createTask = async (
 
     return {
       ok: true,
-      //response: respInCamel,
+      //@ts-ignore
       response: convertTaskKeysToCamelCase(resp) as Task,
     };
   } catch (err) {
@@ -106,7 +106,7 @@ const getTask = async (
 
     return {
       ok: true,
-      //response: mockRespWithFinalState,
+      //@ts-ignore
       response: convertTaskKeysToCamelCase(respWithFinalState) as Task,
     };
   } catch (err) {
@@ -146,6 +146,7 @@ const updateTask = async (
 
     return {
       ok: true,
+      //@ts-ignore
       response: convertTaskKeysToCamelCase(resp) as Task,
     };
   } catch (err) {
@@ -204,14 +205,13 @@ const getTasks = async (
         [task._id]: {
           id: task._id,
           name: get(task, '_source.name', ''),
-          detectorId: get(task, '_source.detector_id'),
-          description: get(task, '_source.description', ''),
           // TODO: change back to the state once we can retrieve it from backend
-          //curState: get(task, '_source.state'),
           curState: 'FINISHED',
+          indices: get(task, '_source.indices', []),
+          // TODO: need to make some aggregation calls to retrieve this - see getDetectors in routes/ad.ts
+          totalAnomalies: 0,
           dataStartTime: get(task, '_source.data_start_time'),
           dataEndTime: get(task, '_source.data_end_time'),
-          lastUpdateTime: get(task, '_source.last_update_time'),
         },
       }),
       {}
@@ -330,60 +330,6 @@ const searchTask = async (
     return { ok: false, error: err.message };
   }
 };
-
-// NOTE: the ad.getDetector api call here will want to add the optional ?execution=true here to retrieve the execution state.
-// We will not call the profile api to get the state here, as it is heavy and should just be used for debugging to get a lot of details.
-
-// const getTask = async (
-//   req: Request,
-//   h: ResponseToolkit,
-//   callWithRequest: CallClusterWithRequest
-// ): Promise<ServerResponse<Task>> => {
-//   try {
-//     const { detectorId } = req.params;
-//     const response = await callWithRequest(req, 'ad.getDetector', {
-//       detectorId,
-//     });
-//     let detectorState;
-//     try {
-//       const detectorStateResp = await callWithRequest(
-//         req,
-//         'ad.detectorProfile',
-//         {
-//           detectorId: detectorId,
-//         }
-//       );
-//       const detectorStates = getFinalDetectorStates(
-//         [detectorStateResp],
-//         [convertTaskKeysToCamelCase(response.anomaly_detector)]
-//       );
-//       detectorState = detectorStates[0];
-//     } catch (err) {
-//       console.log('Anomaly detector - Unable to retrieve detector state', err);
-//     }
-//     const resp = {
-//       ...response.anomaly_detector,
-//       id: response._id,
-//       primaryTerm: response._primary_term,
-//       seqNo: response._seq_no,
-//       adJob: { ...response.anomaly_detector_job },
-//       ...(detectorState !== undefined
-//         ? {
-//             curState: detectorState.state,
-//             stateError: detectorState.error,
-//             initProgress: getDetectorInitProgress(detectorState),
-//           }
-//         : {}),
-//     };
-//     return {
-//       ok: true,
-//       response: convertDetectorKeysToCamelCase(resp) as Detector,
-//     };
-//   } catch (err) {
-//     console.log('Anomaly detector - Unable to get detector', err);
-//     return { ok: false, error: err.message };
-//   }
-// };
 
 // const previewDetector = async (
 //   req: Request,

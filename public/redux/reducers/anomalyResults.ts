@@ -22,7 +22,7 @@ import handleActions from '../utils/handleActions';
 import { AD_NODE_API } from '../../../utils/constants';
 import { AnomalyData } from '../../models/interfaces';
 
-const DETECTOR_RESULTS = 'ad/DETECTOR_RESULTS';
+const ANOMALY_RESULTS = 'ad/ANOMALY_RESULTS';
 
 export interface Anomalies {
   requesting: boolean;
@@ -31,7 +31,7 @@ export interface Anomalies {
   errorMessage: string;
   featureData: any;
 }
-export const initialDetectorsState: Anomalies = {
+export const initialAnomaliesState: Anomalies = {
   requesting: false,
   total: 0,
   anomalies: [],
@@ -41,7 +41,7 @@ export const initialDetectorsState: Anomalies = {
 
 const reducer = handleActions<Anomalies>(
   {
-    [DETECTOR_RESULTS]: {
+    [ANOMALY_RESULTS]: {
       REQUEST: (state: Anomalies): Anomalies => ({
         ...state,
         requesting: true,
@@ -61,16 +61,28 @@ const reducer = handleActions<Anomalies>(
       }),
     },
   },
-  initialDetectorsState
+  initialAnomaliesState
 );
 
 export const getDetectorResults = (
   detectorId: string,
   queryParams: any
 ): APIAction => ({
-  type: DETECTOR_RESULTS,
+  type: ANOMALY_RESULTS,
   request: (client: IHttpService) =>
     client.get(`..${AD_NODE_API.DETECTOR}/${detectorId}/results`, {
+      params: queryParams,
+    }),
+});
+
+// TODO: implement something similar to existing getAnomalyResults in ad.ts
+export const getTaskResults = (
+  taskExecutionId: string,
+  queryParams: any
+): APIAction => ({
+  type: ANOMALY_RESULTS,
+  request: (client: IHttpService) =>
+    client.get(`..${AD_NODE_API.TASK}/${taskExecutionId}/results`, {
       params: queryParams,
     }),
 });

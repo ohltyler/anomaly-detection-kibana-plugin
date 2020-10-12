@@ -240,6 +240,7 @@ export function CreateTask(props: CreateTaskProps) {
 
   const handleSubmit = async (values: TaskFormikValues, formikBag: any) => {
     const apiRequest = formikToTask(values, task);
+    console.log('api request: ', apiRequest);
     try {
       if (props.isEdit) {
         await handleUpdate(apiRequest, saveTaskOption);

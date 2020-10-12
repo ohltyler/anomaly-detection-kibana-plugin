@@ -13,21 +13,50 @@
  * permissions and limitations under the License.
  */
 
-import { cloneDeep } from 'lodash';
+import { get, cloneDeep, omit } from 'lodash';
 import { mapKeysDeep, toCamel, toSnake } from '../../utils/helpers';
 import { TASK_STATE } from '../../../public/utils/constants';
 import { TaskListItem, Task } from 'public/models/interfaces';
 
 export const convertTaskKeysToSnakeCase = (payload: any) => {
   return {
-    ...mapKeysDeep(payload, toSnake),
+    ...mapKeysDeep(
+      {
+        ...omit(payload, ['filterQuery', 'featureAttributes']), // Exclude the filterQuery,
+      },
+      toSnake
+    ),
+    filter_query: get(payload, 'filterQuery', {}),
+    ui_metadata: get(payload, 'uiMetadata', {}),
+    feature_attributes: get(payload, 'featureAttributes', []).map(
+      (feature: any) => ({
+        ...mapKeysDeep({ ...omit(feature, ['aggregationQuery']) }, toSnake),
+        aggregation_query: feature.aggregationQuery,
+      })
+    ),
   };
 };
 
 export const convertTaskKeysToCamelCase = (response: any) => {
-  const obj = { ...mapKeysDeep({ response }, toCamel) };
-  //@ts-ignore
-  return obj.response;
+  return {
+    ...mapKeysDeep(
+      omit(response, [
+        'filter_query',
+        'ui_metadata',
+        'feature_query',
+        'feature_attributes',
+      ]),
+      toCamel
+    ),
+    filterQuery: get(response, 'filter_query', {}),
+    featureAttributes: get(response, 'feature_attributes', []).map(
+      (feature: any) => ({
+        ...mapKeysDeep({ ...omit(feature, ['aggregation_query']) }, toCamel),
+        aggregationQuery: feature.aggregation_query,
+      })
+    ),
+    uiMetadata: get(response, 'ui_metadata', {}),
+  };
 };
 
 export const getFinalStatesFromTaskList = (tasks: {

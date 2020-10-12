@@ -18,9 +18,9 @@ import React from 'react';
 import { APP_PATH, PLUGIN_NAME } from '../../../../utils/constants';
 
 const filterText =
-  'There are no tasks matching your applied filters. Reset your filters to view all tasks.';
+  'There are no historical detectors matching your applied filters. Reset your filters to view all historical detectors.';
 const emptyText =
-  'Historical analysis will allow you to observe patterns in your anomalies to see if there are any trending or distribution changes. Create an analysis to get started.';
+  'Historical detectors allow you to detect anomalies on your historical data. You may also use them to pre-train or tune your model by using your index history to train an anomaly detector.';
 
 interface EmptyTaskProps {
   isFilterApplied: boolean;
@@ -51,7 +51,7 @@ export const EmptyTaskMessage = (props: EmptyTaskProps) => (
           href={`${PLUGIN_NAME}#${APP_PATH.CREATE_TASK}`}
           data-test-subj="createTaskButton"
         >
-          Create task
+          Create detector
         </EuiButton>
       )
     }

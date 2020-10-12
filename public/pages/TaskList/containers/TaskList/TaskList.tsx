@@ -326,8 +326,8 @@ export function TaskList(props: TaskListProps) {
         <ContentPanel
           title={
             isLoading
-              ? getTitleWithCount('Tasks', '...')
-              : getTitleWithCount('Tasks', selectedTasks.length)
+              ? getTitleWithCount('Historical detectors', '...')
+              : getTitleWithCount('Historical detectors', selectedTasks.length)
           }
           actions={[
             <TaskListActions
@@ -341,7 +341,7 @@ export function TaskList(props: TaskListProps) {
               fill
               href={`${PLUGIN_NAME}#${APP_PATH.CREATE_TASK}`}
             >
-              Create task
+              Create detector
             </EuiButton>,
           ]}
         >
@@ -379,7 +379,7 @@ export function TaskList(props: TaskListProps) {
             pagination={pagination}
             noItemsMessage={
               isLoading ? (
-                'Loading tasks...'
+                'Loading historical detectors...'
               ) : (
                 <EmptyTaskMessage
                   isFilterApplied={isFilterApplied}

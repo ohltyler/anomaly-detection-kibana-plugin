@@ -44,6 +44,22 @@ exports[`<EmptyDetector /> spec Empty results renders component with empty messa
             width="16"
             xmlns="http://www.w3.org/2000/svg"
           />
+          <svg
+            aria-hidden="true"
+            aria-label="External link"
+            class="euiIcon euiIcon--small euiIcon-isLoading euiLink__externalIcon"
+            focusable="false"
+            height="16"
+            role="img"
+            viewBox="0 0 16 16"
+            width="16"
+            xmlns="http://www.w3.org/2000/svg"
+          />
+          <span
+            class="euiScreenReaderOnly"
+          >
+            (opens in a new tab or window)
+          </span>
         </a>
          
       </p>
@@ -69,7 +85,7 @@ exports[`<EmptyDetector /> spec Empty results renders component with empty messa
         style="width: 200px;"
       >
         <span
-          class="euiButton__content"
+          class="euiButtonContent euiButton__content"
         >
           <span
             class="euiButton__text"
@@ -90,7 +106,7 @@ exports[`<EmptyDetector /> spec Empty results renders component with empty messa
         style="width: 200px;"
       >
         <span
-          class="euiButton__content"
+          class="euiButtonContent euiButton__content"
         >
           <span
             class="euiButton__text"

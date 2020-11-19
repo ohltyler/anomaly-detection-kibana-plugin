@@ -13,7 +13,7 @@ exports[`<AlertsButton /> spec Alerts Button renders component with monitor 1`] 
     unit="Minutes"
   >
     <span
-      class="euiButton__content"
+      class="euiButtonContent euiButton__content"
     >
       <span
         class="euiButton__text"
@@ -36,7 +36,7 @@ exports[`<AlertsButton /> spec Alerts Button renders component without monitor 1
     unit="Minutes"
   >
     <span
-      class="euiButton__content"
+      class="euiButtonContent euiButton__content"
     >
       <span
         class="euiButton__text"

@@ -48,6 +48,22 @@ exports[`<CreateDetector /> spec create detector renders the component 1`] = `
                 target="_blank"
               >
                 documentation
+                <svg
+                  aria-hidden="true"
+                  aria-label="External link"
+                  class="euiIcon euiIcon--small euiIcon-isLoading euiLink__externalIcon"
+                  focusable="false"
+                  height="16"
+                  role="img"
+                  viewBox="0 0 16 16"
+                  width="16"
+                  xmlns="http://www.w3.org/2000/svg"
+                />
+                <span
+                  class="euiScreenReaderOnly"
+                >
+                  (opens in a new tab or window)
+                </span>
               </a>
                
               or create a
@@ -88,7 +104,7 @@ exports[`<CreateDetector /> spec create detector renders the component 1`] = `
       </div>
     </div>
     <div
-      class="euiPanel euiPanel--paddingMedium"
+      class="euiPanel euiPanel--paddingMedium euiPanel--borderRadiusMedium euiPanel--plain euiPanel--shadow"
       style="padding: 20px;"
     >
       <div
@@ -230,7 +246,7 @@ exports[`<CreateDetector /> spec create detector renders the component 1`] = `
       class="euiSpacer euiSpacer--l"
     />
     <div
-      class="euiPanel euiPanel--paddingMedium"
+      class="euiPanel euiPanel--paddingMedium euiPanel--borderRadiusMedium euiPanel--plain euiPanel--shadow"
       style="padding: 20px;"
     >
       <div
@@ -317,7 +333,7 @@ exports[`<CreateDetector /> spec create detector renders the component 1`] = `
                   class="euiFormControlLayout__childrenWrapper"
                 >
                   <div
-                    class="euiComboBox__inputWrap euiComboBox__inputWrap--noWrap"
+                    class="euiComboBox__inputWrap euiComboBox__inputWrap--noWrap euiComboBox__inputWrap-isLoading"
                     data-test-subj="comboBoxInput"
                     tabindex="-1"
                   >
@@ -346,6 +362,9 @@ exports[`<CreateDetector /> spec create detector renders the component 1`] = `
                   <div
                     class="euiFormControlLayoutIcons euiFormControlLayoutIcons--right"
                   >
+                    <span
+                      class="euiLoadingSpinner euiLoadingSpinner--medium"
+                    />
                     <button
                       aria-label="Open list of options"
                       class="euiFormControlLayoutCustomIcon euiFormControlLayoutCustomIcon--clickable"
@@ -572,7 +591,7 @@ exports[`<CreateDetector /> spec create detector renders the component 1`] = `
               type="button"
             >
               <span
-                class="euiButton__content"
+                class="euiButtonContent euiButton__content"
               >
                 <span
                   class="euiButton__text"
@@ -587,7 +606,7 @@ exports[`<CreateDetector /> spec create detector renders the component 1`] = `
           class="euiHorizontalRule euiHorizontalRule--full"
         />
         <div
-          class="euiPanel euiPanel--paddingMedium"
+          class="euiPanel euiPanel--paddingMedium euiPanel--borderRadiusMedium euiPanel--plain euiPanel--shadow"
           style="background-color: rgb(246, 246, 246);"
         >
           <div
@@ -622,7 +641,7 @@ exports[`<CreateDetector /> spec create detector renders the component 1`] = `
               type="button"
             >
               <span
-                class="euiButton__content"
+                class="euiButtonContent euiButton__content"
               >
                 <span
                   class="euiButton__text"
@@ -639,7 +658,7 @@ exports[`<CreateDetector /> spec create detector renders the component 1`] = `
       class="euiSpacer euiSpacer--l"
     />
     <div
-      class="euiPanel euiPanel--paddingMedium"
+      class="euiPanel euiPanel--paddingMedium euiPanel--borderRadiusMedium euiPanel--plain euiPanel--shadow"
       style="padding: 20px;"
     >
       <div
@@ -852,7 +871,7 @@ exports[`<CreateDetector /> spec create detector renders the component 1`] = `
           type="button"
         >
           <span
-            class="euiButtonEmpty__content"
+            class="euiButtonContent euiButtonEmpty__content"
           >
             <span
               class="euiButtonEmpty__text"
@@ -870,7 +889,7 @@ exports[`<CreateDetector /> spec create detector renders the component 1`] = `
           type="submit"
         >
           <span
-            class="euiButton__content"
+            class="euiButtonContent euiButton__content"
           >
             <span
               class="euiButton__text"

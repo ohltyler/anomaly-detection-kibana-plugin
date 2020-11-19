@@ -4,11 +4,15 @@ exports[`<AlertsFlyout /> spec Alerts Flyout renders component with monitor 1`] 
 <div>
   <div>
     <div
+      aria-hidden="true"
+      data-aria-hidden="true"
       data-focus-guard="true"
       style="width: 1px; height: 0px; padding: 0px; overflow: hidden; position: fixed; top: 1px; left: 1px;"
       tabindex="0"
     />
     <div
+      aria-hidden="true"
+      data-aria-hidden="true"
       data-focus-guard="true"
       style="width: 1px; height: 0px; padding: 0px; overflow: hidden; position: fixed; top: 1px; left: 1px;"
       tabindex="1"
@@ -117,12 +121,20 @@ exports[`<AlertsFlyout /> spec Alerts Flyout renders component with monitor 1`] 
                       <div
                         class="euiStep__titleWrapper"
                       >
-                        <div
-                          aria-label="Step 1"
+                        <span
                           class="euiStepNumber euiStep__circle"
                         >
-                          1
-                        </div>
+                          <span
+                            class="euiScreenReaderOnly"
+                          >
+                            Step 1
+                          </span>
+                          <span
+                            aria-hidden="true"
+                          >
+                            1
+                          </span>
+                        </span>
                         <p
                           class="euiTitle euiTitle--small euiStep__title"
                         >
@@ -145,12 +157,20 @@ exports[`<AlertsFlyout /> spec Alerts Flyout renders component with monitor 1`] 
                       <div
                         class="euiStep__titleWrapper"
                       >
-                        <div
-                          aria-label="Step 2"
+                        <span
                           class="euiStepNumber euiStep__circle"
                         >
-                          2
-                        </div>
+                          <span
+                            class="euiScreenReaderOnly"
+                          >
+                            Step 2
+                          </span>
+                          <span
+                            aria-hidden="true"
+                          >
+                            2
+                          </span>
+                        </span>
                         <p
                           class="euiTitle euiTitle--small euiStep__title"
                         >
@@ -173,12 +193,20 @@ exports[`<AlertsFlyout /> spec Alerts Flyout renders component with monitor 1`] 
                       <div
                         class="euiStep__titleWrapper"
                       >
-                        <div
-                          aria-label="Step 3"
+                        <span
                           class="euiStepNumber euiStep__circle"
                         >
-                          3
-                        </div>
+                          <span
+                            class="euiScreenReaderOnly"
+                          >
+                            Step 3
+                          </span>
+                          <span
+                            aria-hidden="true"
+                          >
+                            3
+                          </span>
+                        </span>
                         <p
                           class="euiTitle euiTitle--small euiStep__title"
                         >
@@ -218,7 +246,7 @@ exports[`<AlertsFlyout /> spec Alerts Flyout renders component with monitor 1`] 
                 target="_blank"
               >
                 <span
-                  class="euiButton__content"
+                  class="euiButtonContent euiButton__content"
                 >
                   <span
                     class="euiButton__text"
@@ -252,7 +280,7 @@ exports[`<AlertsFlyout /> spec Alerts Flyout renders component with monitor 1`] 
                 unit="Minutes"
               >
                 <span
-                  class="euiButton__content"
+                  class="euiButtonContent euiButton__content"
                 >
                   <span
                     class="euiButton__text"
@@ -267,6 +295,8 @@ exports[`<AlertsFlyout /> spec Alerts Flyout renders component with monitor 1`] 
       </div>
     </div>
     <div
+      aria-hidden="true"
+      data-aria-hidden="true"
       data-focus-guard="true"
       style="width: 1px; height: 0px; padding: 0px; overflow: hidden; position: fixed; top: 1px; left: 1px;"
       tabindex="0"
@@ -279,11 +309,15 @@ exports[`<AlertsFlyout /> spec Alerts Flyout renders component with undefined mo
 <div>
   <div>
     <div
+      aria-hidden="true"
+      data-aria-hidden="true"
       data-focus-guard="true"
       style="width: 1px; height: 0px; padding: 0px; overflow: hidden; position: fixed; top: 1px; left: 1px;"
       tabindex="0"
     />
     <div
+      aria-hidden="true"
+      data-aria-hidden="true"
       data-focus-guard="true"
       style="width: 1px; height: 0px; padding: 0px; overflow: hidden; position: fixed; top: 1px; left: 1px;"
       tabindex="1"
@@ -401,12 +435,20 @@ exports[`<AlertsFlyout /> spec Alerts Flyout renders component with undefined mo
                       <div
                         class="euiStep__titleWrapper"
                       >
-                        <div
-                          aria-label="Step 1"
+                        <span
                           class="euiStepNumber euiStep__circle"
                         >
-                          1
-                        </div>
+                          <span
+                            class="euiScreenReaderOnly"
+                          >
+                            Step 1
+                          </span>
+                          <span
+                            aria-hidden="true"
+                          >
+                            1
+                          </span>
+                        </span>
                         <p
                           class="euiTitle euiTitle--small euiStep__title"
                         >
@@ -429,12 +471,20 @@ exports[`<AlertsFlyout /> spec Alerts Flyout renders component with undefined mo
                       <div
                         class="euiStep__titleWrapper"
                       >
-                        <div
-                          aria-label="Step 2"
+                        <span
                           class="euiStepNumber euiStep__circle"
                         >
-                          2
-                        </div>
+                          <span
+                            class="euiScreenReaderOnly"
+                          >
+                            Step 2
+                          </span>
+                          <span
+                            aria-hidden="true"
+                          >
+                            2
+                          </span>
+                        </span>
                         <p
                           class="euiTitle euiTitle--small euiStep__title"
                         >
@@ -457,12 +507,20 @@ exports[`<AlertsFlyout /> spec Alerts Flyout renders component with undefined mo
                       <div
                         class="euiStep__titleWrapper"
                       >
-                        <div
-                          aria-label="Step 3"
+                        <span
                           class="euiStepNumber euiStep__circle"
                         >
-                          3
-                        </div>
+                          <span
+                            class="euiScreenReaderOnly"
+                          >
+                            Step 3
+                          </span>
+                          <span
+                            aria-hidden="true"
+                          >
+                            3
+                          </span>
+                        </span>
                         <p
                           class="euiTitle euiTitle--small euiStep__title"
                         >
@@ -502,7 +560,7 @@ exports[`<AlertsFlyout /> spec Alerts Flyout renders component with undefined mo
                 target="_blank"
               >
                 <span
-                  class="euiButton__content"
+                  class="euiButtonContent euiButton__content"
                 >
                   <span
                     class="euiButton__text"
@@ -538,7 +596,7 @@ exports[`<AlertsFlyout /> spec Alerts Flyout renders component with undefined mo
                 unit="Minutes"
               >
                 <span
-                  class="euiButton__content"
+                  class="euiButtonContent euiButton__content"
                 >
                   <span
                     class="euiButton__text"
@@ -553,6 +611,8 @@ exports[`<AlertsFlyout /> spec Alerts Flyout renders component with undefined mo
       </div>
     </div>
     <div
+      aria-hidden="true"
+      data-aria-hidden="true"
       data-focus-guard="true"
       style="width: 1px; height: 0px; padding: 0px; overflow: hidden; position: fixed; top: 1px; left: 1px;"
       tabindex="0"

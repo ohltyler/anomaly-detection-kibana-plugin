@@ -29,6 +29,11 @@ export const BREADCRUMBS = Object.freeze({
   EDIT_DETECTOR: { text: 'Edit detector' },
   DASHBOARD: { text: 'Dashboard', href: '#/' },
   EDIT_MODEL_CONFIGURATION: { text: 'Edit model configuration' },
+  HISTORICAL_DETECTORS: {
+    text: 'Historical detectors',
+    href: '#/historical-detectors',
+  },
+  CREATE_HISTORICAL_DETECTOR: { text: 'Create historical detector' },
 });
 
 export const APP_PATH = {
@@ -39,6 +44,8 @@ export const APP_PATH = {
   EDIT_DETECTOR: '/detectors/:detectorId/edit',
   EDIT_FEATURES: '/detectors/:detectorId/features/',
   DETECTOR_DETAIL: '/detectors/:detectorId/',
+  LIST_HISTORICAL_DETECTORS: '/historical-detectors',
+  CREATE_HISTORICAL_DETECTOR: '/create-historical-detector/',
 };
 
 export const KIBANA_PATH = {

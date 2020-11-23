@@ -20,6 +20,8 @@ import { CreateDetector } from '../createDetector';
 import { DetectorList } from '../DetectorsList';
 import { SampleData } from '../SampleData';
 import { ListRouterParams } from '../DetectorsList/containers/List/List';
+import { HistoricalDetectorList } from '../HistoricalDetectorList';
+import { HistoricalDetectorListRouterParams } from '../HistoricalDetectorList/containers/HistoricalDetectorList';
 // @ts-ignore
 import { EuiSideNav, EuiPage, EuiPageBody, EuiPageSideBar } from '@elastic/eui';
 import { useSelector } from 'react-redux';
@@ -34,12 +36,14 @@ enum Navigation {
   AnomalyDetection = 'Anomaly detection',
   Dashboard = 'Dashboard',
   Detectors = 'Detectors',
+  HistoricalDetectors = 'Historical detectors',
   SampleDetectors = 'Sample detectors',
 }
 
 enum Pathname {
   Dashboard = '/dashboard',
   Detectors = '/detectors',
+  HistoricalDetectors = '/historical-detectors',
   SampleDetectors = '/sample-detectors',
 }
 
@@ -66,6 +70,12 @@ export function Main(props: MainProps) {
           id: 2,
           href: `#${Pathname.Detectors}`,
           isSelected: props.location.pathname === Pathname.Detectors,
+        },
+        {
+          name: Navigation.HistoricalDetectors,
+          id: 2,
+          href: `#${Pathname.HistoricalDetectors}`,
+          isSelected: props.location.pathname === Pathname.HistoricalDetectors,
         },
         {
           name: Navigation.SampleDetectors,
@@ -128,6 +138,22 @@ export function Main(props: MainProps) {
                   path={APP_PATH.DETECTOR_DETAIL}
                   render={(props: RouteComponentProps) => (
                     <DetectorDetail {...props} />
+                  )}
+                />
+                <Route
+                  exact
+                  path={APP_PATH.LIST_HISTORICAL_DETECTORS}
+                  render={(
+                    props: RouteComponentProps<
+                      HistoricalDetectorListRouterParams
+                    >
+                  ) => <HistoricalDetectorList {...props} />}
+                />
+                <Route
+                  exact
+                  path={APP_PATH.CREATE_HISTORICAL_DETECTOR}
+                  render={(props: RouteComponentProps) => (
+                    <CreateHistoricalDetector {...props} isEdit={false} />
                   )}
                 />
                 <Redirect from="/" to={APP_PATH.DASHBOARD} />

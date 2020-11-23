@@ -124,6 +124,16 @@ export type DetectorListItem = {
   enabledTime?: number;
 };
 
+export type HistoricalDetectorListItem = {
+  id: string;
+  name: string;
+  curState: HISTORICAL_DETECTOR_STATE;
+  indices: string[];
+  totalAnomalies: number;
+  dataStartTime: number;
+  dataEndTime: number;
+};
+
 export type EntityData = {
   name: string;
   value: string;

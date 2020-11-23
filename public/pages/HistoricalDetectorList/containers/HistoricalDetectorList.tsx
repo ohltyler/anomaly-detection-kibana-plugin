@@ -40,12 +40,12 @@ import {
   BREADCRUMBS,
   APP_PATH,
   PLUGIN_NAME,
-  HISTORICAL_DETECTOR_STATE,
+  DETECTOR_STATE,
   MAX_DETECTORS,
 } from '../../../utils/constants';
 import { getTitleWithCount } from '../../../utils/utils';
-import { ALL_HISTORICAL_DETECTOR_STATES } from '../../utils/constants';
-import { getURLQueryParams } from '../../utils/helpers';
+import { ALL_DETECTOR_STATES } from '../../utils/constants';
+import { getURLQueryParams } from '../utils/helpers';
 import {
   filterAndSortHistoricalDetectors,
   getHistoricalDetectorsToDisplay,
@@ -75,7 +75,7 @@ interface HistoricalDetectorListProps
 interface HistoricalDetectorListState {
   page: number;
   queryParams: any;
-  selectedDetectorStates: HISTORICAL_DETECTOR_STATE[];
+  selectedDetectorStates: DETECTOR_STATE[];
 }
 // interface ActionModalState {
 //   isOpen: boolean;
@@ -120,7 +120,7 @@ export function HistoricalDetectorList(props: HistoricalDetectorListProps) {
   const [state, setState] = useState<HistoricalDetectorListState>({
     page: 0,
     queryParams: getURLQueryParams(props.location),
-    selectedDetectorStates: ALL_HISTORICAL_DETECTOR_STATES,
+    selectedDetectorStates: ALL_DETECTOR_STATES,
   });
   // const [actionModalState, setActionModalState] = useState<ActionModalState>({
   //   isOpen: false,
@@ -228,11 +228,11 @@ export function HistoricalDetectorList(props: HistoricalDetectorListProps) {
   const handleDetectorStateChange = (
     options: EuiComboBoxOptionProps[]
   ): void => {
-    let states: HISTORICAL_DETECTOR_STATE[];
+    let states: DETECTOR_STATE[];
     states =
       options.length == 0
-        ? ALL_HISTORICAL_DETECTOR_STATES
-        : options.map((option) => option.label as HISTORICAL_DETECTOR_STATE);
+        ? ALL_DETECTOR_STATES
+        : options.map((option) => option.label as DETECTOR_STATE);
     setState((state) => ({
       ...state,
       page: 0,
@@ -279,7 +279,7 @@ export function HistoricalDetectorList(props: HistoricalDetectorListProps) {
         ...state.queryParams,
         search: '',
       },
-      selectedDetectorStates: ALL_HISTORICAL_DETECTOR_STATES,
+      selectedDetectorStates: ALL_DETECTOR_STATES,
     }));
   };
 

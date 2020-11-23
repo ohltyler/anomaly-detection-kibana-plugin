@@ -28,222 +28,235 @@ import {
 import { Formik, FormikProps } from 'formik';
 import { get, isEmpty } from 'lodash';
 import React, { Fragment, useEffect, useState } from 'react';
-import {
-  BREADCRUMBS,
-  HISTORICAL_DETECTOR_STATE,
-} from '../../../utils/constants';
+import { BREADCRUMBS, DETECTOR_STATE } from '../../../utils/constants';
 import { AppState } from '../../../redux/reducers';
+import {
+  matchDetector,
+  updateDetector,
+  createDetector,
+  startDetector,
+  getDetector,
+} from '../../../redux/reducers/ad';
 import { getMappings } from '../../../redux/reducers/elasticsearch';
 import { RouteComponentProps } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHideSideNavBar } from '../../main/hooks/useHideSideNavBar';
-import { TaskInfo } from '../components/TaskInfo/TaskInfo';
+import { HistoricalDetectorInfo } from '../components/HistoricalDetectorInfo/HistoricalDetectorInfo';
 import { DataSource } from '../components/DataSource/DataSource';
 import { Scheduling } from '../components/Scheduling/Scheduling';
-import { TaskFormikValues, SAVE_TASK_OPTIONS } from '../../utils/constants';
-import { formikToTask, taskToFormik } from '../../utils/helpers';
-import { focusOnFirstWrongFeature } from '../../../EditFeatures/utils/helpers';
-import { validateName } from '../../../../utils/utils';
 import {
-  createTask,
-  getTask,
-  updateTask,
-  startTask,
-  searchTask,
-} from '../../../redux/reducers/task';
+  HistoricalDetectorFormikValues,
+  SAVE_HISTORICAL_DETECTOR_OPTIONS,
+} from '../utils/constants';
+import {
+  formikToHistoricalDetector,
+  historicalDetectorToFormik,
+} from '../utils/helpers';
+import { focusOnFirstWrongFeature } from '../../../EditFeatures/utils/helpers';
+import { validateDetectorName } from '../../../utils/utils';
 import moment from 'moment';
 import { Detector, DateRange } from '../../../models/interfaces';
+import { CoreStart } from '../../../../../../src/core/public';
+import { CoreServicesContext } from '../../../components/CoreServices/CoreServices';
 
 interface CreateRouterProps {
-  taskId?: string;
+  detectorId?: string;
 }
 
-interface CreateTaskProps extends RouteComponentProps<CreateRouterProps> {
+interface CreateHistoricalDetectorProps
+  extends RouteComponentProps<CreateRouterProps> {
   isEdit: boolean;
 }
 
-export function CreateTask(props: CreateTaskProps) {
+export function CreateHistoricalDetector(props: CreateHistoricalDetectorProps) {
+  const core = React.useContext(CoreServicesContext) as CoreStart;
   const dispatch = useDispatch();
-  const taskId: string = get(props, 'match.params.taskId', '');
-  const taskState = useSelector((state: AppState) => state.task);
-  const tasks = taskState.tasks;
-  const task = tasks[taskId];
-  const errorGettingTask = taskState.errorMessage;
+  const detectorId: string = get(props, 'match.params.detectorId', '');
+  const historicalDetectorsState = useSelector(
+    (state: AppState) => state.historicalDetectors
+  );
+  const detectors = historicalDetectorsState.detectors;
+  const detector = detectors[detectorId];
+  const errorGettingDetector = historicalDetectorsState.errorMessage;
 
-  const isRequesting = useSelector((state: AppState) => state.ad.requesting);
+  const isRequesting = useSelector(
+    (state: AppState) => state.historicalDetectors.requesting
+  );
 
   const initialStartDate = moment().subtract(7, 'days').valueOf();
   const [dateRange, setDateRange] = useState<DateRange>({
     startDate: moment().subtract(7, 'days').valueOf(),
     endDate: moment().valueOf(),
   });
-  const [saveTaskOption, setSaveTaskOption] = useState<SAVE_TASK_OPTIONS>(
-    SAVE_TASK_OPTIONS.KEEP_TASK_STOPPED
-  );
+  const [saveDetectorOption, setSaveDetectorOption] = useState<
+    SAVE_HISTORICAL_DETECTOR_OPTIONS
+  >(SAVE_HISTORICAL_DETECTOR_OPTIONS.KEEP_STOPPED);
 
   useHideSideNavBar(true, false);
 
   // Set breadcrumbs based on Create / Update
   useEffect(() => {
     const createOrEditBreadcrumb = props.isEdit
-      ? BREADCRUMBS.EDIT_TASK
-      : BREADCRUMBS.CREATE_TASK;
+      ? BREADCRUMBS.EDIT_HISTORICAL_DETECTOR
+      : BREADCRUMBS.CREATE_HISTORICAL_DETECTOR;
     let breadCrumbs = [
       BREADCRUMBS.ANOMALY_DETECTOR,
-      BREADCRUMBS.TASKS,
+      BREADCRUMBS.HISTORICAL_DETECTORS,
       createOrEditBreadcrumb,
     ];
-    if (task && task.name) {
+    if (detector && detector.name) {
       breadCrumbs.splice(2, 0, {
-        text: task.name,
+        text: detector.name,
         //@ts-ignore
-        href: `#/tasks/${taskId}/details`,
+        href: `#/historical-detectors/${detectorId}/details`,
       });
     }
-    chrome.breadcrumbs.set(breadCrumbs);
+    core.chrome.setBreadcrumbs(breadCrumbs);
   });
-  // If no task found with ID, redirect it to list
+  // If no historical detector found with ID, redirect it to list
   useEffect(() => {
-    if (props.isEdit && errorGettingTask) {
-      toastNotifications.addDanger('Unable to find task for editing');
-      props.history.push(`/tasks`);
+    if (props.isEdit && errorGettingDetector) {
+      core.notifications.toasts.addDanger(
+        'Unable to find historical detector for editing'
+      );
+      props.history.push(`/historical-detectors`);
     }
   }, [props.isEdit]);
 
-  // Try to get the task initially
+  // Try to get the historical detector initially
   useEffect(() => {
-    const fetchTask = async (taskId: string) => {
-      dispatch(getTask(taskId));
+    const fetchDetector = async (detectorId: string) => {
+      dispatch(getDetector(detectorId));
     };
-    if (taskId) {
-      fetchTask(taskId);
+    if (detectorId) {
+      fetchDetector(detectorId);
     }
   }, []);
 
-  // Get corresponding index mappings if there is an existing task
+  // Get corresponding index mappings if there is an existing detector
   useEffect(() => {
     const fetchIndexMappings = async (index: string) => {
       dispatch(getMappings(index));
     };
-    if (task) {
-      fetchIndexMappings(task.indices[0]);
+    if (detector?.indices) {
+      fetchIndexMappings(detector.indices[0]);
     }
-  }, [task]);
+  }, [detector]);
 
-  // Using the task-specified date range (if it exists)
+  // Using the detector-specified date range (if it exists)
   useEffect(() => {
-    if (task?.dataStartTime && task?.dataEndTime) {
+    if (detector?.dataStartTime && detector?.dataEndTime) {
       setDateRange({
-        startDate: task.dataStartTime,
-        endDate: task.dataEndTime,
+        startDate: detector.dataStartTime,
+        endDate: detector.dataEndTime,
       });
     }
-  }, [task]);
+  }, [detector]);
 
-  const handleValidateName = async (taskName: string) => {
-    const {
-      isEdit,
-      match: {
-        params: { taskId },
-      },
-    } = props;
-    if (isEmpty(taskName)) {
-      throw 'Task name cannot be empty';
+  const handleValidateName = async (detectorName: string) => {
+    if (isEmpty(detectorName)) {
+      throw 'Detector name cannot be empty';
     } else {
-      const error = validateName(taskName);
+      const error = validateDetectorName(detectorName);
       if (error) {
         throw error;
       }
-      const resp = await dispatch(
-        searchTask({ query: { term: { 'name.keyword': taskName } } })
-      );
-      const totalTasks = resp.data.response.totalTasks;
-      if (totalTasks === 0) {
+      //TODO::Avoid making call if value is same
+      const resp = await dispatch(matchDetector(detectorName));
+      const match = get(resp, 'response.match', false);
+      if (!match) {
         return undefined;
       }
-      // Check if task name already exists
-      // If creating a new task:
-      if (!isEdit && totalTasks > 0) {
-        throw 'Duplicate task name';
+      // If more than one detector found: duplicate exists.
+      if (!props.isEdit && match) {
+        throw 'Duplicate detector name';
       }
-      // If editing an existing task:
-      if (
-        isEdit &&
-        (totalTasks > 1 || get(resp, 'data.response.tasks.0.id', '') !== taskId)
-      ) {
-        throw 'Duplicate task name';
+      // If it is in edit mode
+      if (props.isEdit && detectorName !== detector?.name) {
+        throw 'Duplicate detector name';
       }
     }
   };
 
-  const handleValidateDescription = async (taskDescription: string) => {
-    if (taskDescription.length > 400) {
+  const handleValidateDescription = async (detectorDescription: string) => {
+    if (detectorDescription.length > 400) {
       throw 'Description should not exceed 400 characters';
     }
     return undefined;
   };
 
   const handleUpdate = async (
-    taskToUpdate: Task,
-    option: SAVE_TASK_OPTIONS
+    detectorToUpdate: Detector,
+    option: SAVE_HISTORICAL_DETECTOR_OPTIONS
   ) => {
     try {
-      await dispatch(updateTask(taskId, taskToUpdate));
-      if (option === SAVE_TASK_OPTIONS.KEEP_TASK_STOPPED) {
-        toastNotifications.addSuccess(`Task updated: ${taskToUpdate.name}`);
-      } else {
-        await dispatch(startTask(taskId));
-        toastNotifications.addSuccess(`Task has been started successfully`);
-      }
-      props.history.push(`/tasks/${taskId}/details/`);
-    } catch (err) {
-      if (option === SAVE_TASK_OPTIONS.KEEP_TASK_STOPPED) {
-        toastNotifications.addDanger(
-          `There was a problem updating the task: ${err}`
+      await dispatch(updateDetector(detectorId, detectorToUpdate));
+      if (option === SAVE_HISTORICAL_DETECTOR_OPTIONS.KEEP_STOPPED) {
+        core.notifications.toasts.addSuccess(
+          `Historical detector updated: ${detectorToUpdate.name}`
         );
       } else {
-        toastNotifications.addDanger(
-          `There was a problem updating and starting the task: ${err}`
+        await dispatch(startDetector(detectorId));
+        core.notifications.toasts.addSuccess(
+          `Historical detector has been started successfully`
+        );
+      }
+      props.history.push(`/historical-detectors/${detectorId}/details/`);
+    } catch (err) {
+      if (option === SAVE_HISTORICAL_DETECTOR_OPTIONS.KEEP_STOPPED) {
+        core.notifications.toasts.addDanger(
+          `There was a problem updating the historical detector: ${err}`
+        );
+      } else {
+        core.notifications.toasts.addDanger(
+          `There was a problem updating and starting the historical detector: ${err}`
         );
       }
     }
   };
 
   const handleCreate = async (
-    taskToCreate: Task,
-    option: SAVE_TASK_OPTIONS
+    detectorToCreate: Detector,
+    option: SAVE_HISTORICAL_DETECTOR_OPTIONS
   ) => {
     try {
-      const response = await dispatch(createTask(taskToCreate));
-      const createdTaskId = response.data.response.id;
-      if (option === SAVE_TASK_OPTIONS.KEEP_TASK_STOPPED) {
-        toastNotifications.addSuccess(`Task created: ${taskToCreate.name}`);
-      } else {
-        await dispatch(startTask(createdTaskId));
-        toastNotifications.addSuccess(`Task has been started successfully`);
-      }
-      props.history.push(`/tasks/${createdTaskId}/details/`);
-    } catch (err) {
-      if (option === SAVE_TASK_OPTIONS.KEEP_TASK_STOPPED) {
-        toastNotifications.addDanger(
-          `There was a problem creating the task: ${err}`
+      const response = await dispatch(createDetector(detectorToCreate));
+      const createdDetectorId = response.response.id;
+      if (option === SAVE_HISTORICAL_DETECTOR_OPTIONS.KEEP_STOPPED) {
+        core.notifications.toasts.addSuccess(
+          `Historical detector created: ${detectorToCreate.name}`
         );
       } else {
-        toastNotifications.addDanger(
-          `There was a problem creating and starting the task: ${err}`
+        await dispatch(startDetector(createdDetectorId));
+        core.notifications.toasts.addSuccess(
+          `Historical detector has been started successfully`
+        );
+      }
+      props.history.push(`/historical-detectors/${createdDetectorId}/details/`);
+    } catch (err) {
+      if (option === SAVE_HISTORICAL_DETECTOR_OPTIONS.KEEP_STOPPED) {
+        core.notifications.toasts.addDanger(
+          `There was a problem creating the historical detector: ${err}`
+        );
+      } else {
+        core.notifications.toasts.addDanger(
+          `There was a problem creating and starting the historical detector: ${err}`
         );
       }
     }
   };
 
-  const handleSubmit = async (values: TaskFormikValues, formikBag: any) => {
-    const apiRequest = formikToTask(values, task);
+  const handleSubmit = async (
+    values: HistoricalDetectorFormikValues,
+    formikBag: any
+  ) => {
+    const apiRequest = formikToHistoricalDetector(values, detector);
     console.log('api request: ', apiRequest);
     try {
       if (props.isEdit) {
-        await handleUpdate(apiRequest, saveTaskOption);
+        await handleUpdate(apiRequest, saveDetectorOption);
       } else {
-        await handleCreate(apiRequest, saveTaskOption);
+        await handleCreate(apiRequest, saveDetectorOption);
       }
       formikBag.setSubmitting(false);
     } catch (e) {
@@ -251,10 +264,12 @@ export function CreateTask(props: CreateTaskProps) {
     }
   };
 
-  const handleFormValidation = (formikProps: FormikProps<TaskFormikValues>) => {
-    if (props.isEdit && task.curState === TASK_STATE.RUNNING) {
-      toastNotifications.addDanger(
-        'Task cannot be updated while it is running'
+  const handleFormValidation = (
+    formikProps: FormikProps<HistoricalDetectorFormikValues>
+  ) => {
+    if (props.isEdit && detector.curState === DETECTOR_STATE.RUNNING) {
+      core.notifications.toasts.addDanger(
+        'Historical detector cannot be updated while it is running'
       );
     } else {
       formikProps.setFieldTouched('name');
@@ -264,7 +279,7 @@ export function CreateTask(props: CreateTaskProps) {
       formikProps.validateForm();
       if (formikProps.isValid && formikProps.values.rangeValid) {
         if (formikProps.values.featureList.length === 0) {
-          toastNotifications.addDanger('No features have been created');
+          core.notifications.toasts.addDanger('No features have been created');
         } else {
           formikProps.setSubmitting(true);
           handleSubmit(formikProps.values, formikProps);
@@ -274,19 +289,23 @@ export function CreateTask(props: CreateTaskProps) {
           formikProps.errors,
           formikProps.setFieldTouched
         );
-        toastNotifications.addDanger('One or more input fields is invalid');
+        core.notifications.toasts.addDanger(
+          'One or more input fields is invalid'
+        );
       }
     }
   };
 
   const handleCancelClick = () => {
-    taskId
-      ? props.history.push(`/tasks/${taskId}/details`)
-      : props.history.push('/tasks');
+    detectorId
+      ? props.history.push(`/historical-detectors/${detectorId}/details`)
+      : props.history.push('/historical-detectors');
   };
 
-  const handleSaveTaskOptionChange = (option: SAVE_TASK_OPTIONS) => {
-    setSaveTaskOption(option);
+  const handleSaveDetectorOptionChange = (
+    option: SAVE_HISTORICAL_DETECTOR_OPTIONS
+  ) => {
+    setSaveDetectorOption(option);
   };
 
   return (
@@ -295,26 +314,30 @@ export function CreateTask(props: CreateTaskProps) {
         <EuiPageHeader>
           <EuiPageHeaderSection>
             <EuiTitle size="l">
-              <h1>{props.isEdit ? 'Edit task' : 'Create task'} </h1>
+              <h1>
+                {props.isEdit
+                  ? 'Edit historical detector'
+                  : 'Create historical detector'}{' '}
+              </h1>
             </EuiTitle>
           </EuiPageHeaderSection>
         </EuiPageHeader>
         <Formik
           enableReinitialize={true}
-          initialValues={taskToFormik(task)}
+          initialValues={historicalDetectorToFormik(detector)}
           onSubmit={handleSubmit}
           isInitialValid={props.isEdit ? true : false}
         >
           {(formikProps) => (
             <Fragment>
-              <TaskInfo
-                onValidateTaskName={handleValidateName}
-                onValidateTaskDescription={handleValidateDescription}
+              <HistoricalDetectorInfo
+                onValidateDetectorName={handleValidateName}
+                onValidateDetectorDescription={handleValidateDescription}
               />
               <EuiSpacer />
               <DataSource
                 isEdit={props.isEdit}
-                task={task}
+                detector={detector}
                 isLoading={isRequesting}
                 formikProps={formikProps}
               />
@@ -322,8 +345,8 @@ export function CreateTask(props: CreateTaskProps) {
               <Scheduling
                 isLoading={isRequesting}
                 formikProps={formikProps}
-                selectedOption={saveTaskOption}
-                onOptionChange={handleSaveTaskOptionChange}
+                selectedOption={saveDetectorOption}
+                onOptionChange={handleSaveDetectorOptionChange}
               />
               <EuiSpacer />
               <EuiFlexGroup alignItems="center" justifyContent="flexEnd">

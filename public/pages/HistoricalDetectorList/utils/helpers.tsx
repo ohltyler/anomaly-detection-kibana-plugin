@@ -16,7 +16,7 @@
 import queryString from 'querystring';
 import { SORT_DIRECTION } from '../../../../server/utils/constants';
 import { DEFAULT_QUERY_PARAMS } from '../../utils/constants';
-import { HISTORICAL_DETECTOR_STATE } from '../../../utils/constants';
+import { DETECTOR_STATE } from '../../../utils/constants';
 // import { TASK_ACTION } from './constants';
 // import { HistoricalDetectorListItem } from '../../../models/interfaces';
 
@@ -42,11 +42,19 @@ export const getURLQueryParams = (location: { search: string }): any => {
   };
 };
 
+// For historical detectors: can only be stopped/running/completed/failed
 export const getHistoricalDetectorStateOptions = () => {
-  return Object.values(HISTORICAL_DETECTOR_STATE).map((state) => ({
-    label: state,
-    text: state,
-  }));
+  return Object.values(DETECTOR_STATE).map((state) => {
+    return state === DETECTOR_STATE.DISABLED ||
+      state === DETECTOR_STATE.RUNNING ||
+      state === DETECTOR_STATE.COMPLETED ||
+      state === DETECTOR_STATE.UNEXPECTED_FAILURE
+      ? {
+          label: state,
+          text: state,
+        }
+      : null;
+  });
 };
 
 // export const getTasksForAction = (

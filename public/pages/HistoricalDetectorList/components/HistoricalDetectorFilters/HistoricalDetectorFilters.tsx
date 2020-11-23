@@ -23,13 +23,13 @@ import {
 } from '@elastic/eui';
 import React from 'react';
 import { getHistoricalDetectorStateOptions } from '../../utils/helpers';
-import { HISTORICAL_DETECTOR_STATE } from '../../../../utils/constants';
+import { DETECTOR_STATE } from '../../../../utils/constants';
 
 interface HistoricalDetectorFiltersProps {
   activePage: number;
   pageCount: number;
   search: string;
-  selectedDetectorStates: HISTORICAL_DETECTOR_STATE[];
+  selectedDetectorStates: DETECTOR_STATE[];
   onSearchDetectorChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onDetectorStateChange: (options: EuiComboBoxOptionProps[]) => void;
   onPageClick: (pageNumber: number) => void;

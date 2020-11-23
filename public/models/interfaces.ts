@@ -110,6 +110,8 @@ export type Detector = {
   stateError: string;
   initProgress?: InitProgress;
   categoryField?: string[];
+  dataStartTime?: number;
+  dataEndTime?: number;
 };
 
 export type DetectorListItem = {
@@ -127,7 +129,7 @@ export type DetectorListItem = {
 export type HistoricalDetectorListItem = {
   id: string;
   name: string;
-  curState: HISTORICAL_DETECTOR_STATE;
+  curState: DETECTOR_STATE;
   indices: string[];
   totalAnomalies: number;
   dataStartTime: number;

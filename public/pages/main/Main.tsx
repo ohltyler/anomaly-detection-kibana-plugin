@@ -22,6 +22,7 @@ import { SampleData } from '../SampleData';
 import { ListRouterParams } from '../DetectorsList/containers/List/List';
 import { HistoricalDetectorList } from '../HistoricalDetectorList';
 import { HistoricalDetectorListRouterParams } from '../HistoricalDetectorList/containers/HistoricalDetectorList';
+import { CreateHistoricalDetector } from '../CreateHistoricalDetector';
 // @ts-ignore
 import { EuiSideNav, EuiPage, EuiPageBody, EuiPageSideBar } from '@elastic/eui';
 import { useSelector } from 'react-redux';

@@ -25,11 +25,8 @@ import moment from 'moment';
 import React from 'react';
 import { get } from 'lodash';
 import { Detector } from '../../../models/interfaces';
-import {
-  PLUGIN_NAME,
-  HISTORICAL_DETECTOR_STATE,
-} from '../../../utils/constants';
-import { historicalDetectorStateToColorMap } from '../../utils/constants';
+import { PLUGIN_NAME, DETECTOR_STATE } from '../../../utils/constants';
+import { stateToColorMap } from '../../utils/constants';
 
 const DEFAULT_EMPTY_DATA = '-';
 const columnStyle = {
@@ -45,12 +42,10 @@ const renderTime = (time: number) => {
   return DEFAULT_EMPTY_DATA;
 };
 
-const renderState = (state: HISTORICAL_DETECTOR_STATE) => {
+const renderState = (state: DETECTOR_STATE) => {
   return (
     //@ts-ignore
-    <EuiHealth color={historicalDetectorStateToColorMap.get(state)}>
-      {state}
-    </EuiHealth>
+    <EuiHealth color={stateToColorMap.get(state)}>{state}</EuiHealth>
   );
 };
 

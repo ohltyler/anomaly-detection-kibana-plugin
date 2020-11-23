@@ -123,7 +123,7 @@ export const formatNumber = (data: any) => {
 export const filterAndSortHistoricalDetectors = (
   detectors: HistoricalDetectorListItem[],
   search: string,
-  selectedDetectorStates: HISTORICAL_DETECTOR_STATE[],
+  selectedDetectorStates: DETECTOR_STATE[],
   sortField: string,
   sortDirection: string
 ) => {
@@ -132,7 +132,7 @@ export const filterAndSortHistoricalDetectors = (
       ? detectors
       : detectors.filter((detector) => detector.name.includes(search));
   let filteredBySearchAndState =
-    selectedDetectorStates == ALL_HISTORICAL_DETECTOR_STATES
+    selectedDetectorStates == ALL_DETECTOR_STATES
       ? filteredBySearch
       : filteredBySearch.filter((detector) =>
           selectedDetectorStates.includes(detector.curState)

@@ -23,7 +23,7 @@ import {
 } from '@elastic/eui';
 import React from 'react';
 import { getHistoricalDetectorStateOptions } from '../../utils/helpers';
-import { DETECTOR_STATE } from '../../../../utils/constants';
+import { DETECTOR_STATE } from '../../../../../server/utils/constants';
 
 interface HistoricalDetectorFiltersProps {
   activePage: number;

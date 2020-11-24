@@ -44,17 +44,17 @@ export const getURLQueryParams = (location: { search: string }): any => {
 
 // For historical detectors: can only be stopped/running/completed/failed
 export const getHistoricalDetectorStateOptions = () => {
-  return Object.values(DETECTOR_STATE).map((state) => {
-    return state === DETECTOR_STATE.DISABLED ||
-      state === DETECTOR_STATE.RUNNING ||
-      state === DETECTOR_STATE.COMPLETED ||
-      state === DETECTOR_STATE.UNEXPECTED_FAILURE
-      ? {
-          label: state,
-          text: state,
-        }
-      : null;
-  });
+  return Object.values(DETECTOR_STATE)
+    .map((detectorState) => ({
+      label: detectorState,
+      text: detectorState,
+    }))
+    .filter(
+      (option) =>
+        option.label !== DETECTOR_STATE.INIT &&
+        option.label !== DETECTOR_STATE.FEATURE_REQUIRED &&
+        option.label !== DETECTOR_STATE.INIT_FAILURE
+    );
 };
 
 // export const getTasksForAction = (

@@ -14,8 +14,8 @@
  */
 
 import { get, omit, cloneDeep, isEmpty } from 'lodash';
-import { AnomalyResults } from 'server/models/interfaces';
-import { GetDetectorsQueryParams } from '../../models/types';
+import { AnomalyResults } from '../../models/interfaces';
+import { GetDetectorsQueryParams, Detector } from '../../models/types';
 import { mapKeysDeep, toCamel, toSnake } from '../../utils/helpers';
 import { DETECTOR_STATE } from '../../utils/constants';
 import { InitProgress } from '../../models/interfaces';
@@ -252,4 +252,11 @@ export const getErrorMessage = (err: any) => {
   return !isEmpty(get(err, 'body.error.reason'))
     ? get(err, 'body.error.reason')
     : get(err, 'message');
+};
+
+// Currently: detector w/ data start & end times is considered a 'historical' detector
+export const getHistoricalDetectors = (detectors: Detector[]) => {
+  return detectors.filter((detector) => {
+    !isEmpty(detector.dataStartTime) && !isEmpty(detector.dataEndTime);
+  });
 };

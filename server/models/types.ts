@@ -67,6 +67,8 @@ export type Detector = {
   enabledTime?: number;
   disabledTime?: number;
   categoryField?: string[];
+  dataStartTime?: number;
+  dataEndTime?: number;
 };
 
 export type Monitor = {

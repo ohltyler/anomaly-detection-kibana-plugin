@@ -45,6 +45,7 @@ import {
   getDetectorInitProgress,
   isIndexNotFoundError,
   getErrorMessage,
+  getHistoricalDetectors,
 } from './utils/adHelpers';
 import { set } from 'lodash';
 import {
@@ -930,74 +931,87 @@ export default class AdService {
     kibanaResponse: KibanaResponseFactory
   ): Promise<IKibanaResponse<any>> => {
     try {
-      // const {
-      //   from = 0,
-      //   size = 20,
-      //   search = '',
-      //   indices = '',
-      //   sortDirection = SORT_DIRECTION.DESC,
-      //   sortField = 'name',
-      // } = request.query as GetDetectorsQueryParams;
-      // const mustQueries = [];
-      // if (search.trim()) {
-      //   mustQueries.push({
-      //     query_string: {
-      //       fields: ['name', 'description'],
-      //       default_operator: 'AND',
-      //       query: `*${search.trim().split('-').join('* *')}*`,
-      //     },
-      //   });
-      // }
-      // if (indices.trim()) {
-      //   mustQueries.push({
-      //     query_string: {
-      //       fields: ['indices'],
-      //       default_operator: 'OR',
-      //       query: `*${indices.trim().split(' ').join('* *')}*`,
-      //     },
-      //   });
-      // }
-      // //Allowed sorting columns
-      // const sortQueryMap = {
-      //   name: { 'name.keyword': sortDirection },
-      //   indices: { 'indices.keyword': sortDirection },
-      //   lastUpdateTime: { last_update_time: sortDirection },
-      // } as { [key: string]: object };
-      // let sort = {};
-      // const sortQuery = sortQueryMap[sortField];
-      // if (sortQuery) {
-      //   sort = sortQuery;
-      // }
-      // //Preparing search request
-      // const requestBody = {
-      //   sort,
-      //   size,
-      //   from,
-      //   query: {
-      //     bool: {
-      //       must: mustQueries,
-      //     },
-      //   },
-      // };
-      // const response: any = await this.client
-      //   .asScoped(request)
-      //   .callAsCurrentUser('ad.searchDetector', { body: requestBody });
+      const {
+        from = 0,
+        size = 20,
+        search = '',
+        indices = '',
+        sortDirection = SORT_DIRECTION.DESC,
+        sortField = 'name',
+      } = request.query as GetDetectorsQueryParams;
+      const mustQueries = [];
+      if (search.trim()) {
+        mustQueries.push({
+          query_string: {
+            fields: ['name', 'description'],
+            default_operator: 'AND',
+            query: `*${search.trim().split('-').join('* *')}*`,
+          },
+        });
+      }
+      if (indices.trim()) {
+        mustQueries.push({
+          query_string: {
+            fields: ['indices'],
+            default_operator: 'OR',
+            query: `*${indices.trim().split(' ').join('* *')}*`,
+          },
+        });
+      }
+      //Allowed sorting columns
+      const sortQueryMap = {
+        name: { 'name.keyword': sortDirection },
+        indices: { 'indices.keyword': sortDirection },
+        lastUpdateTime: { last_update_time: sortDirection },
+      } as { [key: string]: object };
+      let sort = {};
+      const sortQuery = sortQueryMap[sortField];
+      if (sortQuery) {
+        sort = sortQuery;
+      }
+      //Preparing search request
+      const requestBody = {
+        sort,
+        size,
+        from,
+        query: {
+          bool: {
+            must: mustQueries,
+          },
+        },
+      };
+      const response: any = await this.client
+        .asScoped(request)
+        .callAsCurrentUser('ad.searchDetector', { body: requestBody });
 
-      // const totalDetectors = get(response, 'hits.total.value', 0);
-      // //Get all detectors from search detector API
-      // const allDetectors = get(response, 'hits.hits', []).reduce(
-      //   (acc: any, detector: any) => ({
-      //     ...acc,
-      //     [detector._id]: {
-      //       id: detector._id,
-      //       description: get(detector, '_source.description', ''),
-      //       indices: get(detector, '_source.indices', []),
-      //       lastUpdateTime: get(detector, '_source.last_update_time', 0),
-      //       ...convertDetectorKeysToCamelCase(get(detector, '_source', {})),
-      //     },
-      //   }),
-      //   {}
-      // );
+      //const totalDetectors = get(response, 'hits.total.value', 0);
+      //Get all detectors from search detector API
+      const allDetectors = get(response, 'hits.hits', []).reduce(
+        (acc: any, detector: any) => ({
+          ...acc,
+          [detector._id]: {
+            id: detector._id,
+            description: get(detector, '_source.description', ''),
+            indices: get(detector, '_source.indices', []),
+            lastUpdateTime: get(detector, '_source.last_update_time', 0),
+            ...convertDetectorKeysToCamelCase(get(detector, '_source', {})),
+          },
+        }),
+        {}
+      );
+
+      const allHistoricalDetectors = getHistoricalDetectors(
+        Object.values(allDetectors)
+      );
+
+      // Call get historical detector api to retrieve state and task information
+
+      // Call results with task id to get total # anomalies
+
+      // Return everything
+
+      // IGNORE BELOW THIS LINE - use as reference for reducing/filtering etc
+
       // //Given each detector from previous result, get aggregation to power list
       // const allDetectorIds = Object.keys(allDetectors);
       // const aggregationResult = await this.client

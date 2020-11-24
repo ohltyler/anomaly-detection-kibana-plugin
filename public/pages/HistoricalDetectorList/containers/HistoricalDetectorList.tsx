@@ -40,9 +40,9 @@ import {
   BREADCRUMBS,
   APP_PATH,
   PLUGIN_NAME,
-  DETECTOR_STATE,
   MAX_DETECTORS,
 } from '../../../utils/constants';
+import { DETECTOR_STATE } from '../../../../server/utils/constants';
 import { getTitleWithCount } from '../../../utils/utils';
 import { ALL_DETECTOR_STATES } from '../../utils/constants';
 import { getURLQueryParams } from '../utils/helpers';

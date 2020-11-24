@@ -16,7 +16,7 @@
 import queryString from 'querystring';
 import { SORT_DIRECTION } from '../../../../server/utils/constants';
 import { DEFAULT_QUERY_PARAMS } from '../../utils/constants';
-import { DETECTOR_STATE } from '../../../utils/constants';
+import { DETECTOR_STATE } from '../../../../server/utils/constants';
 // import { TASK_ACTION } from './constants';
 // import { HistoricalDetectorListItem } from '../../../models/interfaces';
 

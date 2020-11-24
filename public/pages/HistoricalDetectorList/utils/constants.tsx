@@ -25,7 +25,8 @@ import moment from 'moment';
 import React from 'react';
 import { get } from 'lodash';
 import { Detector } from '../../../models/interfaces';
-import { PLUGIN_NAME, DETECTOR_STATE } from '../../../utils/constants';
+import { PLUGIN_NAME } from '../../../utils/constants';
+import { DETECTOR_STATE } from '../../../../server/utils/constants';
 import { stateToColorMap } from '../../utils/constants';
 
 const DEFAULT_EMPTY_DATA = '-';

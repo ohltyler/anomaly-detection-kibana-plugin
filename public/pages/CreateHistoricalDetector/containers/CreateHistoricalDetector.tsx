@@ -28,7 +28,8 @@ import {
 import { Formik, FormikProps } from 'formik';
 import { get, isEmpty } from 'lodash';
 import React, { Fragment, useEffect, useState } from 'react';
-import { BREADCRUMBS, DETECTOR_STATE } from '../../../utils/constants';
+import { BREADCRUMBS } from '../../../utils/constants';
+import { DETECTOR_STATE } from '../../../../server/utils/constants';
 import { AppState } from '../../../redux/reducers';
 import {
   matchDetector,

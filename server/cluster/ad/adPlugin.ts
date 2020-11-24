@@ -158,4 +158,16 @@ export default function adPlugin(Client: any, config: any, components: any) {
     },
     method: 'GET',
   });
+  ad.getDetectorTask = ca({
+    url: {
+      fmt: `${API.DETECTOR_BASE}/<%=detectorId%>?task=true`,
+      req: {
+        detectorId: {
+          type: 'string',
+          required: true,
+        },
+      },
+    },
+    method: 'GET',
+  });
 }

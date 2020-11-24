@@ -52,7 +52,7 @@ import {
   formikToHistoricalDetector,
   historicalDetectorToFormik,
 } from '../utils/helpers';
-import { focusOnFirstWrongFeature } from '../../../EditFeatures/utils/helpers';
+import { focusOnFirstWrongFeature } from '../../EditFeatures/utils/helpers';
 import { validateDetectorName } from '../../../utils/utils';
 import moment from 'moment';
 import { Detector, DateRange } from '../../../models/interfaces';

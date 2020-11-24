@@ -19,8 +19,14 @@ import {
   HttpSetup,
   APIErrorAction,
 } from '../middleware/types';
+import { cloneDeep } from 'lodash';
+import { AD_NODE_API } from '../../../utils/constants';
 import handleActions from '../utils/handleActions';
 import { Detector, HistoricalDetectorListItem } from '../../models/interfaces';
+import { GetDetectorsQueryParams } from '../../../server/models/types';
+
+const GET_DETECTOR_TASK = 'ad/GET_DETECTOR_TASK';
+const GET_HISTORICAL_DETECTOR_LIST = 'ad/GET_HISTORICAL_DETECTOR_LIST';
 
 export interface HistoricalDetectors {
   requesting: boolean;
@@ -38,8 +44,84 @@ export const initialHistoricalDetectorsState: HistoricalDetectors = {
 };
 
 const reducer = handleActions<HistoricalDetectors>(
-  {},
+  {
+    [GET_DETECTOR_TASK]: {
+      REQUEST: (state: HistoricalDetectors): HistoricalDetectors => ({
+        ...state,
+        requesting: true,
+        errorMessage: '',
+      }),
+      SUCCESS: (
+        state: HistoricalDetectors,
+        action: APIResponseAction
+      ): HistoricalDetectors => ({
+        ...state,
+        requesting: false,
+        detectors: {
+          ...state.detectors,
+          [action.detectorId]: {
+            ...cloneDeep(action.result.response),
+          },
+        },
+      }),
+      FAILURE: (
+        state: HistoricalDetectors,
+        action: APIErrorAction
+      ): HistoricalDetectors => ({
+        ...state,
+        requesting: false,
+        errorMessage: action.error,
+      }),
+    },
+
+    [GET_HISTORICAL_DETECTOR_LIST]: {
+      REQUEST: (state: HistoricalDetectors): HistoricalDetectors => ({
+        ...state,
+        requesting: true,
+        errorMessage: '',
+      }),
+      SUCCESS: (
+        state: HistoricalDetectors,
+        action: APIResponseAction
+      ): HistoricalDetectors => ({
+        ...state,
+        requesting: false,
+        detectorList: action.result.response.detectorList.reduce(
+          (acc: any, detector: HistoricalDetectorListItem) => ({
+            ...acc,
+            [detector.id]: detector,
+          }),
+          {}
+        ),
+        totalDetectors: action.result.response.totalDetectors,
+      }),
+      FAILURE: (
+        state: HistoricalDetectors,
+        action: APIErrorAction
+      ): HistoricalDetectors => ({
+        ...state,
+        requesting: false,
+        errorMessage: action.error,
+      }),
+    },
+  },
+
   initialHistoricalDetectorsState
 );
+
+export const getDetectorTask = (detectorId: string): APIAction => ({
+  type: GET_DETECTOR_TASK,
+  request: (client: HttpSetup) =>
+    client.get(`..${AD_NODE_API.DETECTOR}/${detectorId}/task`),
+  detectorId,
+});
+
+export const getHistoricalDetectorList = (
+  queryParams: GetDetectorsQueryParams
+): APIAction => ({
+  type: GET_HISTORICAL_DETECTOR_LIST,
+  request: (client: HttpSetup) =>
+    client.get(`..${AD_NODE_API.DETECTOR}/historical`, { query: queryParams }),
+});
 
 export default reducer;

@@ -158,7 +158,7 @@ export default function adPlugin(Client: any, config: any, components: any) {
     },
     method: 'GET',
   });
-  ad.getDetectorTask = ca({
+  ad.getHistoricalDetector = ca({
     url: {
       fmt: `${API.DETECTOR_BASE}/<%=detectorId%>?task=true`,
       req: {

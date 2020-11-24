@@ -25,7 +25,7 @@ import handleActions from '../utils/handleActions';
 import { Detector, HistoricalDetectorListItem } from '../../models/interfaces';
 import { GetDetectorsQueryParams } from '../../../server/models/types';
 
-const GET_DETECTOR_TASK = 'ad/GET_DETECTOR_TASK';
+const GET_HISTORICAL_DETECTOR = 'ad/GET_HISTORICAL_DETECTOR';
 const GET_HISTORICAL_DETECTOR_LIST = 'ad/GET_HISTORICAL_DETECTOR_LIST';
 
 export interface HistoricalDetectors {
@@ -45,7 +45,7 @@ export const initialHistoricalDetectorsState: HistoricalDetectors = {
 
 const reducer = handleActions<HistoricalDetectors>(
   {
-    [GET_DETECTOR_TASK]: {
+    [GET_HISTORICAL_DETECTOR]: {
       REQUEST: (state: HistoricalDetectors): HistoricalDetectors => ({
         ...state,
         requesting: true,
@@ -109,10 +109,10 @@ const reducer = handleActions<HistoricalDetectors>(
   initialHistoricalDetectorsState
 );
 
-export const getDetectorTask = (detectorId: string): APIAction => ({
-  type: GET_DETECTOR_TASK,
+export const getHistoricalDetector = (detectorId: string): APIAction => ({
+  type: GET_HISTORICAL_DETECTOR,
   request: (client: HttpSetup) =>
-    client.get(`..${AD_NODE_API.DETECTOR}/${detectorId}/task`),
+    client.get(`..${AD_NODE_API.DETECTOR}/${detectorId}/historical`),
   detectorId,
 });
 

@@ -79,7 +79,10 @@ export function registerADRoutes(apiRouter: Router, adService: AdService) {
   );
   apiRouter.get('/detectors/{detectorName}/_match', adService.matchDetector);
   apiRouter.get('/detectors/_count', adService.getDetectorCount);
-  apiRouter.get('/detectors/{detectorId}/task', adService.getDetectorTask);
+  apiRouter.get(
+    '/detectors/{detectorId}/historical',
+    adService.getHistoricalDetector
+  );
   apiRouter.get('/detectors/historical', adService.getHistoricalDetectors);
 }
 
@@ -893,17 +896,17 @@ export default class AdService {
     return featureResult;
   };
 
-  getDetectorTask = async (
+  getHistoricalDetector = async (
     context: RequestHandlerContext,
     request: KibanaRequest,
     kibanaResponse: KibanaResponseFactory
   ): Promise<IKibanaResponse<any>> => {
     const { detectorId } = request.params as { detectorId: string };
     try {
-      console.log('in getDetectorTask');
+      console.log('in getHistoricalDetector');
       const response = await this.client
         .asScoped(request)
-        .callAsCurrentUser('ad.getDetectorTask', {
+        .callAsCurrentUser('ad.getHistoricalDetector', {
           detectorId,
         });
       console.log('response: ', response);
@@ -914,7 +917,7 @@ export default class AdService {
         },
       });
     } catch (err) {
-      console.log('Anomaly detector - getDetectorTask', err);
+      console.log('Anomaly detector - getHistoricalDetector', err);
       return kibanaResponse.ok({
         body: { ok: false, error: getErrorMessage(err) },
       });

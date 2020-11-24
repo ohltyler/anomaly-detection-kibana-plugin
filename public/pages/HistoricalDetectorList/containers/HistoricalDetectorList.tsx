@@ -35,7 +35,7 @@ import { HistoricalDetectorListItem } from '../../../models/interfaces';
 import { SORT_DIRECTION } from '../../../../server/utils/constants';
 import ContentPanel from '../../../components/ContentPanel/ContentPanel';
 import { AppState } from '../../../redux/reducers';
-import { getTaskList } from '../../../../redux/reducers/task';
+import { getHistoricalDetectorList } from '../../../redux/reducers/historicalDetectors';
 import {
   BREADCRUMBS,
   APP_PATH,
@@ -114,7 +114,7 @@ export function HistoricalDetectorList(props: HistoricalDetectorListProps) {
   //   [] as TaskListItem[]
   // );
 
-  // if loading tasks or sorting/filtering: set whole page in loading state
+  // if loading detectors or sorting/filtering: set whole page in loading state
   const isLoading = isRequestingDetectors || isLoadingFinalDetectors;
 
   const [state, setState] = useState<HistoricalDetectorListState>({
@@ -159,7 +159,7 @@ export function HistoricalDetectorList(props: HistoricalDetectorListProps) {
     });
 
     setIsLoadingFinalDetectors(true);
-    getUpdatedTasks();
+    getUpdatedDetectors();
   }, [state.page, state.queryParams, state.selectedDetectorStates]);
 
   // Handle all filtering / sorting of historical detectors
@@ -186,8 +186,8 @@ export function HistoricalDetectorList(props: HistoricalDetectorListProps) {
     }
   }, [allDetectors]);
 
-  const getUpdatedTasks = async () => {
-    dispatch(getTaskList(GET_ALL_DETECTORS_QUERY_PARAMS));
+  const getUpdatedDetectors = async () => {
+    dispatch(getHistoricalDetectorList(GET_ALL_DETECTORS_QUERY_PARAMS));
   };
 
   const handlePageChange = (pageNumber: number) => {
@@ -365,7 +365,7 @@ export function HistoricalDetectorList(props: HistoricalDetectorListProps) {
             // />,
             <EuiButton
               style={{ width: '150px' }}
-              data-test-subj="createTaskButton"
+              data-test-subj="createDetectorButton"
               fill
               href={`${PLUGIN_NAME}#${APP_PATH.CREATE_HISTORICAL_DETECTOR}`}
             >

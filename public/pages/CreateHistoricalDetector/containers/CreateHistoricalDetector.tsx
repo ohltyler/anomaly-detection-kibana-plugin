@@ -35,8 +35,8 @@ import {
   updateDetector,
   createDetector,
   startDetector,
-  getDetector,
 } from '../../../redux/reducers/ad';
+import { getHistoricalDetector } from '../../../redux/reducers/historicalDetectors';
 import { getMappings } from '../../../redux/reducers/elasticsearch';
 import { RouteComponentProps } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
@@ -126,7 +126,7 @@ export function CreateHistoricalDetector(props: CreateHistoricalDetectorProps) {
   // Try to get the historical detector initially
   useEffect(() => {
     const fetchDetector = async (detectorId: string) => {
-      dispatch(getDetector(detectorId));
+      dispatch(getHistoricalDetector(detectorId));
     };
     if (detectorId) {
       fetchDetector(detectorId);

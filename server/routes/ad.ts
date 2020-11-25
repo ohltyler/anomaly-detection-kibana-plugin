@@ -970,7 +970,7 @@ export default class AdService {
           },
         });
       }
-      //Allowed sorting columns
+      // Allowed sorting columns
       const sortQueryMap = {
         name: { 'name.keyword': sortDirection },
         indices: { 'indices.keyword': sortDirection },
@@ -981,7 +981,7 @@ export default class AdService {
       if (sortQuery) {
         sort = sortQuery;
       }
-      //Preparing search request
+      // Preparing search request
       const requestBody = {
         sort,
         size,
@@ -996,8 +996,7 @@ export default class AdService {
         .asScoped(request)
         .callAsCurrentUser('ad.searchDetector', { body: requestBody });
 
-      //const totalDetectors = get(response, 'hits.total.value', 0);
-      //Get all detectors from search detector API
+      // Get all detectors from search detector API
       const allDetectors = get(response, 'hits.hits', []).reduce(
         (acc: any, detector: any) => ({
           ...acc,
@@ -1012,6 +1011,7 @@ export default class AdService {
         {}
       );
 
+      // Filter out to just include historical detectors
       const allHistoricalDetectors = getHistoricalDetectors(
         Object.values(allDetectors)
       ).reduce(
@@ -1109,10 +1109,6 @@ export default class AdService {
         detectorResults
       );
 
-      console.log(
-        'in getHistoricalDetectors - returning dummy anomaly values for now'
-      );
-
       return kibanaResponse.ok({
         body: {
           ok: true,
@@ -1122,16 +1118,6 @@ export default class AdService {
           },
         },
       });
-
-      // return kibanaResponse.ok({
-      //   body: {
-      //     ok: true,
-      //     response: {
-      //       totalDetectors,
-      //       detectorList: Object.values(finalDetectors),
-      //     },
-      //   },
-      // });
     } catch (err) {
       console.log('Anomaly detector - Unable to search detectors', err);
       if (isIndexNotFoundError(err)) {

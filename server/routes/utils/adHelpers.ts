@@ -280,50 +280,51 @@ export const getDetectorTasks = (detectorTaskResponses: any[]) => {
   return detectorToTaskMap;
 };
 
-// TODO: remove the total anomalies - this is just for testing out detector list page rendering
-export const appendStateInfo = (
-  detectorMap: { [key: string]: any },
-  detectorToTaskMap: { [key: string]: any }
-) => {
-  const detectorMapWithState = {} as { [key: string]: Detector };
-  const detectorsWithTasks = Object.keys(detectorToTaskMap);
-  Object.keys(detectorMap).forEach((detectorId) => {
-    if (!detectorsWithTasks.includes(detectorId)) {
-      detectorMapWithState[detectorId] = {
-        ...detectorMap[detectorId],
-        curState: DETECTOR_STATE.DISABLED,
-      };
-    } else {
-      const state = get(detectorToTaskMap[detectorId], 'state');
-      detectorMapWithState[detectorId] = {
-        ...detectorMap[detectorId],
-        //@ts-ignore
-        curState: DETECTOR_STATE[state],
-      };
+export const getDetectorResults = (detectorResultsResponses: any[]) => {
+  const detectorToResultsMap = {} as { [key: string]: any };
+  detectorResultsResponses.forEach((response) => {
+    const detectorId = get(response, 'hits.hits.0._source.detector_id', null);
+    if (detectorId !== null) {
+      detectorToResultsMap[detectorId] = response;
     }
   });
-  return detectorMapWithState;
+  return detectorToResultsMap;
 };
 
-export const appendAnomalyInfo = (
+// Append task-related info - task state & anomaly results of the task.
+// If there is no related task info for a detector: set to default values of DISABLED state and 0 anomalies
+export const appendTaskInfo = (
   detectorMap: { [key: string]: any },
   detectorToTaskMap: { [key: string]: any },
-  anomalyResults: any[]
+  detectorToResultsMap: { [key: string]: any }
 ) => {
-  const detectorMapWithAnomalyInfo = {} as { [key: string]: Detector };
+  const detectorMapWithTaskInfo = {} as { [key: string]: Detector };
   const detectorsWithTasks = Object.keys(detectorToTaskMap);
   Object.keys(detectorMap).forEach((detectorId, index) => {
     if (!detectorsWithTasks.includes(detectorId)) {
-      detectorMapWithAnomalyInfo[detectorId] = {
+      detectorMapWithTaskInfo[detectorId] = {
         ...detectorMap[detectorId],
+        curState: DETECTOR_STATE.DISABLED,
         totalAnomalies: 0,
       };
     } else {
-      detectorMapWithAnomalyInfo[detectorId] = {
+      const state = get(
+        detectorToTaskMap[detectorId],
+        'state',
+        DETECTOR_STATE.DISABLED
+      );
+      const totalAnomalies = get(
+        detectorToResultsMap[detectorId],
+        'hits.total.value',
+        0
+      );
+      detectorMapWithTaskInfo[detectorId] = {
         ...detectorMap[detectorId],
-        totalAnomalies: get(anomalyResults[index], 'hits.total.value', 0),
+        //@ts-ignore
+        curState: DETECTOR_STATE[state],
+        totalAnomalies: totalAnomalies,
       };
     }
   });
-  return detectorMapWithAnomalyInfo;
+  return detectorMapWithTaskInfo;
 };

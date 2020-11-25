@@ -48,8 +48,8 @@ import {
   getRealtimeDetectors,
   getHistoricalDetectors,
   getDetectorTasks,
-  appendStateInfo,
-  appendAnomalyInfo,
+  appendTaskInfo,
+  getDetectorResults,
 } from './utils/adHelpers';
 import { set } from 'lodash';
 import {
@@ -1055,7 +1055,7 @@ export default class AdService {
       // Get results for each task
       const detectorResultPromises = Object.values(detectorTasks).map(
         async (task) => {
-          const taskId = get(task, '_id', '');
+          const taskId = get(task, 'task_id', '');
           try {
             const reqBody = {
               query: {
@@ -1098,152 +1098,16 @@ export default class AdService {
         throw err;
       });
 
-      // Append the state info for each detector (set to DETECTOR_STATE.DISABLED if no existing task)
-      const detectorsWithState = appendStateInfo(
-        allHistoricalDetectors,
-        detectorTasks
-      );
+      // Get the mapping from detector to anomaly results
+      const detectorResults = getDetectorResults(detectorResultResponses);
 
-      const detectorsWithAnomalyInfo = appendAnomalyInfo(
+      // Append the task-related info for each detector.
+      // If no task: set state to DISABLED and total anomalies to 0
+      const detectorsWithTaskInfo = appendTaskInfo(
         allHistoricalDetectors,
         detectorTasks,
-        detectorResultResponses
+        detectorResults
       );
-      console.log('detectors with anomaly info: ', detectorsWithAnomalyInfo);
-
-      // const finalDetectorStates = getFinalDetectorStates(
-      //   detectorStateResponses,
-      //   finalDetectors
-      // );
-
-      // Call results with task id to get total # anomalies
-
-      // Return everything
-
-      // IGNORE BELOW THIS LINE - use as reference for reducing/filtering etc
-
-      // //Given each detector from previous result, get aggregation to power list
-      // const allDetectorIds = Object.keys(allDetectors);
-      // const aggregationResult = await this.client
-      //   .asScoped(request)
-      //   .callAsCurrentUser('ad.searchResults', {
-      //     body: getResultAggregationQuery(allDetectorIds, {
-      //       from,
-      //       size,
-      //       sortField,
-      //       sortDirection,
-      //       search,
-      //       indices,
-      //     }),
-      //   });
-      // const aggsDetectors = get(
-      //   aggregationResult,
-      //   'aggregations.unique_detectors.buckets',
-      //   []
-      // ).reduce((acc: any, agg: any) => {
-      //   return {
-      //     ...acc,
-      //     [agg.key]: {
-      //       ...allDetectors[agg.key],
-      //       totalAnomalies: agg.total_anomalies_in_24hr.doc_count,
-      //       lastActiveAnomaly: agg.latest_anomaly_time.value,
-      //     },
-      //   };
-      // }, {});
-
-      // // Aggregation will not return values where anomalies for detectors are not generated, loop through it and fill values with 0
-      // const unUsedDetectors = pullAll(
-      //   allDetectorIds,
-      //   Object.keys(aggsDetectors)
-      // ).reduce((acc: any, unusedDetector: string) => {
-      //   return {
-      //     ...acc,
-      //     [unusedDetector]: {
-      //       ...allDetectors[unusedDetector],
-      //       totalAnomalies: 0,
-      //       lastActiveAnomaly: 0,
-      //     },
-      //   };
-      // }, {});
-
-      // // If sorting criteria is from the aggregation manage pagination in memory.
-      // let finalDetectors = orderBy<any>(
-      //   { ...aggsDetectors, ...unUsedDetectors },
-      //   [sortField],
-      //   [sortDirection]
-      // );
-      // if (!sortQueryMap[sortField]) {
-      //   finalDetectors = Object.values(finalDetectors)
-      //     .slice(from, from + size)
-      //     .reduce(
-      //       (acc, detector: any) => ({ ...acc, [detector.id]: detector }),
-      //       {}
-      //     );
-      // }
-
-      // // Get detector state as well: loop through the ids to get each detector's state using profile api
-      // const allIds = finalDetectors.map((detector) => detector.id);
-
-      // const detectorStatePromises = allIds.map(async (id: string) => {
-      //   try {
-      //     const detectorStateResp = await this.client
-      //       .asScoped(request)
-      //       .callAsCurrentUser('ad.detectorProfile', {
-      //         detectorId: id,
-      //       });
-      //     return detectorStateResp;
-      //   } catch (err) {
-      //     console.log('Error getting detector profile ', err);
-      //     return Promise.reject(
-      //       new Error(
-      //         'Error retrieving all detector states: ' + getErrorMessage(err)
-      //       )
-      //     );
-      //   }
-      // });
-      // const detectorStateResponses = await Promise.all(
-      //   detectorStatePromises
-      // ).catch((err) => {
-      //   throw err;
-      // });
-      // const finalDetectorStates = getFinalDetectorStates(
-      //   detectorStateResponses,
-      //   finalDetectors
-      // );
-      // // update the final detectors to include the detector state
-      // finalDetectors.forEach((detector, i) => {
-      //   detector.curState = finalDetectorStates[i].state;
-      // });
-
-      // // get ad job
-      // const detectorsWithJobPromises = allIds.map(async (id: string) => {
-      //   try {
-      //     const detectorResp = await this.client
-      //       .asScoped(request)
-      //       .callAsCurrentUser('ad.getDetector', {
-      //         detectorId: id,
-      //       });
-      //     return detectorResp;
-      //   } catch (err) {
-      //     console.log('Error getting detector ', err);
-      //     return Promise.reject(
-      //       new Error('Error retrieving all detectors: ' + getErrorMessage(err))
-      //     );
-      //   }
-      // });
-      // const detectorsWithJobResponses = await Promise.all(
-      //   detectorsWithJobPromises
-      // ).catch((err) => {
-      //   throw err;
-      // });
-      // const finalDetectorsWithJob = getDetectorsWithJob(
-      //   detectorsWithJobResponses
-      // );
-
-      // // update the final detectors to include the detector enabledTime
-      // finalDetectors.forEach((detector, i) => {
-      //   detector.enabledTime = finalDetectorsWithJob[i].enabledTime;
-      // });
 
       console.log(
         'in getHistoricalDetectors - returning dummy anomaly values for now'
@@ -1253,8 +1117,8 @@ export default class AdService {
         body: {
           ok: true,
           response: {
-            totalDetectors: Object.values(detectorsWithState).length,
-            detectorList: Object.values(detectorsWithState),
+            totalDetectors: Object.values(detectorsWithTaskInfo).length,
+            detectorList: Object.values(detectorsWithTaskInfo),
           },
         },
       });

@@ -1013,17 +1013,42 @@ export default class AdService {
         Object.values(allDetectors)
       );
 
-      // Call get historical detector api to retrieve state and task information
-      const newResponse = await this.client
-        .asScoped(request)
-        .callAsCurrentUser('ad.getHistoricalDetector', {
-          detectorId: allHistoricalDetectors[0].id,
-        });
+      // Get related info for each historical detector (detector state, task info, etc.)
+      const allIds = allHistoricalDetectors.map(
+        (detector) => detector.id
+      ) as string[];
 
-      console.log(
-        'response from calling historical detector details: ',
-        newResponse
-      );
+      const detectorDetailPromises = allIds.map(async (id: string) => {
+        try {
+          const detectorDetailResp = await this.client
+            .asScoped(request)
+            .callAsCurrentUser('ad.getHistoricalDetector', {
+              detectorId: id,
+            });
+          return detectorDetailResp;
+        } catch (err) {
+          console.log('Error getting historical detector ', err);
+          return Promise.reject(
+            new Error(
+              'Error retrieving all historical detectors: ' +
+                getErrorMessage(err)
+            )
+          );
+        }
+      });
+
+      const detectorDetailResponses = await Promise.all(
+        detectorDetailPromises
+      ).catch((err) => {
+        throw err;
+      });
+
+      console.log('detector detail responses: ', detectorDetailResponses);
+
+      // const finalDetectorStates = getFinalDetectorStates(
+      //   detectorStateResponses,
+      //   finalDetectors
+      // );
 
       // Call results with task id to get total # anomalies
 

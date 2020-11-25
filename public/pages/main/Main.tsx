@@ -74,13 +74,13 @@ export function Main(props: MainProps) {
         },
         {
           name: Navigation.HistoricalDetectors,
-          id: 2,
+          id: 3,
           href: `#${Pathname.HistoricalDetectors}`,
           isSelected: props.location.pathname === Pathname.HistoricalDetectors,
         },
         {
           name: Navigation.SampleDetectors,
-          id: 3,
+          id: 4,
           href: `#${Pathname.SampleDetectors}`,
           isSelected: props.location.pathname === Pathname.SampleDetectors,
         },

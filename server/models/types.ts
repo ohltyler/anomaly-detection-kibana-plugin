@@ -67,8 +67,7 @@ export type Detector = {
   enabledTime?: number;
   disabledTime?: number;
   categoryField?: string[];
-  dataStartTime?: number;
-  dataEndTime?: number;
+  detectionDateRange?: DetectionDateRange;
 };
 
 export type Monitor = {
@@ -144,4 +143,9 @@ export type DateRangeFilter = {
   startTime?: number;
   endTime?: number;
   fieldName: string;
+};
+
+export type DetectionDateRange = {
+  startTime: number;
+  endTime: number;
 };

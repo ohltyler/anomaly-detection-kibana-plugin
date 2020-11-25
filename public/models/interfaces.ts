@@ -110,8 +110,7 @@ export type Detector = {
   stateError: string;
   initProgress?: InitProgress;
   categoryField?: string[];
-  dataStartTime?: number;
-  dataEndTime?: number;
+  detectionDateRange?: DetectionDateRange;
 };
 
 export type DetectorListItem = {
@@ -199,4 +198,9 @@ export type AnomalySummary = {
 export type DateRange = {
   startDate: number;
   endDate: number;
+};
+
+export type DetectionDateRange = {
+  startTime: number;
+  endTime: number;
 };

@@ -254,9 +254,9 @@ export const getErrorMessage = (err: any) => {
     : get(err, 'message');
 };
 
-// Currently: detector w/ data start & end times is considered a 'historical' detector
+// Currently: detector w/ detection date range is considered a 'historical' detector
 export const getHistoricalDetectors = (detectors: Detector[]) => {
-  return detectors.filter((detector) => {
-    !isEmpty(detector.dataStartTime) && !isEmpty(detector.dataEndTime);
-  });
+  return detectors.filter(
+    (detector) => detector.detectionDateRange !== undefined
+  );
 };

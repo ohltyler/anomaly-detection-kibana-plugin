@@ -50,8 +50,10 @@ export function formikToHistoricalDetector(
       period: { interval: values.windowDelay, unit: UNITS.MINUTES },
     },
     shingleSize: values.shingleSize,
-    dataStartTime: convertTimestampToNumber(values.startTime),
-    dataEndTime: convertTimestampToNumber(values.endTime),
+    detectionDateRange: {
+      startTime: convertTimestampToNumber(values.startTime),
+      endTime: convertTimestampToNumber(values.endTime),
+    },
   } as Detector;
 
   return apiRequest;
@@ -73,8 +75,8 @@ export function historicalDetectorToFormik(
     featureList: featuresToFormik(detector),
     detectionInterval: get(detector, 'detectionInterval.period.interval', 10),
     shingleSize: get(detector, 'shingleSize', SHINGLE_SIZE),
-    startTime: detector.dataStartTime,
-    endTime: detector.dataEndTime,
+    startTime: get(detector, 'detectionDateRange.startTime'),
+    endTime: get(detector, 'detectionDateRange.endTime'),
   };
 }
 

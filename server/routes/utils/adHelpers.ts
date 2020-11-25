@@ -292,15 +292,38 @@ export const appendStateInfo = (
       detectorMapWithState[detectorId] = {
         ...detectorMap[detectorId],
         curState: DETECTOR_STATE.DISABLED,
-        totalAnomalies: 0,
       };
     } else {
+      const state = get(detectorToTaskMap[detectorId], 'state');
       detectorMapWithState[detectorId] = {
         ...detectorMap[detectorId],
-        curState: get(detectorToTaskMap[detectorId], 'state'),
-        totalAnomalies: 5,
+        //@ts-ignore
+        curState: DETECTOR_STATE[state],
       };
     }
   });
   return detectorMapWithState;
+};
+
+export const appendAnomalyInfo = (
+  detectorMap: { [key: string]: any },
+  detectorToTaskMap: { [key: string]: any },
+  anomalyResults: any[]
+) => {
+  const detectorMapWithAnomalyInfo = {} as { [key: string]: Detector };
+  const detectorsWithTasks = Object.keys(detectorToTaskMap);
+  Object.keys(detectorMap).forEach((detectorId, index) => {
+    if (!detectorsWithTasks.includes(detectorId)) {
+      detectorMapWithAnomalyInfo[detectorId] = {
+        ...detectorMap[detectorId],
+        totalAnomalies: 0,
+      };
+    } else {
+      detectorMapWithAnomalyInfo[detectorId] = {
+        ...detectorMap[detectorId],
+        totalAnomalies: get(anomalyResults[index], 'hits.total.value', 0),
+      };
+    }
+  });
+  return detectorMapWithAnomalyInfo;
 };

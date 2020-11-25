@@ -49,6 +49,7 @@ import {
   getHistoricalDetectors,
   getDetectorTasks,
   appendStateInfo,
+  appendAnomalyInfo,
 } from './utils/adHelpers';
 import { set } from 'lodash';
 import {
@@ -1058,16 +1059,21 @@ export default class AdService {
           try {
             const reqBody = {
               query: {
-                term: {
-                  task_id: {
-                    value: taskId,
-                  },
-                },
                 bool: {
-                  must: { range: { anomaly_grade: { gt: 0 } } },
+                  must: [
+                    { range: { anomaly_grade: { gt: 0 } } },
+                    {
+                      term: {
+                        task_id: {
+                          value: taskId,
+                        },
+                      },
+                    },
+                  ],
                 },
               },
             };
+
             const detectorResultResp = await this.client
               .asScoped(request)
               .callAsCurrentUser('ad.searchResults', {
@@ -1098,7 +1104,12 @@ export default class AdService {
         detectorTasks
       );
 
-      console.log('detectors with state: ', detectorsWithState);
+      const detectorsWithAnomalyInfo = appendAnomalyInfo(
+        allHistoricalDetectors,
+        detectorTasks,
+        detectorResultResponses
+      );
+      console.log('detectors with anomaly info: ', detectorsWithAnomalyInfo);
 
       // const finalDetectorStates = getFinalDetectorStates(
       //   detectorStateResponses,

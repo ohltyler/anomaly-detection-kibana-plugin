@@ -62,6 +62,10 @@ import { GET_ALL_DETECTORS_QUERY_PARAMS } from '../../utils/constants';
 // import { CompareTasksModal } from '../ActionModals/CompareTasksModal/CompareTasksModal';
 import { CoreStart } from '../../../../../../src/core/public';
 import { CoreServicesContext } from '../../../components/CoreServices/CoreServices';
+import {
+  NO_PERMISSIONS_KEY_WORD,
+  prettifyErrorMessage,
+} from '../../../../server/utils/helpers';
 
 export interface HistoricalDetectorListRouterParams {
   from: string;
@@ -144,6 +148,19 @@ export function HistoricalDetectorList(props: HistoricalDetectorListProps) {
       BREADCRUMBS.HISTORICAL_DETECTORS,
     ]);
   }, []);
+
+  useEffect(() => {
+    if (errorGettingDetectors) {
+      console.error(errorGettingDetectors);
+      core.notifications.toasts.addDanger(
+        typeof errorGettingDetectors === 'string' &&
+          errorGettingDetectors.includes(NO_PERMISSIONS_KEY_WORD)
+          ? prettifyErrorMessage(errorGettingDetectors)
+          : 'Unable to get all detectors'
+      );
+      setIsLoadingFinalDetectors(false);
+    }
+  }, [errorGettingDetectors]);
 
   // Refresh data if user change any parameters / filter / sort
   useEffect(() => {

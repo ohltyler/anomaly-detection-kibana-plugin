@@ -60,7 +60,7 @@ export const getDetectorStateOptions = () => {
       label: detectorState,
       text: detectorState,
     }))
-    .filter((option) => option.label !== DETECTOR_STATE.COMPLETED);
+    .filter((option) => option.label !== DETECTOR_STATE.FINISHED);
 };
 
 export const getDetectorsForAction = (

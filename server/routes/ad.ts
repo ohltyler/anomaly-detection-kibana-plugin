@@ -45,6 +45,7 @@ import {
   getDetectorInitProgress,
   isIndexNotFoundError,
   getErrorMessage,
+  getRealtimeDetectors,
   getHistoricalDetectors,
 } from './utils/adHelpers';
 import { set } from 'lodash';
@@ -512,8 +513,16 @@ export default class AdService {
         }),
         {}
       );
+
+      const realtimeDetectors = getRealtimeDetectors(
+        Object.values(allDetectors)
+      ).reduce(
+        (acc: any, detector: any) => ({ ...acc, [detector.id]: detector }),
+        {}
+      );
+
       //Given each detector from previous result, get aggregation to power list
-      const allDetectorIds = Object.keys(allDetectors);
+      const allDetectorIds = Object.keys(realtimeDetectors);
       const aggregationResult = await this.client
         .asScoped(request)
         .callAsCurrentUser('ad.searchResults', {
@@ -534,7 +543,7 @@ export default class AdService {
         return {
           ...acc,
           [agg.key]: {
-            ...allDetectors[agg.key],
+            ...realtimeDetectors[agg.key],
             totalAnomalies: agg.total_anomalies_in_24hr.doc_count,
             lastActiveAnomaly: agg.latest_anomaly_time.value,
           },
@@ -549,7 +558,7 @@ export default class AdService {
         return {
           ...acc,
           [unusedDetector]: {
-            ...allDetectors[unusedDetector],
+            ...realtimeDetectors[unusedDetector],
             totalAnomalies: 0,
             lastActiveAnomaly: 0,
           },
@@ -1005,6 +1014,16 @@ export default class AdService {
       );
 
       // Call get historical detector api to retrieve state and task information
+      const newResponse = await this.client
+        .asScoped(request)
+        .callAsCurrentUser('ad.getHistoricalDetector', {
+          detectorId: allHistoricalDetectors[0].id,
+        });
+
+      console.log(
+        'response from calling historical detector details: ',
+        newResponse
+      );
 
       // Call results with task id to get total # anomalies
 

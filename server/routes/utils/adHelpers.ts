@@ -260,3 +260,10 @@ export const getHistoricalDetectors = (detectors: Detector[]) => {
     (detector) => detector.detectionDateRange !== undefined
   );
 };
+
+// Currently: detector w/ no detection date range is considered a 'realtime' detector
+export const getRealtimeDetectors = (detectors: Detector[]) => {
+  return detectors.filter(
+    (detector) => detector.detectionDateRange === undefined
+  );
+};

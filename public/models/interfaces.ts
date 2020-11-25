@@ -195,6 +195,14 @@ export type AnomalySummary = {
   lastAnomalyOccurrence: string;
 };
 
+export type HistoricalDetectorAnomalySummary = {
+  anomalyOccurrence: number;
+  minAnomalyGrade: number;
+  maxAnomalyGrade: number;
+  minConfidence: number;
+  maxConfidence: number;
+};
+
 export type DateRange = {
   startDate: number;
   endDate: number;

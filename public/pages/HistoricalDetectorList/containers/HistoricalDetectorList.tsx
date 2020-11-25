@@ -27,10 +27,6 @@ import queryString from 'query-string';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RouteComponentProps } from 'react-router';
-//@ts-ignore
-import chrome from 'ui/chrome';
-// @ts-ignore
-import { toastNotifications } from 'ui/notify';
 import { HistoricalDetectorListItem } from '../../../models/interfaces';
 import { SORT_DIRECTION } from '../../../../server/utils/constants';
 import ContentPanel from '../../../components/ContentPanel/ContentPanel';

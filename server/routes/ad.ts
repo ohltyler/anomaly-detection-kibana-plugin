@@ -47,6 +47,8 @@ import {
   getErrorMessage,
   getRealtimeDetectors,
   getHistoricalDetectors,
+  getDetectorTasks,
+  appendStateInfo,
 } from './utils/adHelpers';
 import { set } from 'lodash';
 import {
@@ -1011,10 +1013,13 @@ export default class AdService {
 
       const allHistoricalDetectors = getHistoricalDetectors(
         Object.values(allDetectors)
-      );
+      ).reduce(
+        (acc, detector: any) => ({ ...acc, [detector.id]: detector }),
+        {}
+      ) as { [key: string]: Detector };
 
       // Get related info for each historical detector (detector state, task info, etc.)
-      const allIds = allHistoricalDetectors.map(
+      const allIds = Object.values(allHistoricalDetectors).map(
         (detector) => detector.id
       ) as string[];
 
@@ -1043,7 +1048,57 @@ export default class AdService {
         throw err;
       });
 
-      console.log('detector detail responses: ', detectorDetailResponses);
+      // Get the mapping from detector to task
+      const detectorTasks = getDetectorTasks(detectorDetailResponses);
+
+      // Get results for each task
+      const detectorResultPromises = Object.values(detectorTasks).map(
+        async (task) => {
+          const taskId = get(task, '_id', '');
+          try {
+            const reqBody = {
+              query: {
+                term: {
+                  task_id: {
+                    value: taskId,
+                  },
+                },
+                bool: {
+                  must: { range: { anomaly_grade: { gt: 0 } } },
+                },
+              },
+            };
+            const detectorResultResp = await this.client
+              .asScoped(request)
+              .callAsCurrentUser('ad.searchResults', {
+                body: reqBody,
+              });
+            return detectorResultResp;
+          } catch (err) {
+            console.log('Error getting historical detector results ', err);
+            return Promise.reject(
+              new Error(
+                'Error retrieving all historical detector results: ' +
+                  getErrorMessage(err)
+              )
+            );
+          }
+        }
+      );
+
+      const detectorResultResponses = await Promise.all(
+        detectorResultPromises
+      ).catch((err) => {
+        throw err;
+      });
+
+      // Append the state info for each detector (set to DETECTOR_STATE.DISABLED if no existing task)
+      const detectorsWithState = appendStateInfo(
+        allHistoricalDetectors,
+        detectorTasks
+      );
+
+      console.log('detectors with state: ', detectorsWithState);
 
       // const finalDetectorStates = getFinalDetectorStates(
       //   detectorStateResponses,
@@ -1179,14 +1234,16 @@ export default class AdService {
       //   detector.enabledTime = finalDetectorsWithJob[i].enabledTime;
       // });
 
-      console.log('in getHistoricalDetectors - returning empty for now');
+      console.log(
+        'in getHistoricalDetectors - returning dummy anomaly values for now'
+      );
 
       return kibanaResponse.ok({
         body: {
           ok: true,
           response: {
-            totalDetectors: 0,
-            detectorList: [],
+            totalDetectors: Object.values(detectorsWithState).length,
+            detectorList: Object.values(detectorsWithState),
           },
         },
       });

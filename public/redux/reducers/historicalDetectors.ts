@@ -19,7 +19,7 @@ import {
   HttpSetup,
   APIErrorAction,
 } from '../middleware/types';
-import { cloneDeep } from 'lodash';
+import { cloneDeep, get } from 'lodash';
 import { AD_NODE_API } from '../../../utils/constants';
 import handleActions from '../utils/handleActions';
 import { Detector, HistoricalDetectorListItem } from '../../models/interfaces';
@@ -87,9 +87,13 @@ const reducer = handleActions<HistoricalDetectors>(
         ...state,
         requesting: false,
         detectorList: action.result.response.detectorList.reduce(
-          (acc: any, detector: HistoricalDetectorListItem) => ({
+          (acc: any, detector: Detector) => ({
             ...acc,
-            [detector.id]: detector,
+            [detector.id]: {
+              ...detector,
+              dataStartTime: get(detector, 'detectionDateRange.startTime', 0),
+              dataEndTime: get(detector, 'detectionDateRange.endTime', 0),
+            },
           }),
           {}
         ),

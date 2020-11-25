@@ -267,3 +267,40 @@ export const getRealtimeDetectors = (detectors: Detector[]) => {
     (detector) => detector.detectionDateRange === undefined
   );
 };
+
+export const getDetectorTasks = (detectorTaskResponses: any[]) => {
+  const detectorToTaskMap = {} as { [key: string]: any };
+  detectorTaskResponses.forEach((response) => {
+    const detectorId = get(response, '_id', '');
+    const detectorTask = get(response, 'anomaly_detection_task', null);
+    if (detectorTask !== null) {
+      detectorToTaskMap[detectorId] = detectorTask;
+    }
+  });
+  return detectorToTaskMap;
+};
+
+// TODO: remove the total anomalies - this is just for testing out detector list page rendering
+export const appendStateInfo = (
+  detectorMap: { [key: string]: any },
+  detectorToTaskMap: { [key: string]: any }
+) => {
+  const detectorMapWithState = {} as { [key: string]: Detector };
+  const detectorsWithTasks = Object.keys(detectorToTaskMap);
+  Object.keys(detectorMap).forEach((detectorId) => {
+    if (!detectorsWithTasks.includes(detectorId)) {
+      detectorMapWithState[detectorId] = {
+        ...detectorMap[detectorId],
+        curState: DETECTOR_STATE.DISABLED,
+        totalAnomalies: 0,
+      };
+    } else {
+      detectorMapWithState[detectorId] = {
+        ...detectorMap[detectorId],
+        curState: get(detectorToTaskMap[detectorId], 'state'),
+        totalAnomalies: 5,
+      };
+    }
+  });
+  return detectorMapWithState;
+};

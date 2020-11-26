@@ -160,6 +160,13 @@ export function Main(props: MainProps) {
                 />
                 <Route
                   exact
+                  path={APP_PATH.EDIT_HISTORICAL_DETECTOR}
+                  render={(props: RouteComponentProps) => (
+                    <CreateHistoricalDetector {...props} isEdit={true} />
+                  )}
+                />
+                <Route
+                  exact
                   path={APP_PATH.HISTORICAL_DETECTOR_DETAIL}
                   render={(props: RouteComponentProps) => (
                     <HistoricalDetectorDetail {...props} />

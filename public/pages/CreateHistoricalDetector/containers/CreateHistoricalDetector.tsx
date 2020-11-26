@@ -70,7 +70,6 @@ interface CreateHistoricalDetectorProps
 }
 
 export function CreateHistoricalDetector(props: CreateHistoricalDetectorProps) {
-  console.log('in edit detector page');
   const core = React.useContext(CoreServicesContext) as CoreStart;
   const dispatch = useDispatch();
   const detectorId: string = get(props, 'match.params.detectorId', '');

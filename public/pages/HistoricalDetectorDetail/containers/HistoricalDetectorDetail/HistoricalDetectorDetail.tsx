@@ -70,11 +70,9 @@ export const HistoricalDetectorDetail = (
   const dispatch = useDispatch();
   const detectorId: string = get(props, 'match.params.detectorId', '');
 
-  // TODO: figure out how to use redux for the historical detector use case
   const historicalDetectorState = useSelector(
     (state: AppState) => state.historicalDetectors
   );
-  const adState = useSelector((state: AppState) => state.ad);
   const allDetectors = historicalDetectorState.detectors;
   const errorGettingDetectors = historicalDetectorState.errorMessage;
   const detector = allDetectors[detectorId];
@@ -263,11 +261,7 @@ export const HistoricalDetectorDetail = (
     backgroundColor: '#FFF',
   };
 
-  // TODO: adjust once proper redux is set up
-  const isLoading =
-    historicalDetectorState.requesting ||
-    adState.requesting ||
-    isLoadingDetector;
+  const isLoading = historicalDetectorState.requesting || isLoadingDetector;
 
   return (
     <React.Fragment>

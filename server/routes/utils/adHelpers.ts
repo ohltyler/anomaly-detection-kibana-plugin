@@ -318,7 +318,7 @@ export const appendTaskInfo = (
       detectorMapWithTaskInfo[detectorId] = {
         ...detectorMap[detectorId],
         //@ts-ignore
-        curState: DETECTOR_STATE[state],
+        curState: state,
         totalAnomalies: totalAnomalies,
       };
     }
@@ -330,6 +330,8 @@ export const appendTaskInfo = (
 // (1) set to DISABLED if there is no existing task for this detector
 // (2) set to UNEXPECTED_FAILURE if the task is in a FAILED state to stay consistent
 export const getHistoricalDetectorState = (task: any) => {
-  const state = get(task, 'state', DETECTOR_STATE.DISABLED);
-  return state === 'FAILED' ? 'UNEXPECTED_FAILURE' : state;
+  const state = get(task, 'state', 'DISABLED');
+  const updatedState = state === 'FAILED' ? 'UNEXPECTED_FAILURE' : state;
+  //@ts-ignore
+  return DETECTOR_STATE[updatedState];
 };

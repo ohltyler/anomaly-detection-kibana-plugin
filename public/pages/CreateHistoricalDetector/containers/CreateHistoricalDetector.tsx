@@ -70,6 +70,7 @@ interface CreateHistoricalDetectorProps
 }
 
 export function CreateHistoricalDetector(props: CreateHistoricalDetectorProps) {
+  console.log('in edit detector page');
   const core = React.useContext(CoreServicesContext) as CoreStart;
   const dispatch = useDispatch();
   const detectorId: string = get(props, 'match.params.detectorId', '');
@@ -146,10 +147,13 @@ export function CreateHistoricalDetector(props: CreateHistoricalDetectorProps) {
 
   // Using the detector-specified date range (if it exists)
   useEffect(() => {
-    if (detector?.dataStartTime && detector?.dataEndTime) {
+    if (
+      detector?.detectionDateRange?.startTime &&
+      detector?.detectionDateRange?.endTime
+    ) {
       setDateRange({
-        startDate: detector.dataStartTime,
-        endDate: detector.dataEndTime,
+        startDate: detector.detectionDateRange.startTime,
+        endDate: detector.detectionDateRange.endTime,
       });
     }
   }, [detector]);

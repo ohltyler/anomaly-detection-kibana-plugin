@@ -28,11 +28,7 @@ import {
   DateRangeFilter,
 } from '../models/types';
 import { Router } from '../router';
-import {
-  SORT_DIRECTION,
-  AD_DOC_FIELDS,
-  DETECTOR_STATE,
-} from '../utils/constants';
+import { SORT_DIRECTION, AD_DOC_FIELDS } from '../utils/constants';
 import {
   mapKeysDeep,
   toCamel,
@@ -927,16 +923,12 @@ export default class AdService {
           detectorId,
         });
 
-      const curState = getHistoricalDetectorState(
-        response.anomaly_detection_task
-      );
       const resp = {
         ...response.anomaly_detector,
         id: response._id,
         primaryTerm: response._primary_term,
         seqNo: response._seq_no,
-        //@ts-ignore
-        curState: DETECTOR_STATE[curState],
+        curState: getHistoricalDetectorState(response.anomaly_detection_task),
       };
 
       return kibanaResponse.ok({

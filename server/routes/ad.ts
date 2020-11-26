@@ -28,7 +28,11 @@ import {
   DateRangeFilter,
 } from '../models/types';
 import { Router } from '../router';
-import { SORT_DIRECTION, AD_DOC_FIELDS } from '../utils/constants';
+import {
+  SORT_DIRECTION,
+  AD_DOC_FIELDS,
+  DETECTOR_STATE,
+} from '../utils/constants';
 import {
   mapKeysDeep,
   toCamel,
@@ -50,6 +54,7 @@ import {
   getDetectorTasks,
   appendTaskInfo,
   getDetectorResults,
+  getHistoricalDetectorState,
 } from './utils/adHelpers';
 import { set } from 'lodash';
 import {
@@ -916,17 +921,28 @@ export default class AdService {
   ): Promise<IKibanaResponse<any>> => {
     const { detectorId } = request.params as { detectorId: string };
     try {
-      console.log('in getHistoricalDetector');
       const response = await this.client
         .asScoped(request)
         .callAsCurrentUser('ad.getHistoricalDetector', {
           detectorId,
         });
-      console.log('response: ', response);
+
+      const curState = getHistoricalDetectorState(
+        response.anomaly_detection_task
+      );
+      const resp = {
+        ...response.anomaly_detector,
+        id: response._id,
+        primaryTerm: response._primary_term,
+        seqNo: response._seq_no,
+        //@ts-ignore
+        curState: DETECTOR_STATE[curState],
+      };
+
       return kibanaResponse.ok({
         body: {
           ok: true,
-          response: response,
+          response: convertDetectorKeysToCamelCase(resp) as Detector,
         },
       });
     } catch (err) {

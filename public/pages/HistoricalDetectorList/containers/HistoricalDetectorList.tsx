@@ -47,10 +47,7 @@ import {
   getHistoricalDetectorsToDisplay,
 } from '../../utils/helpers';
 import { EmptyHistoricalDetectorMessage } from '../components/EmptyHistoricalDetectorMessage/EmptyHistoricalDetectorMessage';
-import {
-  HISTORICAL_DETECTOR_ACTION,
-  historicalDetectorListColumns,
-} from '../utils/constants';
+import { historicalDetectorListColumns } from '../utils/constants';
 import { HistoricalDetectorFilters } from '../components/HistoricalDetectorFilters/HistoricalDetectorFilters';
 import { GET_ALL_DETECTORS_QUERY_PARAMS } from '../../utils/constants';
 // import { getTasksForAction } from '../../utils/helpers';

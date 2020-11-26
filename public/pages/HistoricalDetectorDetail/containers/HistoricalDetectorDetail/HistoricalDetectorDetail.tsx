@@ -29,11 +29,11 @@ import { Listener } from '../../../../utils/utils';
 import { darkModeEnabled } from '../../../../utils/kibanaUtils';
 import { AppState } from '../../../../redux/reducers';
 import {
-  getDetector,
   startDetector,
   stopDetector,
   deleteDetector,
 } from '../../../../redux/reducers/ad';
+import { getHistoricalDetector } from '../../../../redux/reducers/historicalDetectors';
 import { BREADCRUMBS } from '../../../../utils/constants';
 import { DETECTOR_STATE } from '../../../../../server/utils/constants';
 import { HistoricalDetectorConfig } from '../../components/HistoricalDetectorConfig/HistoricalDetectorConfig';
@@ -108,7 +108,7 @@ export const HistoricalDetectorDetail = (
 
   const fetchDetector = async () => {
     try {
-      await dispatch(getDetector(detectorId));
+      await dispatch(getHistoricalDetector(detectorId));
       setIsLoadingDetector(false);
     } catch {
       core.notifications.toasts.addDanger(

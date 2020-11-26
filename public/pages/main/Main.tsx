@@ -23,6 +23,7 @@ import { ListRouterParams } from '../DetectorsList/containers/List/List';
 import { HistoricalDetectorList } from '../HistoricalDetectorList';
 import { HistoricalDetectorListRouterParams } from '../HistoricalDetectorList/containers/HistoricalDetectorList';
 import { CreateHistoricalDetector } from '../CreateHistoricalDetector';
+import { HistoricalDetectorDetail } from '../HistoricalDetectorDetail';
 // @ts-ignore
 import { EuiSideNav, EuiPage, EuiPageBody, EuiPageSideBar } from '@elastic/eui';
 import { useSelector } from 'react-redux';
@@ -155,6 +156,13 @@ export function Main(props: MainProps) {
                   path={APP_PATH.CREATE_HISTORICAL_DETECTOR}
                   render={(props: RouteComponentProps) => (
                     <CreateHistoricalDetector {...props} isEdit={false} />
+                  )}
+                />
+                <Route
+                  exact
+                  path={APP_PATH.HISTORICAL_DETECTOR_DETAIL}
+                  render={(props: RouteComponentProps) => (
+                    <HistoricalDetectorDetail {...props} />
                   )}
                 />
                 <Redirect from="/" to={APP_PATH.DASHBOARD} />

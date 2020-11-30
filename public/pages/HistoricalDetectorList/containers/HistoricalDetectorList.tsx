@@ -92,7 +92,7 @@ export function HistoricalDetectorList(props: HistoricalDetectorListProps) {
 
   // get historical detector store
   const adState = useSelector((state: AppState) => state.ad);
-  const allDetectors = adState.detectorList;
+  const allDetectors = adState.historicalDetectorList;
   const errorGettingDetectors = adState.errorMessage;
   const isRequestingDetectors = adState.requesting;
 

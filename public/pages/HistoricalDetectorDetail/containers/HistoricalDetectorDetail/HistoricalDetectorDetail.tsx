@@ -32,8 +32,8 @@ import {
   startDetector,
   stopDetector,
   deleteDetector,
+  getHistoricalDetector,
 } from '../../../../redux/reducers/ad';
-import { getHistoricalDetector } from '../../../../redux/reducers/historicalDetectors';
 import { BREADCRUMBS } from '../../../../utils/constants';
 import { DETECTOR_STATE } from '../../../../../server/utils/constants';
 import { HistoricalDetectorConfig } from '../../components/HistoricalDetectorConfig/HistoricalDetectorConfig';
@@ -70,11 +70,9 @@ export const HistoricalDetectorDetail = (
   const dispatch = useDispatch();
   const detectorId: string = get(props, 'match.params.detectorId', '');
 
-  const historicalDetectorState = useSelector(
-    (state: AppState) => state.historicalDetectors
-  );
-  const allDetectors = historicalDetectorState.detectors;
-  const errorGettingDetectors = historicalDetectorState.errorMessage;
+  const adState = useSelector((state: AppState) => state.ad);
+  const allDetectors = adState.detectors;
+  const errorGettingDetectors = adState.errorMessage;
   const detector = allDetectors[detectorId];
   const callout = getCallout(detector);
 
@@ -261,7 +259,7 @@ export const HistoricalDetectorDetail = (
     backgroundColor: '#FFF',
   };
 
-  const isLoading = historicalDetectorState.requesting || isLoadingDetector;
+  const isLoading = adState.requesting || isLoadingDetector;
 
   return (
     <React.Fragment>

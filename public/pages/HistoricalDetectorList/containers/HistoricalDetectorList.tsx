@@ -22,7 +22,7 @@ import {
   EuiPageBody,
   EuiSpacer,
 } from '@elastic/eui';
-import { isEmpty, debounce } from 'lodash';
+import { isEmpty } from 'lodash';
 import queryString from 'query-string';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -31,7 +31,7 @@ import { HistoricalDetectorListItem } from '../../../models/interfaces';
 import { SORT_DIRECTION } from '../../../../server/utils/constants';
 import ContentPanel from '../../../components/ContentPanel/ContentPanel';
 import { AppState } from '../../../redux/reducers';
-import { getHistoricalDetectorList } from '../../../redux/reducers/historicalDetectors';
+import { getHistoricalDetectorList } from '../../../redux/reducers/ad';
 import {
   BREADCRUMBS,
   APP_PATH,
@@ -91,12 +91,10 @@ export function HistoricalDetectorList(props: HistoricalDetectorListProps) {
   const dispatch = useDispatch();
 
   // get historical detector store
-  const historicalDetectorState = useSelector(
-    (state: AppState) => state.historicalDetectors
-  );
-  const allDetectors = historicalDetectorState.detectorList;
-  const errorGettingDetectors = historicalDetectorState.errorMessage;
-  const isRequestingDetectors = historicalDetectorState.requesting;
+  const adState = useSelector((state: AppState) => state.ad);
+  const allDetectors = adState.detectorList;
+  const errorGettingDetectors = adState.errorMessage;
+  const isRequestingDetectors = adState.requesting;
 
   const [selectedDetectors, setSelectedDetectors] = useState(
     [] as HistoricalDetectorListItem[]

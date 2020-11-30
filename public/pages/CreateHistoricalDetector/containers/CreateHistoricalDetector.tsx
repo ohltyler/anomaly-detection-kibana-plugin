@@ -36,8 +36,8 @@ import {
   updateDetector,
   createDetector,
   startDetector,
+  getHistoricalDetector,
 } from '../../../redux/reducers/ad';
-import { getHistoricalDetector } from '../../../redux/reducers/historicalDetectors';
 import { getMappings } from '../../../redux/reducers/elasticsearch';
 import { RouteComponentProps } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
@@ -73,16 +73,12 @@ export function CreateHistoricalDetector(props: CreateHistoricalDetectorProps) {
   const core = React.useContext(CoreServicesContext) as CoreStart;
   const dispatch = useDispatch();
   const detectorId: string = get(props, 'match.params.detectorId', '');
-  const historicalDetectorsState = useSelector(
-    (state: AppState) => state.historicalDetectors
-  );
-  const detectors = historicalDetectorsState.detectors;
+  const adState = useSelector((state: AppState) => state.ad);
+  const detectors = adState.detectors;
   const detector = detectors[detectorId];
-  const errorGettingDetector = historicalDetectorsState.errorMessage;
+  const errorGettingDetector = adState.errorMessage;
 
-  const isRequesting = useSelector(
-    (state: AppState) => state.historicalDetectors.requesting
-  );
+  const isRequesting = adState.requesting;
 
   const initialStartDate = moment().subtract(7, 'days').valueOf();
   const [dateRange, setDateRange] = useState<DateRange>({

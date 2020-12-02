@@ -210,11 +210,15 @@ export const HistoricalDetectorDetail = (
   };
 
   const onStopDetectorForDeleting = async () => {
-    const listener: Listener = {
-      onSuccess: onDeleteDetector,
-      onException: handleHideModal,
-    };
-    onStopDetector(true, listener);
+    if (detector?.curState === DETECTOR_STATE.RUNNING) {
+      const listener: Listener = {
+        onSuccess: onDeleteDetector,
+        onException: handleHideModal,
+      };
+      onStopDetector(true, listener);
+    } else {
+      onDeleteDetector();
+    }
   };
 
   const handleHideModal = () => {

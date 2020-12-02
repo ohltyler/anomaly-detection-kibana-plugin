@@ -429,13 +429,6 @@ export const getDetectorCount = (): APIAction => ({
     client.get(`..${AD_NODE_API.DETECTOR}/_count`, {}),
 });
 
-export const getHistoricalDetector = (detectorId: string): APIAction => ({
-  type: GET_DETECTOR,
-  request: (client: HttpSetup) =>
-    client.get(`..${AD_NODE_API.DETECTOR}/${detectorId}/historical`),
-  detectorId,
-});
-
 export const getHistoricalDetectorList = (
   queryParams: GetDetectorsQueryParams
 ): APIAction => ({

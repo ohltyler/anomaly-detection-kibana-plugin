@@ -28,7 +28,11 @@ import {
   DateRangeFilter,
 } from '../models/types';
 import { Router } from '../router';
-import { SORT_DIRECTION, AD_DOC_FIELDS } from '../utils/constants';
+import {
+  SORT_DIRECTION,
+  AD_DOC_FIELDS,
+  DETECTOR_STATE,
+} from '../utils/constants';
 import {
   mapKeysDeep,
   toCamel,
@@ -85,10 +89,6 @@ export function registerADRoutes(apiRouter: Router, adService: AdService) {
   );
   apiRouter.get('/detectors/{detectorName}/_match', adService.matchDetector);
   apiRouter.get('/detectors/_count', adService.getDetectorCount);
-  apiRouter.get(
-    '/detectors/{detectorId}/historical',
-    adService.getHistoricalDetector
-  );
   apiRouter.get('/detectors/historical', adService.getHistoricalDetectors);
 }
 
@@ -231,37 +231,74 @@ export default class AdService {
         .callAsCurrentUser('ad.getDetector', {
           detectorId,
         });
+
+      // Considering any detector with no detection date range to be a realtime detector
+      const isRealtimeDetector =
+        get(response, 'anomaly_detector.detection_date_range', null) === null;
+      const task = get(response, 'anomaly_detection_task', null);
+
+      // Getting detector state, depending on realtime or historical
       let detectorState;
-      try {
-        const detectorStateResp = await this.client
-          .asScoped(request)
-          .callAsCurrentUser('ad.detectorProfile', {
-            detectorId: detectorId,
-          });
-        const detectorStates = getFinalDetectorStates(
-          [detectorStateResp],
-          [convertDetectorKeysToCamelCase(response.anomaly_detector)]
-        );
-        detectorState = detectorStates[0];
-      } catch (err) {
-        console.log(
-          'Anomaly detector - Unable to retrieve detector state',
-          err
-        );
+      if (isRealtimeDetector) {
+        try {
+          const detectorStateResp = await this.client
+            .asScoped(request)
+            .callAsCurrentUser('ad.detectorProfile', {
+              detectorId: detectorId,
+            });
+          const detectorStates = getFinalDetectorStates(
+            [detectorStateResp],
+            [convertDetectorKeysToCamelCase(response.anomaly_detector)]
+          );
+          detectorState = detectorStates[0];
+        } catch (err) {
+          console.log(
+            'Anomaly detector - Unable to retrieve detector state',
+            err
+          );
+        }
+      } else {
+        detectorState = { state: getHistoricalDetectorState(task) };
       }
+
+      // Getting the detector job, depending on realtime or historical
+      let adJob = get(response, 'anomaly_detector_job', null);
+      if (task && adJob === null) {
+        adJob = {
+          name: get(response, '_id'),
+          schedule: {
+            interval: {
+              start_time: 1606298347398,
+              period: 1,
+              unit: 'Minutes',
+            },
+          },
+          window_delay: get(response, 'anomaly_detector.window_delay'),
+          enabled: detectorState === DETECTOR_STATE.RUNNING ? true : false,
+          enabled_time: get(task, 'execution_start_time'),
+          disabled_time: get(task, 'execution_end_time')
+            ? get(task, 'execution_end_time')
+            : get(task, 'last_update_time'),
+          last_update_time: get(task, 'last_update_time'),
+          lock_duration_seconds: 60,
+        };
+      }
+
       const resp = {
         ...response.anomaly_detector,
         id: response._id,
         primaryTerm: response._primary_term,
         seqNo: response._seq_no,
-        adJob: { ...response.anomaly_detector_job },
-        ...(detectorState !== undefined
+        adJob: { ...adJob },
+        ...(isRealtimeDetector
           ? {
               curState: detectorState.state,
               stateError: detectorState.error,
               initProgress: getDetectorInitProgress(detectorState),
             }
-          : {}),
+          : {
+              curState: detectorState.state,
+            }),
       };
       return kibanaResponse.ok({
         body: {
@@ -910,41 +947,6 @@ export default class AdService {
     return featureResult;
   };
 
-  getHistoricalDetector = async (
-    context: RequestHandlerContext,
-    request: KibanaRequest,
-    kibanaResponse: KibanaResponseFactory
-  ): Promise<IKibanaResponse<any>> => {
-    const { detectorId } = request.params as { detectorId: string };
-    try {
-      const response = await this.client
-        .asScoped(request)
-        .callAsCurrentUser('ad.getHistoricalDetector', {
-          detectorId,
-        });
-
-      const resp = {
-        ...response.anomaly_detector,
-        id: response._id,
-        primaryTerm: response._primary_term,
-        seqNo: response._seq_no,
-        curState: getHistoricalDetectorState(response.anomaly_detection_task),
-      };
-
-      return kibanaResponse.ok({
-        body: {
-          ok: true,
-          response: convertDetectorKeysToCamelCase(resp) as Detector,
-        },
-      });
-    } catch (err) {
-      console.log('Anomaly detector - getHistoricalDetector', err);
-      return kibanaResponse.ok({
-        body: { ok: false, error: getErrorMessage(err) },
-      });
-    }
-  };
-
   getHistoricalDetectors = async (
     context: RequestHandlerContext,
     request: KibanaRequest,
@@ -1036,7 +1038,7 @@ export default class AdService {
         try {
           const detectorDetailResp = await this.client
             .asScoped(request)
-            .callAsCurrentUser('ad.getHistoricalDetector', {
+            .callAsCurrentUser('ad.getDetector', {
               detectorId: id,
             });
           return detectorDetailResp;

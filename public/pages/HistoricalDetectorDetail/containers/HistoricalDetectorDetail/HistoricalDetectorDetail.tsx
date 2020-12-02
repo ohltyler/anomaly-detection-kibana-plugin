@@ -32,7 +32,7 @@ import {
   startDetector,
   stopDetector,
   deleteDetector,
-  getHistoricalDetector,
+  getDetector,
 } from '../../../../redux/reducers/ad';
 import { BREADCRUMBS } from '../../../../utils/constants';
 import { DETECTOR_STATE } from '../../../../../server/utils/constants';
@@ -109,7 +109,7 @@ export const HistoricalDetectorDetail = (
 
   const fetchDetector = async () => {
     try {
-      await dispatch(getHistoricalDetector(detectorId));
+      await dispatch(getDetector(detectorId));
       setIsLoadingDetector(false);
     } catch {
       core.notifications.toasts.addDanger(

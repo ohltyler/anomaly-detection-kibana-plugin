@@ -268,7 +268,7 @@ export default class AdService {
           name: get(response, '_id'),
           schedule: {
             interval: {
-              start_time: 1606298347398,
+              start_time: get(task, 'last_update_time'),
               period: 1,
               unit: 'Minutes',
             },

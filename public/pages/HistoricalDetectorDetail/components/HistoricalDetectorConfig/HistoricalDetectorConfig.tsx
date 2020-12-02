@@ -26,6 +26,7 @@ import {
 import { Detector } from '../../../../models/interfaces';
 import React from 'react';
 import moment from 'moment';
+import { get } from 'lodash';
 
 interface HistoricalDetectorConfigProps {
   detector: Detector;
@@ -36,7 +37,7 @@ const FixedWidthRow = (props: EuiFormRowProps) => (
   <EuiFormRow {...props} style={{ width: '250px' }} />
 );
 
-const renderCell = (title: string, description: string) => {
+const renderCell = (title: string, description: string | number) => {
   return (
     <FixedWidthRow label={title}>
       <EuiText>
@@ -65,18 +66,42 @@ export const HistoricalDetectorConfig = (
       actions={[<EuiButton onClick={props.onEditDetector}>Edit</EuiButton>]}
     >
       <EuiFlexGrid columns={3} gutterSize="l" style={{ border: 'none' }}>
-        <EuiFlexItem>{renderCell('Name', props.detector.name)}</EuiFlexItem>
-        <EuiFlexItem>{renderCell('ID', props.detector.id)}</EuiFlexItem>
+        <EuiFlexItem>
+          {renderCell('Name', get(props, 'detector.name', ''))}
+        </EuiFlexItem>
+        <EuiFlexItem>
+          {renderCell('ID', get(props, 'detector.id', ''))}
+        </EuiFlexItem>
         <EuiFlexItem>
           {renderCell(
             'Date range',
-            renderDate(props.detector.detectionDateRange?.startTime) +
+            renderDate(get(props, 'detector.detectionDateRange.startTime', 0)) +
               '-' +
-              renderDate(props.detector.detectionDateRange?.endTime)
+              renderDate(get(props, 'detector.detectionDateRange.endTime', 0))
           )}
         </EuiFlexItem>
         <EuiFlexItem>
-          {renderCell('Description', props.detector.description)}
+          {renderCell('Description', get(props, 'detector.description', ''))}
+        </EuiFlexItem>
+        <EuiFlexItem>
+          {renderCell(
+            'Last updated',
+            renderDate(get(props, 'detector.lastUpdateTime', 0))
+          )}
+        </EuiFlexItem>
+        <EuiFlexItem>
+          {renderCell(
+            'Data source index',
+            get(props, 'detector.indices.0', '')
+          )}
+        </EuiFlexItem>
+        <EuiFlexItem>
+          {renderCell(
+            'Detection interval',
+            get(props, 'detector.detectionInterval.period.interval', '') +
+              ' ' +
+              get(props, 'detector.detectionInterval.period.unit', '')
+          )}
         </EuiFlexItem>
       </EuiFlexGrid>
     </ContentPanel>

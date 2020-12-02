@@ -196,7 +196,7 @@ export function CreateHistoricalDetector(props: CreateHistoricalDetectorProps) {
           `Historical detector updated: ${detectorToUpdate.name}`
         );
       } else {
-        await dispatch(startDetector(detectorId));
+        await dispatch(startDetector(detectorId, true));
         core.notifications.toasts.addSuccess(
           `Historical detector has been started successfully`
         );
@@ -227,7 +227,7 @@ export function CreateHistoricalDetector(props: CreateHistoricalDetectorProps) {
           `Historical detector created: ${detectorToCreate.name}`
         );
       } else {
-        await dispatch(startDetector(createdDetectorId));
+        await dispatch(startDetector(createdDetectorId, true));
         core.notifications.toasts.addSuccess(
           `Historical detector has been started successfully`
         );

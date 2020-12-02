@@ -41,6 +41,7 @@ import { HistoricalDetectorConfig } from '../../components/HistoricalDetectorCon
 import { HistoricalDetectorControls } from '../../components/HistoricalDetectorControls/HistoricalDetectorControls';
 import { EditHistoricalDetectorModal } from '../ActionModals/EditHistoricalDetectorModal/EditHistoricalDetectorModal';
 import { DeleteHistoricalDetectorModal } from '../ActionModals/DeleteHistoricalDetectorModal/DeleteHistoricalDetectorModal';
+import { AnomalyHistory } from '../../../DetectorResults/containers/AnomalyHistory';
 import { stateToColorMap } from '../../../utils/constants';
 import {
   HISTORICAL_DETECTOR_RESULT_REFRESH_RATE,
@@ -75,6 +76,11 @@ export const HistoricalDetectorDetail = (
   const errorGettingDetectors = adState.errorMessage;
   const detector = allDetectors[detectorId];
   const callout = getCallout(detector);
+  const monitors = useSelector((state: AppState) => state.alerting.monitors);
+  const monitor = get(monitors, `${detectorId}.0`);
+
+  // TODO: look further into whether or not we need to check for missing data or not
+  const isDetectorMissingData = false;
 
   const [isLoadingDetector, setIsLoadingDetector] = useState<boolean>(true);
   const [
@@ -331,6 +337,13 @@ export const HistoricalDetectorDetail = (
               <HistoricalDetectorConfig
                 detector={detector}
                 onEditDetector={handleEditAction}
+              />
+            </EuiFlexItem>
+            <EuiFlexItem>
+              <AnomalyHistory
+                detector={detector}
+                monitor={monitor}
+                isFeatureDataMissing={isDetectorMissingData}
               />
             </EuiFlexItem>
             {/* <EuiFlexItem>

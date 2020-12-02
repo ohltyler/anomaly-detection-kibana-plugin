@@ -64,7 +64,6 @@ import { darkModeEnabled } from '../../../utils/kibanaUtils';
 interface AnomalyHistoryProps {
   detector: Detector;
   monitor: Monitor | undefined;
-  createFeature(): void;
   isFeatureDataMissing?: boolean;
 }
 

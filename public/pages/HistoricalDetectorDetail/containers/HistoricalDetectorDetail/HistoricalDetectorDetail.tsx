@@ -37,7 +37,6 @@ import {
 import { BREADCRUMBS } from '../../../../utils/constants';
 import { DETECTOR_STATE } from '../../../../../server/utils/constants';
 import { HistoricalDetectorConfig } from '../../components/HistoricalDetectorConfig/HistoricalDetectorConfig';
-//import { HistoricalDetectorResults } from '../../components/HistoricalDetectorResults/HistoricalDetectorResults';
 import { HistoricalDetectorControls } from '../../components/HistoricalDetectorControls/HistoricalDetectorControls';
 import { EditHistoricalDetectorModal } from '../ActionModals/EditHistoricalDetectorModal/EditHistoricalDetectorModal';
 import { DeleteHistoricalDetectorModal } from '../ActionModals/DeleteHistoricalDetectorModal/DeleteHistoricalDetectorModal';

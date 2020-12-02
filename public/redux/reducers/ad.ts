@@ -42,7 +42,6 @@ const STOP_DETECTOR = 'ad/STOP_DETECTOR';
 const GET_DETECTOR_PROFILE = 'ad/GET_DETECTOR_PROFILE';
 const MATCH_DETECTOR = 'ad/MATCH_DETECTOR';
 const GET_DETECTOR_COUNT = 'ad/GET_DETECTOR_COUNT';
-const GET_HISTORICAL_DETECTOR = 'ad/GET_HISTORICAL_DETECTOR';
 const GET_HISTORICAL_DETECTOR_LIST = 'ad/GET_HISTORICAL_DETECTOR_LIST';
 
 export interface Detectors {
@@ -311,28 +310,6 @@ const reducer = handleActions<Detectors>(
         errorMessage: action.error,
       }),
     },
-    [GET_HISTORICAL_DETECTOR]: {
-      REQUEST: (state: Detectors): Detectors => ({
-        ...state,
-        requesting: true,
-        errorMessage: '',
-      }),
-      SUCCESS: (state: Detectors, action: APIResponseAction): Detectors => ({
-        ...state,
-        requesting: false,
-        detectors: {
-          ...state.detectors,
-          [action.detectorId]: {
-            ...cloneDeep(action.result.response),
-          },
-        },
-      }),
-      FAILURE: (state: Detectors, action: APIErrorAction): Detectors => ({
-        ...state,
-        requesting: false,
-        errorMessage: action.error,
-      }),
-    },
     [GET_HISTORICAL_DETECTOR_LIST]: {
       REQUEST: (state: Detectors): Detectors => ({
         ...state,
@@ -453,7 +430,7 @@ export const getDetectorCount = (): APIAction => ({
 });
 
 export const getHistoricalDetector = (detectorId: string): APIAction => ({
-  type: GET_HISTORICAL_DETECTOR,
+  type: GET_DETECTOR,
   request: (client: HttpSetup) =>
     client.get(`..${AD_NODE_API.DETECTOR}/${detectorId}/historical`),
   detectorId,

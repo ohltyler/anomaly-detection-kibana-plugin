@@ -69,6 +69,7 @@ export type Detector = {
   curState?: DETECTOR_STATE;
   categoryField?: string[];
   detectionDateRange?: DetectionDateRange;
+  taskId?: string;
 };
 
 export type Monitor = {

@@ -31,7 +31,6 @@ import {
   FeatureAggregationData,
   FeatureAttributes,
 } from '../../models/interfaces';
-import { getDetectorResults } from '../../redux/reducers/anomalyResults';
 import { getDetectorLiveResults } from '../../redux/reducers/liveAnomalyResults';
 import {
   MAX_ANOMALIES,
@@ -91,19 +90,6 @@ export const buildParamsForGetAnomalyResultsWithDateRange = (
     },
     anomalyThreshold: anomalyOnly ? 0 : -1,
   };
-};
-
-export const getAnomalyResultsWithDateRange = (
-  dispatch: Dispatch<any>,
-  startTime: number,
-  endTime: number,
-  detectorId: string
-) => {
-  const params = buildParamsForGetAnomalyResultsWithDateRange(
-    startTime,
-    endTime
-  );
-  dispatch(getDetectorResults(detectorId, params));
 };
 
 const MAX_DATA_POINTS = 1000;

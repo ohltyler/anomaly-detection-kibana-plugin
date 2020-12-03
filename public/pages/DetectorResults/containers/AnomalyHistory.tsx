@@ -54,8 +54,10 @@ import { ANOMALY_HISTORY_TABS } from '../utils/constants';
 import { MIN_IN_MILLI_SECS } from '../../../../server/utils/constants';
 import { INITIAL_ANOMALY_SUMMARY } from '../../AnomalyCharts/utils/constants';
 import { MAX_ANOMALIES } from '../../../utils/constants';
-import { getDetectorResults } from '../../../redux/reducers/anomalyResults';
-import { searchResults } from '../../../redux/reducers/anomalyResults';
+import {
+  searchResults,
+  getDetectorResults,
+} from '../../../redux/reducers/anomalyResults';
 import { AnomalyOccurrenceChart } from '../../AnomalyCharts/containers/AnomalyOccurrenceChart';
 import { HeatmapCell } from '../../AnomalyCharts/containers/AnomalyHeatmapChart';
 import { getAnomalyHistoryWording } from '../../AnomalyCharts/utils/anomalyChartUtils';
@@ -65,6 +67,8 @@ interface AnomalyHistoryProps {
   detector: Detector;
   monitor: Monitor | undefined;
   isFeatureDataMissing?: boolean;
+  isHistorical?: boolean;
+  taskId?: string;
 }
 
 export const AnomalyHistory = (props: AnomalyHistoryProps) => {
@@ -183,9 +187,9 @@ export const AnomalyHistory = (props: AnomalyHistoryProps) => {
         // get anomaly only data if HC detector
         isHCDetector
       );
-      const detectorResultResponse = await dispatch(
-        getDetectorResults(props.detector.id, params)
-      );
+      const detectorResultResponse = props.isHistorical
+        ? await dispatch(getDetectorResults(props.taskId || '', params, true))
+        : await dispatch(getDetectorResults(props.detector.id, params, false));
       const rawAnomaliesData = get(detectorResultResponse, 'response', []);
       const rawAnomaliesResult = {
         anomalies: get(rawAnomaliesData, 'results', []),

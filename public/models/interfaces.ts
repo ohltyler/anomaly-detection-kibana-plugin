@@ -111,6 +111,7 @@ export type Detector = {
   initProgress?: InitProgress;
   categoryField?: string[];
   detectionDateRange?: DetectionDateRange;
+  taskId?: string;
 };
 
 export type DetectorListItem = {

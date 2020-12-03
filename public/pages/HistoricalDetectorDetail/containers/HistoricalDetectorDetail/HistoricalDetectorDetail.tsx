@@ -343,6 +343,8 @@ export const HistoricalDetectorDetail = (
                 detector={detector}
                 monitor={monitor}
                 isFeatureDataMissing={isDetectorMissingData}
+                isHistorical={true}
+                taskId={detector?.taskId}
               />
             </EuiFlexItem>
             {/* <EuiFlexItem>

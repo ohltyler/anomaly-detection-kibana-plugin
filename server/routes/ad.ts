@@ -79,7 +79,10 @@ export function registerADRoutes(apiRouter: Router, adService: AdService) {
   apiRouter.get('/detectors/{detectorId}', adService.getDetector);
   apiRouter.get('/detectors', adService.getDetectors);
   apiRouter.post('/detectors/{detectorId}/preview', adService.previewDetector);
-  apiRouter.get('/detectors/{detectorId}/results', adService.getAnomalyResults);
+  apiRouter.get(
+    '/detectors/{id}/results/{isHistorical}',
+    adService.getAnomalyResults
+  );
   apiRouter.delete('/detectors/{detectorId}', adService.deleteDetector);
   apiRouter.post('/detectors/{detectorId}/start', adService.startDetector);
   apiRouter.post('/detectors/{detectorId}/stop', adService.stopDetector);
@@ -236,6 +239,7 @@ export default class AdService {
       const isRealtimeDetector =
         get(response, 'anomaly_detector.detection_date_range', null) === null;
       const task = get(response, 'anomaly_detection_task', null);
+      const taskId = get(response, 'anomaly_detection_task.task_id', null);
 
       // Getting detector state, depending on realtime or historical
       let detectorState;
@@ -299,6 +303,11 @@ export default class AdService {
           : {
               curState: detectorState.state,
             }),
+        ...(!isRealtimeDetector
+          ? {
+              taskId: taskId,
+            }
+          : {}),
       };
       return kibanaResponse.ok({
         body: {
@@ -715,7 +724,15 @@ export default class AdService {
     request: KibanaRequest,
     kibanaResponse: KibanaResponseFactory
   ): Promise<IKibanaResponse<any>> => {
-    const { detectorId } = request.params as { detectorId: string };
+    let { id, isHistorical } = request.params as {
+      id: string;
+      isHistorical: any;
+    };
+    isHistorical = JSON.parse(isHistorical);
+
+    // Search by task id if historical, or by detector id if realtime
+    const searchTerm = isHistorical ? { task_id: id } : { detector_id: id };
+
     try {
       const {
         from = 0,
@@ -759,9 +776,7 @@ export default class AdService {
           bool: {
             filter: [
               {
-                term: {
-                  detector_id: detectorId,
-                },
+                term: searchTerm,
               },
 
               {

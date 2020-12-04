@@ -492,6 +492,7 @@ export function AnomalyResults(props: AnomalyResultsProps) {
                     detector={detector}
                     monitor={monitor}
                     isFeatureDataMissing={isDetectorMissingData}
+                    isNotSample={true}
                   />
                 </Fragment>
               ) : detector ? (

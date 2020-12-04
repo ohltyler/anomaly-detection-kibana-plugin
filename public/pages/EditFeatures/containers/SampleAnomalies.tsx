@@ -248,6 +248,7 @@ export function SampleAnomalies(props: SampleAnomaliesProps) {
                 zoomRange={zoomRange}
                 anomaliesResult={anomaliesResult}
                 showAlerts={false}
+                isNotSample={false}
               />
               <EuiSpacer />
               {isLoading ? (

@@ -69,6 +69,7 @@ interface AnomalyHistoryProps {
   isFeatureDataMissing?: boolean;
   isHistorical?: boolean;
   taskId?: string;
+  isNotSample?: boolean;
 }
 
 export const AnomalyHistory = (props: AnomalyHistoryProps) => {
@@ -333,6 +334,7 @@ export const AnomalyHistory = (props: AnomalyHistoryProps) => {
         anomalySummary={bucketizedAnomalySummary}
         isLoading={isLoading || isLoadingAnomalyResults}
         showAlerts={props.isHistorical ? false : true}
+        isNotSample={props.isNotSample}
         detector={props.detector}
         monitor={props.monitor}
         isHCDetector={isHCDetector}
@@ -397,6 +399,7 @@ export const AnomalyHistory = (props: AnomalyHistoryProps) => {
                         anomalyGradeSeriesName="Anomaly grade"
                         confidenceSeriesName="Confidence"
                         showAlerts={true}
+                        isNotSample={true}
                         detector={props.detector}
                         monitor={props.monitor}
                         isHCDetector={isHCDetector}

@@ -345,6 +345,7 @@ export const HistoricalDetectorDetail = (
                 isFeatureDataMissing={isDetectorMissingData}
                 isHistorical={true}
                 taskId={detector?.taskId}
+                isNotSample={true}
               />
             </EuiFlexItem>
             {/* <EuiFlexItem>

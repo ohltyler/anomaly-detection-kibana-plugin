@@ -332,7 +332,7 @@ export const AnomalyHistory = (props: AnomalyHistoryProps) => {
         bucketizedAnomalies={bucketizedAnomalyResults !== undefined}
         anomalySummary={bucketizedAnomalySummary}
         isLoading={isLoading || isLoadingAnomalyResults}
-        showAlerts={true}
+        showAlerts={props.isHistorical ? false : true}
         detector={props.detector}
         monitor={props.monitor}
         isHCDetector={isHCDetector}

@@ -70,7 +70,7 @@ export const getLiveAnomalyResults = (
     detectionInterval,
     intervals
   );
-  dispatch(getDetectorLiveResults(detectorId, queryParams));
+  dispatch(getDetectorLiveResults(detectorId, queryParams, false));
 };
 
 export const buildParamsForGetAnomalyResultsWithDateRange = (

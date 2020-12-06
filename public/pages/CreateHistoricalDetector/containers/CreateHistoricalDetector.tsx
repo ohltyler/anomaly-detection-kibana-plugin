@@ -191,12 +191,11 @@ export function CreateHistoricalDetector(props: CreateHistoricalDetectorProps) {
   ) => {
     try {
       await dispatch(updateDetector(detectorId, detectorToUpdate));
-      if (option === SAVE_HISTORICAL_DETECTOR_OPTIONS.KEEP_STOPPED) {
-        core.notifications.toasts.addSuccess(
-          `Historical detector updated: ${detectorToUpdate.name}`
-        );
-      } else {
-        await dispatch(startDetector(detectorId, true));
+      core.notifications.toasts.addSuccess(
+        `Historical detector updated: ${detectorToUpdate.name}`
+      );
+      if (option === SAVE_HISTORICAL_DETECTOR_OPTIONS.START) {
+        await dispatch(startDetector(detectorId));
         core.notifications.toasts.addSuccess(
           `Historical detector has been started successfully`
         );
@@ -221,13 +220,12 @@ export function CreateHistoricalDetector(props: CreateHistoricalDetectorProps) {
   ) => {
     try {
       const response = await dispatch(createDetector(detectorToCreate));
+      core.notifications.toasts.addSuccess(
+        `Historical detector created: ${detectorToCreate.name}`
+      );
       const createdDetectorId = response.response.id;
-      if (option === SAVE_HISTORICAL_DETECTOR_OPTIONS.KEEP_STOPPED) {
-        core.notifications.toasts.addSuccess(
-          `Historical detector created: ${detectorToCreate.name}`
-        );
-      } else {
-        await dispatch(startDetector(createdDetectorId, true));
+      if (option === SAVE_HISTORICAL_DETECTOR_OPTIONS.START) {
+        await dispatch(startDetector(createdDetectorId));
         core.notifications.toasts.addSuccess(
           `Historical detector has been started successfully`
         );

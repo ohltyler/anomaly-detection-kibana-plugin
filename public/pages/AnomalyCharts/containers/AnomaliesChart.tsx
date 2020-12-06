@@ -51,6 +51,7 @@ import {
 } from '../utils/constants';
 import { AnomalyOccurrenceChart } from './AnomalyOccurrenceChart';
 import { FeatureBreakDown } from './FeatureBreakDown';
+import { convertTimestampToString } from '../../CreateHistoricalDetector/utils/helpers';
 
 interface AnomaliesChartProps {
   onDateRangeChange(
@@ -70,6 +71,7 @@ interface AnomaliesChartProps {
   monitor?: Monitor;
   children: React.ReactNode | React.ReactNode[];
   isHCDetector?: boolean;
+  isHistorical?: boolean;
   detectorCategoryField?: string[];
   onHeatmapCellSelected?(heatmapCell: HeatmapCell): void;
   selectedHeatmapCell?: HeatmapCell;
@@ -80,8 +82,12 @@ interface AnomaliesChartProps {
 
 export const AnomaliesChart = React.memo((props: AnomaliesChartProps) => {
   const [datePickerRange, setDatePickerRange] = useState({
-    start: 'now-7d',
-    end: 'now',
+    start: props.isHistorical
+      ? convertTimestampToString(props.dateRange.startDate)
+      : 'now-7d',
+    end: props.isHistorical
+      ? convertTimestampToString(props.dateRange.endDate)
+      : 'now',
   });
 
   const anomalies = get(props.anomaliesResult, 'anomalies', []);

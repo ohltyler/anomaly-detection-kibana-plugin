@@ -120,9 +120,7 @@ const reducer = handleActions<Detectors>(
             ...state.detectors[action.detectorId],
             enabled: true,
             enabledTime: moment().valueOf(),
-            curState: action.isHistorical
-              ? DETECTOR_STATE.RUNNING
-              : DETECTOR_STATE.INIT,
+            curState: DETECTOR_STATE.INIT,
             stateError: '',
           },
         },
@@ -392,15 +390,11 @@ export const deleteDetector = (detectorId: string): APIAction => ({
   detectorId,
 });
 
-export const startDetector = (
-  detectorId: string,
-  isHistorical?: boolean
-): APIAction => ({
+export const startDetector = (detectorId: string): APIAction => ({
   type: START_DETECTOR,
   request: (client: HttpSetup) =>
     client.post(`..${AD_NODE_API.DETECTOR}/${detectorId}/start`),
   detectorId,
-  isHistorical,
 });
 
 export const stopDetector = (detectorId: string): APIAction => ({

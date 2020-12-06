@@ -17,7 +17,7 @@ import { HistoricalDetectorAnomalySummary } from '../../../models/interfaces';
 
 // Current backend implementation (not finalized): limited to running model on 1000 intervals every 6s.
 // Frontend should refresh at this rate to always show updated historical detector progress / partial anomaly results, etc.
-export const HISTORICAL_DETECTOR_RESULT_REFRESH_RATE = 6000;
+export const HISTORICAL_DETECTOR_RESULT_REFRESH_RATE = 1000;
 
 export const INITIAL_HISTORICAL_DETECTOR_ANOMALY_SUMMARY = {
   anomalyOccurrence: 0,

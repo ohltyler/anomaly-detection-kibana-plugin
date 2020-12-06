@@ -326,12 +326,18 @@ export const appendTaskInfo = (
   return detectorMapWithTaskInfo;
 };
 
-// Two checks need to be made here:
+// Three checks need to be made here:
 // (1) set to DISABLED if there is no existing task for this detector
 // (2) set to UNEXPECTED_FAILURE if the task is in a FAILED state to stay consistent
+// (3) set to INIT if the task is in a CREATED state
 export const getHistoricalDetectorState = (task: any) => {
   const state = get(task, 'state', 'DISABLED');
-  const updatedState = state === 'FAILED' ? 'UNEXPECTED_FAILURE' : state;
+  const updatedState =
+    state === 'FAILED'
+      ? 'UNEXPECTED_FAILURE'
+      : state === 'CREATED'
+      ? 'INIT'
+      : state;
   //@ts-ignore
   return DETECTOR_STATE[updatedState];
 };

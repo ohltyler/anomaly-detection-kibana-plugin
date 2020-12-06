@@ -38,6 +38,22 @@ export const getCallout = (detector: Detector) => {
           iconType="alert"
         />
       );
+    case DETECTOR_STATE.INIT:
+      return (
+        <EuiCallOut
+          title={
+            <div>
+              <EuiFlexGroup direction="row" gutterSize="xs">
+                <EuiLoadingSpinner size="l" style={{ marginRight: '8px' }} />
+                <EuiText>
+                  <p>The historical detector is initializing</p>
+                </EuiText>
+              </EuiFlexGroup>
+            </div>
+          }
+          color="primary"
+        />
+      );
     case DETECTOR_STATE.RUNNING:
       return (
         <EuiCallOut

@@ -126,9 +126,12 @@ export const HistoricalDetectorDetail = (
     }
   }, []);
 
-  // If detector is running: keep fetching every second to quickly update state/results/percentage bar, etc.
+  // If detector is initialiazing or running: keep fetching every second to quickly update state/results/percentage bar, etc.
   useEffect(() => {
-    if (detector?.curState === DETECTOR_STATE.RUNNING) {
+    if (
+      detector?.curState === DETECTOR_STATE.RUNNING ||
+      detector?.curState === DETECTOR_STATE.INIT
+    ) {
       const intervalId = setInterval(
         fetchDetector,
         HISTORICAL_DETECTOR_RESULT_REFRESH_RATE
@@ -148,7 +151,8 @@ export const HistoricalDetectorDetail = (
   };
 
   const handleEditAction = () => {
-    detector?.curState === DETECTOR_STATE.RUNNING
+    detector?.curState === DETECTOR_STATE.RUNNING ||
+    detector?.curState === DETECTOR_STATE.INIT
       ? setHistoricalDetectorDetailModalState({
           ...historicalDetectorDetailModalState,
           isOpen: true,
@@ -159,7 +163,7 @@ export const HistoricalDetectorDetail = (
 
   const onStartDetector = async () => {
     try {
-      await dispatch(startDetector(detectorId, true));
+      await dispatch(startDetector(detectorId));
       core.notifications.toasts.addSuccess(
         `Historical detector has been started successfully`
       );
@@ -215,7 +219,10 @@ export const HistoricalDetectorDetail = (
   };
 
   const onStopDetectorForDeleting = async () => {
-    if (detector?.curState === DETECTOR_STATE.RUNNING) {
+    if (
+      detector?.curState === DETECTOR_STATE.RUNNING ||
+      detector?.curState === DETECTOR_STATE.INIT
+    ) {
       const listener: Listener = {
         onSuccess: onDeleteDetector,
         onException: handleHideModal,
@@ -348,12 +355,6 @@ export const HistoricalDetectorDetail = (
                 isNotSample={true}
               />
             </EuiFlexItem>
-            {/* <EuiFlexItem>
-              <HistoricalDetectorResults
-                detector={detector}
-                isLoading={isLoading}
-              />
-            </EuiFlexItem> */}
           </EuiFlexGroup>
         </EuiFlexGroup>
       ) : (

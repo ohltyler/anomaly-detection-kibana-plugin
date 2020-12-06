@@ -76,15 +76,21 @@ export const AnomalyHistory = (props: AnomalyHistoryProps) => {
   const dispatch = useDispatch();
 
   const [isLoading, setIsLoading] = useState(false);
-  const initialStartDate = moment().subtract(7, 'days');
-  const initialEndDate = moment();
+  const initialStartDate =
+    props.isHistorical && props.detector?.detectionDateRange
+      ? props.detector.detectionDateRange.startTime
+      : moment().subtract(7, 'days').valueOf();
+  const initialEndDate =
+    props.isHistorical && props.detector?.detectionDateRange
+      ? props.detector.detectionDateRange.endTime
+      : moment().valueOf();
   const [dateRange, setDateRange] = useState<DateRange>({
-    startDate: initialStartDate.valueOf(),
-    endDate: initialEndDate.valueOf(),
+    startDate: initialStartDate,
+    endDate: initialEndDate,
   });
   const [zoomRange, setZoomRange] = useState<DateRange>({
-    startDate: initialStartDate.valueOf(),
-    endDate: initialEndDate.valueOf(),
+    startDate: initialStartDate,
+    endDate: initialEndDate,
   });
   const [selectedTabId, setSelectedTabId] = useState<string>(
     ANOMALY_HISTORY_TABS.ANOMALY_OCCURRENCE
@@ -160,7 +166,7 @@ export const AnomalyHistory = (props: AnomalyHistoryProps) => {
     } else {
       setBucketizedAnomalyResults(undefined);
     }
-  }, [dateRange]);
+  }, [dateRange, props.detector]);
 
   const detectorInterval = get(
     props.detector,
@@ -338,6 +344,7 @@ export const AnomalyHistory = (props: AnomalyHistoryProps) => {
         detector={props.detector}
         monitor={props.monitor}
         isHCDetector={isHCDetector}
+        isHistorical={props.isHistorical}
         detectorCategoryField={detectorCategoryField}
         onHeatmapCellSelected={handleHeatmapCellSelected}
         selectedHeatmapCell={selectedHeatmapCell}

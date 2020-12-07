@@ -48,12 +48,12 @@ export const EmptyHistoricalDetectorMessage = (
         </EuiButton>
       ) : (
         <EuiButton
-          style={{ width: '150px' }}
+          style={{ width: '225px' }}
           fill
           href={`${PLUGIN_NAME}#${APP_PATH.CREATE_HISTORICAL_DETECTOR}`}
           data-test-subj="createHistoricalDetectorButton"
         >
-          Create detector
+          Create historical detector
         </EuiButton>
       )
     }

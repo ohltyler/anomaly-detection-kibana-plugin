@@ -125,7 +125,9 @@ export const AnomalyHistory = (props: AnomalyHistoryProps) => {
             getAnomalySummaryQuery(
               dateRange.startDate,
               dateRange.endDate,
-              props.detector.id
+              props.detector.id,
+              props.isHistorical,
+              props.taskId
             )
           )
         );
@@ -139,7 +141,9 @@ export const AnomalyHistory = (props: AnomalyHistoryProps) => {
               dateRange.startDate,
               dateRange.endDate,
               1,
-              props.detector.id
+              props.detector.id,
+              props.isHistorical,
+              props.taskId
             )
           )
         );
@@ -147,7 +151,7 @@ export const AnomalyHistory = (props: AnomalyHistoryProps) => {
         setBucketizedAnomalyResults(parseBucketizedAnomalyResults(result));
       } catch (err) {
         console.error(
-          `Failed to get anomaly results for ${props.detector.id}`,
+          `Failed to get anomaly results for ${props.detector?.id}`,
           err
         );
       } finally {
@@ -355,7 +359,7 @@ export const AnomalyHistory = (props: AnomalyHistoryProps) => {
         {isLoading || isLoadingAnomalyResults ? (
           <EuiFlexGroup
             justifyContent="spaceAround"
-            style={{ height: '200px', paddingTop: '100px' }}
+            style={{ height: '500px', paddingTop: '100px' }}
           >
             <EuiFlexItem grow={false}>
               <EuiLoadingSpinner size="xl" />

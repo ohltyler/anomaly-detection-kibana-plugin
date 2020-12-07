@@ -166,6 +166,7 @@ export const HistoricalDetectorDetail = (
   const onStartDetector = async () => {
     try {
       await dispatch(startDetector(detectorId));
+      fetchDetector();
       core.notifications.toasts.addSuccess(
         `Historical detector has been started successfully`
       );

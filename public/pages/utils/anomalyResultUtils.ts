@@ -270,8 +270,12 @@ export const RETURNED_AD_RESULT_FIELDS = [
 export const getAnomalySummaryQuery = (
   startTime: number,
   endTime: number,
-  detectorId: string
+  detectorId: string,
+  isHistorical?: boolean,
+  taskId?: string
 ) => {
+  const termField =
+    isHistorical && taskId ? { task_id: taskId } : { detector_id: detectorId };
   return {
     size: MAX_ANOMALIES,
     query: {
@@ -293,9 +297,7 @@ export const getAnomalySummaryQuery = (
             },
           },
           {
-            term: {
-              detector_id: detectorId,
-            },
+            term: termField,
           },
         ],
       },
@@ -342,8 +344,12 @@ export const getBucketizedAnomalyResultsQuery = (
   startTime: number,
   endTime: number,
   interval: number,
-  detectorId: string
+  detectorId: string,
+  isHistorical?: boolean,
+  taskId?: string
 ) => {
+  const termField =
+    isHistorical && taskId ? { task_id: taskId } : { detector_id: detectorId };
   const fixedInterval = Math.ceil(
     (endTime - startTime) / (interval * MIN_IN_MILLI_SECS * MAX_DATA_POINTS)
   );
@@ -361,9 +367,7 @@ export const getBucketizedAnomalyResultsQuery = (
             },
           },
           {
-            term: {
-              detector_id: detectorId,
-            },
+            term: termField,
           },
         ],
       },

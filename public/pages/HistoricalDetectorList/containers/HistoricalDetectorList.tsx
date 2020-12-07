@@ -372,7 +372,7 @@ export function HistoricalDetectorList(props: HistoricalDetectorListProps) {
             //   isCompareDisabled={taskListActionsState.isCompareDisabled}
             // />,
             <EuiButton
-              style={{ width: '150px' }}
+              style={{ width: '225px' }}
               data-test-subj="createDetectorButton"
               fill
               href={`${PLUGIN_NAME}#${APP_PATH.CREATE_HISTORICAL_DETECTOR}`}

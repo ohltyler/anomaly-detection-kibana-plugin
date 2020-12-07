@@ -25,9 +25,29 @@ import {
 import { Detector } from '../../../models/interfaces';
 import { DETECTOR_STATE } from '../../../../server/utils/constants';
 
-export const getCallout = (detector: Detector) => {
+export const waitForMs = (ms: number) =>
+  new Promise((res) => setTimeout(res, ms));
+
+export const getCallout = (detector: Detector, isStoppingDetector: boolean) => {
   if (!detector || !detector.curState) {
     return null;
+  }
+  if (isStoppingDetector) {
+    return (
+      <EuiCallOut
+        title={
+          <div>
+            <EuiFlexGroup direction="row" gutterSize="xs">
+              <EuiLoadingSpinner size="l" style={{ marginRight: '8px' }} />
+              <EuiText>
+                <p>Stopping the historical detector</p>
+              </EuiText>
+            </EuiFlexGroup>
+          </div>
+        }
+        color="primary"
+      />
+    );
   }
   switch (detector.curState) {
     case DETECTOR_STATE.DISABLED:
@@ -46,7 +66,7 @@ export const getCallout = (detector: Detector) => {
               <EuiFlexGroup direction="row" gutterSize="xs">
                 <EuiLoadingSpinner size="l" style={{ marginRight: '8px' }} />
                 <EuiText>
-                  <p>The historical detector is initializing</p>
+                  <p>Initializing the historical detector</p>
                 </EuiText>
               </EuiFlexGroup>
             </div>

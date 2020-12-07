@@ -45,8 +45,9 @@ import { stateToColorMap } from '../../../utils/constants';
 import {
   HISTORICAL_DETECTOR_RESULT_REFRESH_RATE,
   HISTORICAL_DETECTOR_ACTION,
+  HISTORICAL_DETECTOR_STOP_THRESHOLD,
 } from '../../utils/constants';
-import { getCallout } from '../../utils/helpers';
+import { getCallout, waitForMs } from '../../utils/helpers';
 import { CoreStart } from '../../../../../../../src/core/public';
 import { CoreServicesContext } from '../../../../components/CoreServices/CoreServices';
 
@@ -74,7 +75,6 @@ export const HistoricalDetectorDetail = (
   const allDetectors = adState.detectors;
   const errorGettingDetectors = adState.errorMessage;
   const detector = allDetectors[detectorId];
-  const callout = getCallout(detector);
   const monitors = useSelector((state: AppState) => state.alerting.monitors);
   const monitor = get(monitors, `${detectorId}.0`);
 
@@ -82,6 +82,7 @@ export const HistoricalDetectorDetail = (
   const isDetectorMissingData = false;
 
   const [isLoadingDetector, setIsLoadingDetector] = useState<boolean>(true);
+  const [isStoppingDetector, setIsStoppingDetector] = useState<boolean>(false);
   const [
     historicalDetectorDetailModalState,
     setHistoricalDetectorDetailModalState,
@@ -89,6 +90,7 @@ export const HistoricalDetectorDetail = (
     isOpen: false,
     action: undefined,
   });
+  const callout = getCallout(detector, isStoppingDetector);
 
   useEffect(() => {
     if (errorGettingDetectors) {
@@ -174,9 +176,18 @@ export const HistoricalDetectorDetail = (
     }
   };
 
+  // We query the task state 5s after making the stop detector call. If the task is still running,
+  // then it is assumed there was an error stopping this task / historical detector.
   const onStopDetector = async (isDelete: boolean, listener?: Listener) => {
     try {
+      setIsStoppingDetector(true);
       await dispatch(stopDetector(detectorId));
+      await waitForMs(HISTORICAL_DETECTOR_STOP_THRESHOLD);
+      setIsStoppingDetector(false);
+      const resp = await dispatch(getDetector(detectorId));
+      if (get(resp, 'response.curState') !== DETECTOR_STATE.DISABLED) {
+        throw 'please try again.';
+      }
       if (!isDelete) {
         core.notifications.toasts.addSuccess(
           'Historical detector has been stopped successfully'
@@ -248,6 +259,7 @@ export const HistoricalDetectorDetail = (
           return (
             <EditHistoricalDetectorModal
               detector={detector}
+              isStoppingDetector={isStoppingDetector}
               onHide={handleHideModal}
               onStopDetectorForEditing={onStopDetectorForEditing}
             />
@@ -257,6 +269,7 @@ export const HistoricalDetectorDetail = (
           return (
             <DeleteHistoricalDetectorModal
               detector={detector}
+              isStoppingDetector={isStoppingDetector}
               onHide={handleHideModal}
               onStopDetectorForDeleting={onStopDetectorForDeleting}
             />
@@ -276,7 +289,6 @@ export const HistoricalDetectorDetail = (
   };
 
   const isLoading = adState.requesting || isLoadingDetector;
-
   return (
     <React.Fragment>
       {!isEmpty(detector) && !errorGettingDetectors
@@ -303,7 +315,9 @@ export const HistoricalDetectorDetail = (
               <EuiTitle size="l">
                 <h1>
                   {detector && detector.name}{' '}
-                  {detector?.curState ? (
+                  {isStoppingDetector ? (
+                    <EuiHealth color={'#00'}>{'Stopping...'}</EuiHealth>
+                  ) : detector?.curState ? (
                     <EuiHealth color={stateToColorMap.get(detector.curState)}>
                       {detector.curState}
                     </EuiHealth>
@@ -315,6 +329,7 @@ export const HistoricalDetectorDetail = (
             <EuiFlexItem grow={false}>
               <HistoricalDetectorControls
                 detector={detector}
+                isStoppingDetector={isStoppingDetector}
                 onEditDetector={handleEditAction}
                 onStartDetector={onStartDetector}
                 onStopDetector={onStopDetector}
@@ -342,6 +357,7 @@ export const HistoricalDetectorDetail = (
             <EuiFlexItem>
               <HistoricalDetectorConfig
                 detector={detector}
+                isStoppingDetector={isStoppingDetector}
                 onEditDetector={handleEditAction}
               />
             </EuiFlexItem>

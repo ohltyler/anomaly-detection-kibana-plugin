@@ -19,6 +19,10 @@ import { HistoricalDetectorAnomalySummary } from '../../../models/interfaces';
 // Frontend should refresh at this rate to always show updated historical detector progress / partial anomaly results, etc.
 export const HISTORICAL_DETECTOR_RESULT_REFRESH_RATE = 1000;
 
+// Current backend implementation will handle stopping a historical detector task asynchronously. It is assumed
+// that if the task is not in a stopped state after 5s, then there was a problem stopping.
+export const HISTORICAL_DETECTOR_STOP_THRESHOLD = 5000;
+
 export const INITIAL_HISTORICAL_DETECTOR_ANOMALY_SUMMARY = {
   anomalyOccurrence: 0,
   minAnomalyGrade: 0.0,

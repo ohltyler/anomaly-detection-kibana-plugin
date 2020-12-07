@@ -25,6 +25,7 @@ import { ConfirmModal } from '../../../../DetectorDetail/components/ConfirmModal
 
 interface EditHistoricalDetectorModalProps {
   detector: Detector;
+  isStoppingDetector: boolean;
   onHide(): void;
   onStopDetectorForEditing(): void;
 }
@@ -52,6 +53,7 @@ export const EditHistoricalDetectorModal = (
         confirmButtonText="Stop and proceed to edit"
         confirmButtonColor="primary"
         confirmButtonDisabled={false}
+        confirmButtonIsLoading={props.isStoppingDetector}
         onClose={props.onHide}
         onCancel={props.onHide}
         onConfirm={() => props.onStopDetectorForEditing()}

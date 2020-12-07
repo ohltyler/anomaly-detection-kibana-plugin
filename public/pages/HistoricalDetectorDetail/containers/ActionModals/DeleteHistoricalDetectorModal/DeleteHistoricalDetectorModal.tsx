@@ -28,6 +28,7 @@ import { DETECTOR_STATE } from '../../../../../../server/utils/constants';
 
 interface DeleteHistoricalDetectorModalProps {
   detector: Detector;
+  isStoppingDetector: boolean;
   onHide(): void;
   onStopDetectorForDeleting(): void;
 }
@@ -38,7 +39,8 @@ export const DeleteHistoricalDetectorModal = (
   const [deleteTyped, setDeleteTyped] = useState<boolean>(false);
 
   const detectorIsRunningCallout =
-    props.detector.curState === DETECTOR_STATE.RUNNING ? (
+    props.detector?.curState === DETECTOR_STATE.INIT ||
+    props.detector?.curState === DETECTOR_STATE.RUNNING ? (
       <EuiCallOut
         title="The historical detector is running. Are you sure you want to proceed?"
         color="warning"
@@ -77,9 +79,17 @@ export const DeleteHistoricalDetectorModal = (
           </EuiFlexGroup>
         }
         callout={<Fragment>{detectorIsRunningCallout}</Fragment>}
-        confirmButtonText="Delete"
+        confirmButtonText={
+          props.detector?.curState === DETECTOR_STATE.INIT ||
+          props.detector?.curState === DETECTOR_STATE.RUNNING
+            ? 'Stop and delete'
+            : props.isStoppingDetector
+            ? 'Stopping the detector first'
+            : 'Delete'
+        }
         confirmButtonColor="danger"
         confirmButtonDisabled={!deleteTyped}
+        confirmButtonIsLoading={props.isStoppingDetector}
         onClose={props.onHide}
         onCancel={props.onHide}
         onConfirm={() => props.onStopDetectorForDeleting()}

@@ -30,6 +30,7 @@ import { get } from 'lodash';
 
 interface HistoricalDetectorConfigProps {
   detector: Detector;
+  isStoppingDetector: boolean;
   onEditDetector(): void;
 }
 
@@ -63,7 +64,14 @@ export const HistoricalDetectorConfig = (
       title="Historical detector configuration"
       titleSize="s"
       panelStyles={{ margin: '0px' }}
-      actions={[<EuiButton onClick={props.onEditDetector}>Edit</EuiButton>]}
+      actions={[
+        <EuiButton
+          onClick={props.onEditDetector}
+          disabled={props.isStoppingDetector}
+        >
+          Edit
+        </EuiButton>,
+      ]}
     >
       <EuiFlexGrid columns={3} gutterSize="l" style={{ border: 'none' }}>
         <EuiFlexItem>

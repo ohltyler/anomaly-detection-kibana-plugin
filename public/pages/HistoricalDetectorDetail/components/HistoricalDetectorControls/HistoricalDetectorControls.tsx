@@ -28,6 +28,7 @@ import { DETECTOR_STATE } from '../../../../../server/utils/constants';
 
 interface HistoricalDetectorControlsProps {
   detector: Detector;
+  isStoppingDetector: boolean;
   onEditDetector(): void;
   onStartDetector(): void;
   onStopDetector: (isDelete: boolean, listener?: Listener) => void;
@@ -48,6 +49,7 @@ export const HistoricalDetectorControls = (
               iconSide="right"
               data-test-subj="actionsButton"
               onClick={() => setIsOpen(!isOpen)}
+              isDisabled={props.isStoppingDetector}
             >
               Actions
             </EuiButton>
@@ -84,6 +86,15 @@ export const HistoricalDetectorControls = (
             iconType={'stop'}
           >
             Stop historical detector
+          </EuiButton>
+        ) : props.isStoppingDetector ? (
+          <EuiButton
+            data-test-subj="isStoppingDetectorButton"
+            onClick={() => {}}
+            isLoading={true}
+            iconType={'play'}
+          >
+            Stopping
           </EuiButton>
         ) : (
           <EuiButton

@@ -78,16 +78,7 @@ export const HistoricalDetectorControls = (
         </EuiPopover>
       </EuiFlexItem>
       <EuiFlexItem grow={false} style={{ marginLeft: '0px' }}>
-        {props.detector?.curState === DETECTOR_STATE.INIT ||
-        props.detector?.curState === DETECTOR_STATE.RUNNING ? (
-          <EuiButton
-            data-test-subj="stopDetectorButton"
-            onClick={() => props.onStopDetector(false, undefined)}
-            iconType={'stop'}
-          >
-            Stop historical detector
-          </EuiButton>
-        ) : props.isStoppingDetector ? (
+        {props.isStoppingDetector ? (
           <EuiButton
             data-test-subj="isStoppingDetectorButton"
             onClick={() => {}}
@@ -95,6 +86,15 @@ export const HistoricalDetectorControls = (
             iconType={'play'}
           >
             Stopping
+          </EuiButton>
+        ) : props.detector?.curState === DETECTOR_STATE.INIT ||
+          props.detector?.curState === DETECTOR_STATE.RUNNING ? (
+          <EuiButton
+            data-test-subj="stopDetectorButton"
+            onClick={() => props.onStopDetector(false, undefined)}
+            iconType={'stop'}
+          >
+            Stop historical detector
           </EuiButton>
         ) : (
           <EuiButton

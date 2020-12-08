@@ -83,11 +83,9 @@ export const buildParamsForGetAnomalyResultsWithDateRange = (
     size: MAX_ANOMALIES,
     sortDirection: SORT_DIRECTION.DESC,
     sortField: AD_DOC_FIELDS.DATA_START_TIME,
-    dateRangeFilter: {
-      startTime: startTime,
-      endTime: endTime,
-      fieldName: AD_DOC_FIELDS.DATA_START_TIME,
-    },
+    startTime: startTime,
+    endTime: endTime,
+    fieldName: AD_DOC_FIELDS.DATA_START_TIME,
     anomalyThreshold: anomalyOnly ? 0 : -1,
   };
 };

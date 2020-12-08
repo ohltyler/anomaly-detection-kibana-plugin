@@ -739,14 +739,18 @@ export default class AdService {
         size = 20,
         sortDirection = SORT_DIRECTION.DESC,
         sortField = AD_DOC_FIELDS.DATA_START_TIME,
-        dateRangeFilter = undefined,
+        startTime = 0,
+        endTime = 0,
+        fieldName = '',
         anomalyThreshold = -1,
       } = request.query as {
         from: number;
         size: number;
         sortDirection: SORT_DIRECTION;
         sortField?: string;
-        dateRangeFilter?: string;
+        startTime: number;
+        endTime: number;
+        fieldName: string;
         anomalyThreshold: number;
       };
 
@@ -792,30 +796,27 @@ export default class AdService {
       };
 
       try {
-        const dateRangeFilterObj = (dateRangeFilter
-          ? JSON.parse(dateRangeFilter)
-          : undefined) as DateRangeFilter;
         const filterSize = requestBody.query.bool.filter.length;
-        if (dateRangeFilterObj && dateRangeFilterObj.fieldName) {
-          (dateRangeFilterObj.startTime || dateRangeFilterObj.endTime) &&
+        if (fieldName) {
+          (startTime || endTime) &&
             set(
               requestBody.query.bool.filter,
-              `${filterSize}.range.${dateRangeFilterObj.fieldName}.format`,
+              `${filterSize}.range.${fieldName}.format`,
               'epoch_millis'
             );
 
-          dateRangeFilterObj.startTime &&
+          startTime &&
             set(
               requestBody.query.bool.filter,
-              `${filterSize}.range.${dateRangeFilterObj.fieldName}.gte`,
-              dateRangeFilterObj.startTime
+              `${filterSize}.range.${fieldName}.gte`,
+              startTime
             );
 
-          dateRangeFilterObj.endTime &&
+          endTime &&
             set(
               requestBody.query.bool.filter,
-              `${filterSize}.range.${dateRangeFilterObj.fieldName}.lte`,
-              dateRangeFilterObj.endTime
+              `${filterSize}.range.${fieldName}.lte`,
+              endTime
             );
         }
       } catch (error) {

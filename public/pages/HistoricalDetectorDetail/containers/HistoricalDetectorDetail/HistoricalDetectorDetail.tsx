@@ -176,7 +176,7 @@ export const HistoricalDetectorDetail = (
       const clusterStatsResponse = await dispatch(getClusterStats());
       const nodeCount = get(
         clusterStatsResponse,
-        'response.nodes.count.total',
+        'response.nodes.count.data',
         1
       );
       const historicalDetectorsResponse = await dispatch(

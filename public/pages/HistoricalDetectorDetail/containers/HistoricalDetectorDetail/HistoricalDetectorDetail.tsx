@@ -33,6 +33,7 @@ import {
   stopDetector,
   deleteDetector,
   getDetector,
+  getHistoricalDetectorList,
 } from '../../../../redux/reducers/ad';
 import { BREADCRUMBS } from '../../../../utils/constants';
 import { DETECTOR_STATE } from '../../../../../server/utils/constants';
@@ -47,9 +48,15 @@ import {
   HISTORICAL_DETECTOR_ACTION,
   HISTORICAL_DETECTOR_STOP_THRESHOLD,
 } from '../../utils/constants';
-import { getCallout, waitForMs } from '../../utils/helpers';
+import {
+  getCallout,
+  waitForMs,
+  getRunningHistoricalDetectorCount,
+} from '../../utils/helpers';
 import { CoreStart } from '../../../../../../../src/core/public';
 import { CoreServicesContext } from '../../../../components/CoreServices/CoreServices';
+import { getClusterStats } from '../../../../redux/reducers/elasticsearch';
+import { GET_ALL_DETECTORS_QUERY_PARAMS } from '../../../utils/constants';
 
 export interface HistoricalDetectorRouterProps {
   detectorId?: string;
@@ -165,6 +172,24 @@ export const HistoricalDetectorDetail = (
 
   const onStartDetector = async () => {
     try {
+      // Check to make sure we can start. Current historical detector limit: 2 running per node
+      const clusterStatsResponse = await dispatch(getClusterStats());
+      const nodeCount = get(
+        clusterStatsResponse,
+        'response.nodes.count.total',
+        1
+      );
+      const historicalDetectorsResponse = await dispatch(
+        getHistoricalDetectorList(GET_ALL_DETECTORS_QUERY_PARAMS)
+      );
+      const runningCount = getRunningHistoricalDetectorCount(
+        get(historicalDetectorsResponse, 'response.detectorList')
+      );
+
+      if (nodeCount * 2 <= runningCount) {
+        throw 'only 2 historical detectors can be running per node in the cluster';
+      }
+
       await dispatch(startDetector(detectorId));
       fetchDetector();
       core.notifications.toasts.addSuccess(

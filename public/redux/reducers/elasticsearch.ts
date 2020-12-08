@@ -33,6 +33,7 @@ const SEARCH_ES = 'elasticsearch/SEARCH_ES';
 const CREATE_INDEX = 'elasticsearch/CREATE_INDEX';
 const BULK = 'elasticsearch/BULK';
 const DELETE_INDEX = 'elasticsearch/DELETE_INDEX';
+const GET_CLUSTER_STATS = 'elasticsearch/GET_CLUSTER_STATS';
 
 export type Mappings = {
   [key: string]: any;
@@ -244,6 +245,28 @@ const reducer = handleActions<ElasticsearchState>(
         errorMessage: action.error,
       }),
     },
+    [GET_CLUSTER_STATS]: {
+      REQUEST: (state: ElasticsearchState): ElasticsearchState => {
+        return { ...state, requesting: true, errorMessage: '' };
+      },
+      SUCCESS: (
+        state: ElasticsearchState,
+        action: APIResponseAction
+      ): ElasticsearchState => {
+        return {
+          ...state,
+          requesting: false,
+        };
+      },
+      FAILURE: (
+        state: ElasticsearchState,
+        action: APIErrorAction
+      ): ElasticsearchState => ({
+        ...state,
+        requesting: false,
+        errorMessage: action.error,
+      }),
+    },
   },
   initialState
 );
@@ -294,6 +317,12 @@ export const deleteIndex = (index: string): APIAction => ({
   type: DELETE_INDEX,
   request: (client: HttpSetup) =>
     client.post(`..${AD_NODE_API.DELETE_INDEX}`, { query: { index: index } }),
+});
+
+export const getClusterStats = (): APIAction => ({
+  type: GET_CLUSTER_STATS,
+  request: (client: HttpSetup) =>
+    client.get(`..${AD_NODE_API.GET_CLUSTER_STATS}`),
 });
 
 export const getPrioritizedIndices = (searchKey: string): ThunkAction => async (

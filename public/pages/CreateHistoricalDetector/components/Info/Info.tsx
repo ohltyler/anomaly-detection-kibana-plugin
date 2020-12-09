@@ -20,11 +20,11 @@ import ContentPanel from '../../../../components/ContentPanel/ContentPanel';
 import { getError, isInvalid } from '../../../../utils/utils';
 import { FormattedFormRow } from '../../../createDetector/components/FormattedFormRow/FormattedFormRow';
 
-interface HistoricalDetectorInfoProps {
-  onValidateDetectorName: (detectorName: string) => Promise<any>;
+interface InfoProps {
+  onValidateDetectorName: (detectorName: string) => any;
   onValidateDetectorDescription: (detectorDescription: string) => any;
 }
-export function HistoricalDetectorInfo(props: HistoricalDetectorInfoProps) {
+export function Info(props: InfoProps) {
   return (
     <ContentPanel title="Name and description" titleSize="s">
       <Field name="name" validate={props.onValidateDetectorName}>

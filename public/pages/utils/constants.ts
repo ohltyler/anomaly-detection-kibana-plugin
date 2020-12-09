@@ -24,7 +24,7 @@ export const customDangerColor = '#F66';
 export enum DETECTOR_STATE_COLOR {
   DISABLED = '#98A2B3',
   INIT = 'primary',
-  RUNNING = '#017F75',
+  RUNNING = '#7DE2D1',
   FINISHED = '#017F75',
   FEATURE_REQUIRED = '#98A2B3',
   INIT_FAILURE = '#F66',

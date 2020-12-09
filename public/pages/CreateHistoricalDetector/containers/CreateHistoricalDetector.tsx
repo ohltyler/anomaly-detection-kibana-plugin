@@ -42,9 +42,9 @@ import { getMappings } from '../../../redux/reducers/elasticsearch';
 import { RouteComponentProps } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHideSideNavBar } from '../../main/hooks/useHideSideNavBar';
-import { HistoricalDetectorInfo } from '../components/HistoricalDetectorInfo/HistoricalDetectorInfo';
-import { DataSource } from '../components/DataSource/DataSource';
-import { Scheduling } from '../components/Scheduling/Scheduling';
+import { Info } from '../components/Info/Info';
+import { IndexChooser } from '../components/IndexChooser/IndexChooser';
+import { TimeRange } from '../components/TimeRange/TimeRange';
 import {
   HistoricalDetectorFormikValues,
   SAVE_HISTORICAL_DETECTOR_OPTIONS,
@@ -85,9 +85,12 @@ export function CreateHistoricalDetector(props: CreateHistoricalDetectorProps) {
     startDate: moment().subtract(7, 'days').valueOf(),
     endDate: moment().valueOf(),
   });
-  const [saveDetectorOption, setSaveDetectorOption] = useState<
-    SAVE_HISTORICAL_DETECTOR_OPTIONS
-  >(SAVE_HISTORICAL_DETECTOR_OPTIONS.KEEP_STOPPED);
+  const [
+    saveDetectorOption,
+    setSaveDetectorOption,
+  ] = useState<SAVE_HISTORICAL_DETECTOR_OPTIONS>(
+    SAVE_HISTORICAL_DETECTOR_OPTIONS.KEEP_STOPPED
+  );
 
   useHideSideNavBar(true, false);
 
@@ -155,11 +158,11 @@ export function CreateHistoricalDetector(props: CreateHistoricalDetectorProps) {
 
   const handleValidateName = async (detectorName: string) => {
     if (isEmpty(detectorName)) {
-      throw 'Detector name cannot be empty';
+      return 'Detector name cannot be empty';
     } else {
       const error = validateDetectorName(detectorName);
       if (error) {
-        throw error;
+        return error;
       }
       //TODO::Avoid making call if value is same
       const resp = await dispatch(matchDetector(detectorName));
@@ -169,18 +172,18 @@ export function CreateHistoricalDetector(props: CreateHistoricalDetectorProps) {
       }
       // If more than one detector found: duplicate exists.
       if (!props.isEdit && match) {
-        throw 'Duplicate detector name';
+        return 'Duplicate detector name';
       }
       // If it is in edit mode
       if (props.isEdit && detectorName !== detector?.name) {
-        throw 'Duplicate detector name';
+        return 'Duplicate detector name';
       }
     }
   };
 
   const handleValidateDescription = async (detectorDescription: string) => {
     if (detectorDescription.length > 400) {
-      throw 'Description should not exceed 400 characters';
+      return 'Description should not exceed 400 characters';
     }
     return undefined;
   };
@@ -265,6 +268,7 @@ export function CreateHistoricalDetector(props: CreateHistoricalDetectorProps) {
   const handleFormValidation = (
     formikProps: FormikProps<HistoricalDetectorFormikValues>
   ) => {
+    console.log('formik fields: ', formikProps.values);
     if (props.isEdit && detector.curState === DETECTOR_STATE.RUNNING) {
       core.notifications.toasts.addDanger(
         'Historical detector cannot be updated while it is running'
@@ -328,25 +332,21 @@ export function CreateHistoricalDetector(props: CreateHistoricalDetectorProps) {
         >
           {(formikProps) => (
             <Fragment>
-              <HistoricalDetectorInfo
+              <Info
                 onValidateDetectorName={handleValidateName}
                 onValidateDetectorDescription={handleValidateDescription}
               />
               <EuiSpacer />
-              <DataSource
-                isEdit={props.isEdit}
-                detector={detector}
-                isLoading={isRequesting}
-                formikProps={formikProps}
-              />
+              <IndexChooser formikProps={formikProps} />
               <EuiSpacer />
-              <Scheduling
+              <TimeRange isLoading={isRequesting} />
+              {/* <Scheduling
                 isLoading={isRequesting}
                 formikProps={formikProps}
                 selectedOption={saveDetectorOption}
                 onOptionChange={handleSaveDetectorOptionChange}
               />
-              <EuiSpacer />
+              <EuiSpacer /> */}
               <EuiFlexGroup alignItems="center" justifyContent="flexEnd">
                 <EuiFlexItem grow={false}>
                   <EuiButtonEmpty onClick={handleCancelClick}>

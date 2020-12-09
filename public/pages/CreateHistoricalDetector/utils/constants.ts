@@ -39,7 +39,7 @@ export const INITIAL_HISTORICAL_DETECTOR_VALUES: HistoricalDetectorFormikValues 
   detectionInterval: 10,
   windowDelay: 1,
   shingleSize: SHINGLE_SIZE,
-  startTime: 'now-7d',
+  startTime: 'now-30d',
   endTime: 'now',
   rangeValid: true,
 };

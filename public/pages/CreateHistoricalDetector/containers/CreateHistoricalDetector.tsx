@@ -45,6 +45,7 @@ import { useHideSideNavBar } from '../../main/hooks/useHideSideNavBar';
 import { Info } from '../components/Info/Info';
 import { IndexChooser } from '../components/IndexChooser/IndexChooser';
 import { TimeRange } from '../components/TimeRange/TimeRange';
+import { Configuration } from '../components/Configuration/Configuration';
 import {
   HistoricalDetectorFormikValues,
   SAVE_HISTORICAL_DETECTOR_OPTIONS,
@@ -340,13 +341,16 @@ export function CreateHistoricalDetector(props: CreateHistoricalDetectorProps) {
               <IndexChooser formikProps={formikProps} />
               <EuiSpacer />
               <TimeRange isLoading={isRequesting} />
-              {/* <Scheduling
+              <EuiSpacer />
+              <Configuration
+                isEdit={props.isEdit}
+                detector={detector}
                 isLoading={isRequesting}
                 formikProps={formikProps}
-                selectedOption={saveDetectorOption}
-                onOptionChange={handleSaveDetectorOptionChange}
+                selectedSaveOption={saveDetectorOption}
+                onSaveOptionChange={handleSaveDetectorOptionChange}
               />
-              <EuiSpacer /> */}
+              <EuiSpacer />
               <EuiFlexGroup alignItems="center" justifyContent="flexEnd">
                 <EuiFlexItem grow={false}>
                   <EuiButtonEmpty onClick={handleCancelClick}>

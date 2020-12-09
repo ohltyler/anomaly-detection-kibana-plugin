@@ -26,7 +26,7 @@ export function populateDetectorFieldsFromDetector(
   formikProps: FormikProps<HistoricalDetectorFormikValues>,
   detector: Detector
 ) {
-  formikProps.setFieldValue('index', [{ label: detector.indices[0] }]);
+  //formikProps.setFieldValue('index', [{ label: detector.indices[0] }]);
   formikProps.setFieldValue('timeField', detector.timeField);
   formikProps.setFieldValue('featureList', generateInitialFeatures(detector));
   formikProps.setFieldValue(
@@ -38,7 +38,7 @@ export function populateDetectorFieldsFromDetector(
 export function populateDetectorFieldsToInitialValues(
   formikProps: FormikProps<HistoricalDetectorFormikValues>
 ) {
-  formikProps.setFieldValue('index', INITIAL_HISTORICAL_DETECTOR_VALUES.index);
+  //formikProps.setFieldValue('index', INITIAL_HISTORICAL_DETECTOR_VALUES.index);
   formikProps.setFieldValue(
     'timeField',
     INITIAL_HISTORICAL_DETECTOR_VALUES.timeField

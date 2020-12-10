@@ -122,3 +122,13 @@ export function convertTimestampToNumber(timestamp: number | string) {
   }
   return timestamp;
 }
+
+export const getAllDetectorOptions = (allDetectors: any[]) => {
+  return allDetectors.map((detector) => {
+    return {
+      id: detector.id,
+      label: detector.name,
+      index: get(detector, 'indices.0', ''),
+    };
+  });
+};

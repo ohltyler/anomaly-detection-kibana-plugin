@@ -45,9 +45,7 @@ export function IndexChooser(props: IndexChooserProps) {
   const elasticsearchState = useSelector(
     (state: AppState) => state.elasticsearch
   );
-
   const [queryText, setQueryText] = useState('');
-  const [indexName, setIndexName] = useState(undefined);
 
   useEffect(() => {
     const getInitialIndices = async () => {
@@ -66,7 +64,6 @@ export function IndexChooser(props: IndexChooserProps) {
 
   const handleIndexNameChange = (selectedOptions: any) => {
     const indexName = get(selectedOptions, '0.label', '');
-    setIndexName(indexName);
     if (indexName !== '') {
       dispatch(getMappings(indexName));
     }
@@ -75,25 +72,8 @@ export function IndexChooser(props: IndexChooserProps) {
   const visibleIndices = get(elasticsearchState, 'indices', []) as CatIndex[];
   const visibleAliases = get(elasticsearchState, 'aliases', []) as IndexAlias[];
 
-  const isRemoteIndex = () => {
-    const initialIndex = get(props.formikProps, 'values.index.0.label', '');
-    return indexName !== undefined
-      ? indexName.includes(':')
-      : initialIndex.includes(':');
-  };
-
   return (
     <ContentPanel title="Data source" titleSize="s">
-      {isRemoteIndex() ? (
-        <div>
-          <EuiCallOut
-            title="This detector is using a remote cluster index, so you need to manually input the time field."
-            color="warning"
-            iconType="alert"
-          />
-          <EuiSpacer size="m" />
-        </div>
-      ) : null}
       <Fragment>
         <Field name="index" validate={validateIndex}>
           {({ field, form }: FieldProps) => {
@@ -123,17 +103,25 @@ export function IndexChooser(props: IndexChooserProps) {
                     form.setFieldTouched('index', true);
                   }}
                   onChange={(options) => {
-                    form.setFieldValue('index', options);
-                    form.setFieldValue('timeField', undefined);
-                    form.setFieldValue(
-                      'featureList',
-                      INITIAL_HISTORICAL_DETECTOR_VALUES.featureList
-                    );
-                    handleIndexNameChange(options);
+                    const newOption = get(options, '0.label');
+                    const prevOption = get(field, 'value.0.label');
+                    if (newOption !== prevOption) {
+                      form.setFieldValue('index', options);
+                      form.setFieldValue('timeField', undefined);
+                      form.setFieldValue(
+                        'featureList',
+                        INITIAL_HISTORICAL_DETECTOR_VALUES.featureList
+                      );
+                      form.setFieldValue(
+                        'detectionInterval',
+                        INITIAL_HISTORICAL_DETECTOR_VALUES.detectionInterval
+                      );
+                      handleIndexNameChange(options);
+                    }
                   }}
                   selectedOptions={field.value}
                   singleSelection={true}
-                  isClearable={false}
+                  isClearable={true}
                   renderOption={(option, searchValue, className) => (
                     <IndexOption
                       option={option}

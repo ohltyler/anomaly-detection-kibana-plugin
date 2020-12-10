@@ -38,15 +38,11 @@ export function Timestamp(props: TimestampProps) {
   const elasticsearchState = useSelector(
     (state: AppState) => state.elasticsearch
   );
+  const selectedIndex = get(props.formikProps, 'values.index.0.label', '');
+  const isIndexSelected = selectedIndex && selectedIndex.length > 0;
+  const isRemoteIndex = selectedIndex.includes(':');
 
   const [queryText, setQueryText] = useState('');
-
-  useEffect(() => {
-    const getInitialIndices = async () => {
-      await dispatch(getIndices(queryText));
-    };
-    getInitialIndices();
-  }, []);
 
   const handleSearchChange = debounce(async (searchValue: string) => {
     if (searchValue !== queryText) {
@@ -64,17 +60,12 @@ export function Timestamp(props: TimestampProps) {
     ? []
     : dateFields.map((dateField) => ({ label: dateField }));
 
-  const isRemoteIndex = () => {
-    const initialIndex = get(props.formikProps, 'values.index.0.label', '');
-    return initialIndex.includes(':');
-  };
-
   return (
     <ContentPanel title="Timestamp" titleSize="s">
-      {isRemoteIndex() ? (
+      {isRemoteIndex ? (
         <div>
           <EuiCallOut
-            title="This detector is using a remote cluster index, so you need to manually input the time field."
+            title="A remote index is selected, so you need to manually input the time field."
             color="warning"
             iconType="alert"
           />
@@ -92,7 +83,7 @@ export function Timestamp(props: TimestampProps) {
             <EuiComboBox
               id="timeField"
               placeholder="Find timestamp"
-              options={timeStampFieldOptions}
+              options={isIndexSelected ? timeStampFieldOptions : []}
               onSearchChange={handleSearchChange}
               onCreateOption={(createdOption: string) => {
                 const normalizedOptions = createdOption.trim();
@@ -107,7 +98,7 @@ export function Timestamp(props: TimestampProps) {
               }}
               selectedOptions={(field.value && [{ label: field.value }]) || []}
               singleSelection={true}
-              isClearable={false}
+              isClearable={true}
             />
           </FormattedFormRow>
         )}

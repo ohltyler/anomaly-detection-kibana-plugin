@@ -25,7 +25,10 @@ import { debounce, get } from 'lodash';
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../../../../../../redux/reducers';
-import { getDetectorList } from '../../../../../../redux/reducers/ad';
+import {
+  getDetectorList,
+  getHistoricalDetectorList,
+} from '../../../../../../redux/reducers/ad';
 import { getMappings } from '../../../../../../redux/reducers/elasticsearch';
 import { GET_ALL_DETECTORS_QUERY_PARAMS } from '../../../../../utils/constants';
 import { searchDetector } from '../../../../../../redux/reducers/ad';
@@ -38,6 +41,7 @@ import {
   populateDetectorFieldsToInitialValues,
   untouchDetectorFields,
 } from './utils/helpers';
+import { getAllDetectorOptions } from '../../../../utils/helpers';
 
 interface ExistingDetectorsProps {
   formikProps: FormikProps<HistoricalDetectorFormikValues>;
@@ -45,9 +49,17 @@ interface ExistingDetectorsProps {
 
 export function ExistingDetectors(props: ExistingDetectorsProps) {
   const dispatch = useDispatch();
+  const selectedIndex = get(props, 'formikProps.values.index.0.label', '');
   const adState = useSelector((state: AppState) => state.ad);
-  const detectorItems = adState.detectorList;
   const detectors = adState.detectors;
+  const allDetectors = {
+    ...adState.detectorList,
+    ...adState.historicalDetectorList,
+  };
+  const allDetectorOptions =
+    selectedIndex && selectedIndex.length > 0
+      ? getAllDetectorOptions(Object.values(allDetectors))
+      : [];
   const [queryText, setQueryText] = useState('');
   const [selectedDetectorId, setSelectedDetectorId] = useState<string>('');
   const selectedDetector = detectors[selectedDetectorId];
@@ -69,13 +81,24 @@ export function ExistingDetectors(props: ExistingDetectorsProps) {
     },
   ];
 
-  // Getting all detectors initially
+  const getDetectorsWithIndexParams = {
+    ...GET_ALL_DETECTORS_QUERY_PARAMS,
+    indices: selectedIndex,
+  };
+
+  // Fetch all realtime and historical detectors that detect over the specified index
   useEffect(() => {
-    const getInitialDetectors = async () => {
-      dispatch(getDetectorList(GET_ALL_DETECTORS_QUERY_PARAMS));
+    const fetchRealtimeDetectors = async () => {
+      dispatch(getDetectorList(getDetectorsWithIndexParams));
     };
-    getInitialDetectors();
-  }, []);
+    const fetchHistoricalDetectors = async () => {
+      dispatch(getHistoricalDetectorList(getDetectorsWithIndexParams));
+    };
+    if (selectedIndex && selectedIndex.length > 0) {
+      fetchRealtimeDetectors();
+      fetchHistoricalDetectors();
+    }
+  }, [selectedIndex]);
 
   // Update the form if a change in selected detector, and get index mappings
   useEffect(() => {
@@ -89,10 +112,10 @@ export function ExistingDetectors(props: ExistingDetectorsProps) {
   }, [selectedDetector]);
 
   const getDetectorInfo = (detectorId: string) => {
-    if (detectorId && detectorItems && detectorItems[detectorId]) {
+    if (detectorId && allDetectors && allDetectors[detectorId]) {
       dispatch(
         searchDetector({
-          query: { term: { 'name.keyword': detectorItems[detectorId].name } },
+          query: { term: { 'name.keyword': allDetectors[detectorId].name } },
         })
       );
     }
@@ -105,8 +128,12 @@ export function ExistingDetectors(props: ExistingDetectorsProps) {
       const searchRequest = {
         ...GET_ALL_DETECTORS_QUERY_PARAMS,
         search: sanitizedQuery,
+        indices: selectedIndex,
       };
-      dispatch(getDetectorList(searchRequest));
+      if (selectedIndex && selectedIndex.length > 0) {
+        dispatch(getDetectorList(searchRequest));
+        dispatch(getHistoricalDetectorList(searchRequest));
+      }
     }
   }, 300);
 
@@ -156,10 +183,7 @@ export function ExistingDetectors(props: ExistingDetectorsProps) {
                 placeholder="Existing detector configurations"
                 async
                 isLoading={adState.requesting}
-                options={Object.values(detectorItems).map((detector) => ({
-                  label: detector.name,
-                  id: detector.id,
-                }))}
+                options={allDetectorOptions}
                 onSearchChange={handleSearchChange}
                 onBlur={() => {}}
                 onChange={(options) => {
@@ -169,9 +193,9 @@ export function ExistingDetectors(props: ExistingDetectorsProps) {
                 }}
                 selectedOptions={
                   (selectedDetectorId &&
-                    detectorItems &&
-                    detectorItems[selectedDetectorId] && [
-                      { label: detectorItems[selectedDetectorId].name },
+                    allDetectors &&
+                    allDetectors[selectedDetectorId] && [
+                      { label: allDetectors[selectedDetectorId].name },
                     ]) ||
                   []
                 }

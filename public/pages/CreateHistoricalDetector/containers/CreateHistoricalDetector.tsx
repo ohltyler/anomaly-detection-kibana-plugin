@@ -56,8 +56,7 @@ import {
 } from '../utils/helpers';
 import { focusOnFirstWrongFeature } from '../../EditFeatures/utils/helpers';
 import { validateDetectorName } from '../../../utils/utils';
-import moment from 'moment';
-import { Detector, DateRange } from '../../../models/interfaces';
+import { Detector } from '../../../models/interfaces';
 import { CoreStart } from '../../../../../../src/core/public';
 import { CoreServicesContext } from '../../../components/CoreServices/CoreServices';
 
@@ -81,11 +80,6 @@ export function CreateHistoricalDetector(props: CreateHistoricalDetectorProps) {
 
   const isRequesting = adState.requesting;
 
-  const initialStartDate = moment().subtract(7, 'days').valueOf();
-  const [dateRange, setDateRange] = useState<DateRange>({
-    startDate: moment().subtract(7, 'days').valueOf(),
-    endDate: moment().valueOf(),
-  });
   const [
     saveDetectorOption,
     setSaveDetectorOption,
@@ -141,19 +135,6 @@ export function CreateHistoricalDetector(props: CreateHistoricalDetectorProps) {
     };
     if (detector?.indices) {
       fetchIndexMappings(detector.indices[0]);
-    }
-  }, [detector]);
-
-  // Using the detector-specified date range (if it exists)
-  useEffect(() => {
-    if (
-      detector?.detectionDateRange?.startTime &&
-      detector?.detectionDateRange?.endTime
-    ) {
-      setDateRange({
-        startDate: detector.detectionDateRange.startTime,
-        endDate: detector.detectionDateRange.endTime,
-      });
     }
   }, [detector]);
 

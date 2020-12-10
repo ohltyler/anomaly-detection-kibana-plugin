@@ -25,7 +25,6 @@ import {
   GetDetectorsQueryParams,
   ServerResponse,
   FeatureResult,
-  DateRangeFilter,
 } from '../models/types';
 import { Router } from '../router';
 import {
@@ -517,8 +516,8 @@ export default class AdService {
         mustQueries.push({
           query_string: {
             fields: ['indices'],
-            default_operator: 'OR',
-            query: `*${indices.trim().split(' ').join('* *')}*`,
+            default_operator: 'AND',
+            query: `*${indices.trim().split('-').join('* *')}*`,
           },
         });
       }
@@ -991,8 +990,8 @@ export default class AdService {
         mustQueries.push({
           query_string: {
             fields: ['indices'],
-            default_operator: 'OR',
-            query: `*${indices.trim().split(' ').join('* *')}*`,
+            default_operator: 'AND',
+            query: `*${indices.trim().split('-').join('* *')}*`,
           },
         });
       }

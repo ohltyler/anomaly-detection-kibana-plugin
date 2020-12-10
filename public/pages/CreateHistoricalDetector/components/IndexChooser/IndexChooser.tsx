@@ -38,6 +38,7 @@ import {
 
 interface IndexChooserProps {
   formikProps: FormikProps<HistoricalDetectorFormikValues>;
+  isEdit: boolean;
 }
 
 export function IndexChooser(props: IndexChooserProps) {
@@ -74,6 +75,16 @@ export function IndexChooser(props: IndexChooserProps) {
 
   return (
     <ContentPanel title="Data source" titleSize="s">
+      {props.isEdit ? (
+        <div>
+          <EuiCallOut
+            title="Modifying the index selected will reset your detector configuration settings."
+            color="warning"
+            iconType="alert"
+          />
+          <EuiSpacer />
+        </div>
+      ) : null}
       <Fragment>
         <Field name="index" validate={validateIndex}>
           {({ field, form }: FieldProps) => {

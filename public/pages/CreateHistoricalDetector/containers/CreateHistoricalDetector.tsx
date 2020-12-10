@@ -80,12 +80,9 @@ export function CreateHistoricalDetector(props: CreateHistoricalDetectorProps) {
 
   const isRequesting = adState.requesting;
 
-  const [
-    saveDetectorOption,
-    setSaveDetectorOption,
-  ] = useState<SAVE_HISTORICAL_DETECTOR_OPTIONS>(
-    SAVE_HISTORICAL_DETECTOR_OPTIONS.KEEP_STOPPED
-  );
+  const [saveDetectorOption, setSaveDetectorOption] = useState<
+    SAVE_HISTORICAL_DETECTOR_OPTIONS
+  >(SAVE_HISTORICAL_DETECTOR_OPTIONS.KEEP_STOPPED);
 
   useHideSideNavBar(true, false);
 
@@ -319,7 +316,7 @@ export function CreateHistoricalDetector(props: CreateHistoricalDetectorProps) {
                 onValidateDetectorDescription={handleValidateDescription}
               />
               <EuiSpacer />
-              <IndexChooser formikProps={formikProps} />
+              <IndexChooser formikProps={formikProps} isEdit={props.isEdit} />
               <EuiSpacer />
               <TimeRange isLoading={isRequesting} />
               <EuiSpacer />

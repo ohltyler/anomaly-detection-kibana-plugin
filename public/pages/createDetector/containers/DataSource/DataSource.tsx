@@ -113,7 +113,7 @@ function DataSource(props: DataSourceProps) {
       {isDifferentIndex() ? (
         <div>
           <EuiCallOut
-            title="Selecting a new index will delete the existing model configuration."
+            title="Modifying the index selected will reset your detector configuration settings."
             color="warning"
             iconType="alert"
           />

@@ -19,6 +19,7 @@ import {
   EuiSpacer,
   EuiComboBox,
   EuiRadioGroup,
+  EuiCallOut,
 } from '@elastic/eui';
 import { FormikProps } from 'formik';
 import { debounce, get } from 'lodash';
@@ -42,6 +43,7 @@ import {
   untouchDetectorFields,
 } from './utils/helpers';
 import { getAllDetectorOptions } from '../../../../utils/helpers';
+import { GetDetectorsQueryParams } from '../../../../../../../server/models/types';
 
 interface ExistingDetectorsProps {
   formikProps: FormikProps<HistoricalDetectorFormikValues>;
@@ -49,26 +51,27 @@ interface ExistingDetectorsProps {
 
 export function ExistingDetectors(props: ExistingDetectorsProps) {
   const dispatch = useDispatch();
-  const selectedIndex = get(props, 'formikProps.values.index.0.label', '');
+  const selectedIndexOption = get(
+    props,
+    'formikProps.values.index.0.label',
+    ''
+  );
+  const isIndexSelected = selectedIndexOption && selectedIndexOption.length > 0;
   const adState = useSelector((state: AppState) => state.ad);
   const detectors = adState.detectors;
   const allDetectors = {
     ...adState.detectorList,
     ...adState.historicalDetectorList,
   };
-  const allDetectorOptions =
-    selectedIndex && selectedIndex.length > 0
-      ? getAllDetectorOptions(Object.values(allDetectors))
-      : [];
+  const allDetectorOptions = isIndexSelected
+    ? getAllDetectorOptions(Object.values(allDetectors))
+    : [];
   const [queryText, setQueryText] = useState('');
   const [selectedDetectorId, setSelectedDetectorId] = useState<string>('');
   const selectedDetector = detectors[selectedDetectorId];
-  const [
-    createDetectorSelection,
-    setCreateDetectorSelection,
-  ] = useState<CREATE_HISTORICAL_DETECTOR_OPTIONS>(
-    CREATE_HISTORICAL_DETECTOR_OPTIONS.CREATE_NEW
-  );
+  const [createDetectorSelection, setCreateDetectorSelection] = useState<
+    CREATE_HISTORICAL_DETECTOR_OPTIONS
+  >(CREATE_HISTORICAL_DETECTOR_OPTIONS.CREATE_NEW);
 
   const existingDetectorsOptions = [
     {
@@ -81,24 +84,21 @@ export function ExistingDetectors(props: ExistingDetectorsProps) {
     },
   ];
 
-  const getDetectorsWithIndexParams = {
-    ...GET_ALL_DETECTORS_QUERY_PARAMS,
-    indices: selectedIndex,
+  const fetchAllDetectors = async (params: GetDetectorsQueryParams) => {
+    dispatch(getDetectorList(params));
+    dispatch(getHistoricalDetectorList(params));
   };
 
-  // Fetch all realtime and historical detectors that detect over the specified index
+  // Fetch all realtime and historical detectors that are using the specified index
   useEffect(() => {
-    const fetchRealtimeDetectors = async () => {
-      dispatch(getDetectorList(getDetectorsWithIndexParams));
-    };
-    const fetchHistoricalDetectors = async () => {
-      dispatch(getHistoricalDetectorList(getDetectorsWithIndexParams));
-    };
-    if (selectedIndex && selectedIndex.length > 0) {
-      fetchRealtimeDetectors();
-      fetchHistoricalDetectors();
+    if (isIndexSelected) {
+      const params = {
+        ...GET_ALL_DETECTORS_QUERY_PARAMS,
+        indices: selectedIndexOption,
+      };
+      fetchAllDetectors(params);
     }
-  }, [selectedIndex]);
+  }, [selectedIndexOption]);
 
   // Update the form if a change in selected detector, and get index mappings
   useEffect(() => {
@@ -125,14 +125,13 @@ export function ExistingDetectors(props: ExistingDetectorsProps) {
     if (searchValue !== queryText) {
       const sanitizedQuery = sanitizeSearchText(searchValue);
       setQueryText(sanitizedQuery);
-      const searchRequest = {
-        ...GET_ALL_DETECTORS_QUERY_PARAMS,
-        search: sanitizedQuery,
-        indices: selectedIndex,
-      };
-      if (selectedIndex && selectedIndex.length > 0) {
-        dispatch(getDetectorList(searchRequest));
-        dispatch(getHistoricalDetectorList(searchRequest));
+      if (isIndexSelected) {
+        const params = {
+          ...GET_ALL_DETECTORS_QUERY_PARAMS,
+          search: sanitizedQuery,
+          indices: selectedIndexOption,
+        };
+        fetchAllDetectors(params);
       }
     }
   }, 300);
@@ -156,7 +155,7 @@ export function ExistingDetectors(props: ExistingDetectorsProps) {
       >
         <EuiFlexItem>
           <FormattedFormRow
-            title="Configure using an existing real-time detector"
+            title="Configure using an existing detector"
             hint="Choose if you would like to source an existing real-time or historical detector to use as a template for your configuration."
           >
             <EuiRadioGroup
@@ -172,6 +171,21 @@ export function ExistingDetectors(props: ExistingDetectorsProps) {
       {createDetectorSelection ===
       CREATE_HISTORICAL_DETECTOR_OPTIONS.USE_EXISTING ? (
         <EuiFlexGroup direction="column">
+          {!isIndexSelected ? (
+            <EuiCallOut
+              style={{ marginLeft: '12px' }}
+              title="No index has been selected. Please select an index first."
+              color="warning"
+              iconType="alert"
+            />
+          ) : allDetectorOptions.length === 0 ? (
+            <EuiCallOut
+              style={{ marginLeft: '12px' }}
+              title="No existing detectors are using the selected index."
+              color="warning"
+              iconType="alert"
+            />
+          ) : null}
           <EuiFlexItem style={{ maxWidth: '70%' }}>
             <FormattedFormRow
               fullWidth
@@ -183,6 +197,7 @@ export function ExistingDetectors(props: ExistingDetectorsProps) {
                 placeholder="Existing detector configurations"
                 async
                 isLoading={adState.requesting}
+                isDisabled={allDetectorOptions.length === 0}
                 options={allDetectorOptions}
                 onSearchChange={handleSearchChange}
                 onBlur={() => {}}

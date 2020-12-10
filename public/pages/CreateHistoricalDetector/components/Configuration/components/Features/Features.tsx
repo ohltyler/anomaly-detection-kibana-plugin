@@ -106,7 +106,9 @@ export function Features(props: FeaturesProps) {
                         push(initialFeatureValue());
                       }}
                     >
-                      Add another feature
+                      {values.featureList.length === 0
+                        ? 'Add feature'
+                        : 'Add another feature'}
                     </EuiButton>
                     <EuiText className="content-panel-subTitle">
                       <p>

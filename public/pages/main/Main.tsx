@@ -36,6 +36,7 @@ import { CoreStart } from '../../../../../src/core/public';
 
 enum Navigation {
   AnomalyDetection = 'Anomaly detection',
+  Realtime = 'Real-time',
   Dashboard = 'Dashboard',
   Detectors = 'Detectors',
   HistoricalDetectors = 'Historical detectors',
@@ -62,26 +63,33 @@ export function Main(props: MainProps) {
       href: `#${Pathname.Dashboard}`,
       items: [
         {
-          name: Navigation.Dashboard,
+          name: Navigation.Realtime,
           id: 1,
-          href: `#${Pathname.Dashboard}`,
-          isSelected: props.location.pathname === Pathname.Dashboard,
-        },
-        {
-          name: Navigation.Detectors,
-          id: 2,
-          href: `#${Pathname.Detectors}`,
-          isSelected: props.location.pathname === Pathname.Detectors,
+          forceOpen: true,
+          items: [
+            {
+              name: Navigation.Dashboard,
+              id: 2,
+              href: `#${Pathname.Dashboard}`,
+              isSelected: props.location.pathname === Pathname.Dashboard,
+            },
+            {
+              name: Navigation.Detectors,
+              id: 3,
+              href: `#${Pathname.Detectors}`,
+              isSelected: props.location.pathname === Pathname.Detectors,
+            },
+          ],
         },
         {
           name: Navigation.HistoricalDetectors,
-          id: 3,
+          id: 4,
           href: `#${Pathname.HistoricalDetectors}`,
           isSelected: props.location.pathname === Pathname.HistoricalDetectors,
         },
         {
           name: Navigation.SampleDetectors,
-          id: 4,
+          id: 5,
           href: `#${Pathname.SampleDetectors}`,
           isSelected: props.location.pathname === Pathname.SampleDetectors,
         },

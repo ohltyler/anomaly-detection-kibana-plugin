@@ -317,7 +317,6 @@ export const appendTaskInfo = (
       );
       detectorMapWithTaskInfo[detectorId] = {
         ...detectorMap[detectorId],
-        //@ts-ignore
         curState: state,
         totalAnomalies: totalAnomalies,
       };

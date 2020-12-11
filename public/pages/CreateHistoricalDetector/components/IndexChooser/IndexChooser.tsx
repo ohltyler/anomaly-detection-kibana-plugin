@@ -81,6 +81,7 @@ export function IndexChooser(props: IndexChooserProps) {
             title="Modifying the index selected will reset your detector configuration settings."
             color="warning"
             iconType="alert"
+            size="s"
           />
           <EuiSpacer />
         </div>

@@ -21,6 +21,8 @@ import {
   EuiFlexGroup,
   EuiLoadingSpinner,
   EuiText,
+  EuiFlexItem,
+  EuiProgress,
 } from '@elastic/eui';
 import { Detector } from '../../../models/interfaces';
 import { DETECTOR_STATE } from '../../../../server/utils/constants';
@@ -32,6 +34,13 @@ export const getCallout = (detector: Detector, isStoppingDetector: boolean) => {
   if (!detector || !detector.curState) {
     return null;
   }
+  const runningProgress = detector.taskProgress
+    ? Math.round(detector.taskProgress * 100)
+    : undefined;
+  const runningProgressPctStr = runningProgress
+    ? runningProgress.toString() + '%'
+    : '';
+
   if (isStoppingDetector) {
     return (
       <EuiCallOut
@@ -85,6 +94,27 @@ export const getCallout = (detector: Detector, isStoppingDetector: boolean) => {
                   <p>Running the historical detector</p>
                 </EuiText>
               </EuiFlexGroup>
+              {runningProgress ? (
+                <EuiFlexGroup
+                  direction="row"
+                  gutterSize="xs"
+                  alignItems="center"
+                  style={{ marginTop: '12px' }}
+                >
+                  <EuiFlexItem>
+                    <EuiText>{runningProgressPctStr}</EuiText>
+                  </EuiFlexItem>
+                  <EuiFlexItem style={{ marginLeft: '-150px' }}>
+                    <EuiProgress
+                      //@ts-ignore
+                      value={runningProgress}
+                      max={100}
+                      color="primary"
+                      size="s"
+                    />
+                  </EuiFlexItem>
+                </EuiFlexGroup>
+              ) : null}
             </div>
           }
           color="primary"

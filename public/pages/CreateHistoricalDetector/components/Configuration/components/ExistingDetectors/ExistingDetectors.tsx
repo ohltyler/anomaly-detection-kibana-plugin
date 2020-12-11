@@ -177,6 +177,7 @@ export function ExistingDetectors(props: ExistingDetectorsProps) {
               title="No index has been selected. Please select an index first."
               color="warning"
               iconType="alert"
+              size="s"
             />
           ) : allDetectorOptions.length === 0 ? (
             <EuiCallOut
@@ -184,6 +185,7 @@ export function ExistingDetectors(props: ExistingDetectorsProps) {
               title="No existing detectors are using the selected index."
               color="warning"
               iconType="alert"
+              size="s"
             />
           ) : null}
           <EuiFlexItem style={{ maxWidth: '70%' }}>

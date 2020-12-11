@@ -70,6 +70,7 @@ export type Detector = {
   categoryField?: string[];
   detectionDateRange?: DetectionDateRange;
   taskId?: string;
+  taskProgress?: number;
 };
 
 export type Monitor = {

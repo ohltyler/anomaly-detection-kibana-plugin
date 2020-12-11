@@ -239,6 +239,11 @@ export default class AdService {
         get(response, 'anomaly_detector.detection_date_range', null) === null;
       const task = get(response, 'anomaly_detection_task', null);
       const taskId = get(response, 'anomaly_detection_task.task_id', null);
+      const taskProgress = get(
+        response,
+        'anomaly_detection_task.task_progress',
+        null
+      );
 
       // Getting detector state, depending on realtime or historical
       let detectorState;
@@ -305,9 +310,11 @@ export default class AdService {
         ...(!isRealtimeDetector
           ? {
               taskId: taskId,
+              taskProgress: taskProgress,
             }
           : {}),
       };
+
       return kibanaResponse.ok({
         body: {
           ok: true,

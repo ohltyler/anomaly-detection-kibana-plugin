@@ -17,8 +17,6 @@ import queryString from 'querystring';
 import { SORT_DIRECTION } from '../../../../server/utils/constants';
 import { DEFAULT_QUERY_PARAMS } from '../../utils/constants';
 import { DETECTOR_STATE } from '../../../../server/utils/constants';
-// import { TASK_ACTION } from './constants';
-// import { HistoricalDetectorListItem } from '../../../models/interfaces';
 
 export const getURLQueryParams = (location: { search: string }): any => {
   const { from, size, search, sortField, sortDirection } = queryString.parse(
@@ -56,21 +54,3 @@ export const getHistoricalDetectorStateOptions = () => {
         option.label !== DETECTOR_STATE.INIT_FAILURE
     );
 };
-
-// export const getTasksForAction = (
-//   tasks: TaskListItem[],
-//   action: TASK_ACTION
-// ) => {
-//   console.log('tasks passed: ', tasks);
-//   switch (action) {
-//     case TASK_ACTION.COMPARE: {
-//       const tasksForAction = tasks.filter(
-//         (task) => task.curState === TASK_STATE.FINISHED
-//       );
-//       console.log('tasks for action: ', tasksForAction);
-//       return tasksForAction;
-//     }
-//     default:
-//       return [];
-//   }
-// };

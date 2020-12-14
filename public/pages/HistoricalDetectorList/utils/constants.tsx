@@ -135,9 +135,3 @@ export const historicalDetectorListColumns = [
     render: renderTime,
   },
 ] as EuiBasicTableColumn<any>[];
-
-// export enum HISTORICAL_DETECTOR_ACTION {
-//   START,
-//   STOP,
-//   DELETE,
-// }

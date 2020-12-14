@@ -50,9 +50,6 @@ import { EmptyHistoricalDetectorMessage } from '../components/EmptyHistoricalDet
 import { historicalDetectorListColumns } from '../utils/constants';
 import { HistoricalDetectorFilters } from '../components/HistoricalDetectorFilters/HistoricalDetectorFilters';
 import { GET_ALL_DETECTORS_QUERY_PARAMS } from '../../utils/constants';
-// import { getTasksForAction } from '../../utils/helpers';
-// import { TaskListActions } from '../../components/TaskListActions/TaskListActions';
-// import { CompareTasksModal } from '../ActionModals/CompareTasksModal/CompareTasksModal';
 import { CoreStart } from '../../../../../../src/core/public';
 import { CoreServicesContext } from '../../../components/CoreServices/CoreServices';
 import {
@@ -74,17 +71,6 @@ interface HistoricalDetectorListState {
   queryParams: any;
   selectedDetectorStates: DETECTOR_STATE[];
 }
-// interface ActionModalState {
-//   isOpen: boolean;
-//   action: HISTORICAL_DETECTOR_ACTION;
-//   isListLoading: boolean;
-//   isRequestingToClose: boolean;
-//   affectedTasks: HistoricalDetectorListItem[];
-// }
-// interface TaskListActionsState {
-//   isDisabled: boolean;
-//   isCompareDisabled: boolean;
-// }
 
 export function HistoricalDetectorList(props: HistoricalDetectorListProps) {
   const core = React.useContext(CoreServicesContext) as CoreStart;
@@ -105,9 +91,6 @@ export function HistoricalDetectorList(props: HistoricalDetectorListProps) {
   const [isLoadingFinalDetectors, setIsLoadingFinalDetectors] = useState<
     boolean
   >(true);
-  // const [selectedTasksForAction, setSelectedTasksForAction] = useState(
-  //   [] as TaskListItem[]
-  // );
 
   // if loading detectors or sorting/filtering: set whole page in loading state
   const isLoading = isRequestingDetectors || isLoadingFinalDetectors;
@@ -117,20 +100,6 @@ export function HistoricalDetectorList(props: HistoricalDetectorListProps) {
     queryParams: getURLQueryParams(props.location),
     selectedDetectorStates: ALL_DETECTOR_STATES,
   });
-  // const [actionModalState, setActionModalState] = useState<ActionModalState>({
-  //   isOpen: false,
-  //   //@ts-ignore
-  //   action: null,
-  //   isListLoading: false,
-  //   isRequestingToClose: false,
-  //   affectedTasks: [],
-  // });
-  // const [taskListActionsState, setTaskListActionsState] = useState<
-  //   TaskListActionsState
-  // >({
-  //   isDisabled: true,
-  //   isCompareDisabled: false,
-  // });
 
   // Set breadcrumbs on page initialization
   useEffect(() => {
@@ -248,38 +217,6 @@ export function HistoricalDetectorList(props: HistoricalDetectorListProps) {
     }));
   };
 
-  // const handleCompareTasksAction = () => {
-  //   const validTasks = getTasksForAction(
-  //     selectedTasksForAction,
-  //     TASK_ACTION.COMPARE
-  //   );
-  //   if (!isEmpty(validTasks)) {
-  //     setActionModalState({
-  //       isOpen: true,
-  //       action: TASK_ACTION.COMPARE,
-  //       isListLoading: false,
-  //       isRequestingToClose: false,
-  //       affectedTasks: validTasks,
-  //     });
-  //   } else {
-  //     toastNotifications.addWarning(
-  //       'All selected detectors are unable to start. Make sure selected \
-  //           detectors have features and are not already running'
-  //     );
-  //   }
-  // };
-
-  // const handleSelectionChange = (currentSelected: TaskListItem[]) => {
-  //   setSelectedTasksForAction(currentSelected);
-  //   setTaskListActionsState({
-  //     ...taskListActionsState,
-  //     isDisabled: isEmpty(currentSelected),
-  //     isCompareDisabled: isEmpty(
-  //       getTasksForAction(currentSelected, TASK_ACTION.COMPARE)
-  //     ),
-  //   });
-  // };
-
   const handleResetFilter = () => {
     setState((state) => ({
       ...state,
@@ -294,42 +231,6 @@ export function HistoricalDetectorList(props: HistoricalDetectorListProps) {
   const getItemId = (item: any) => {
     return `${item.id}-${item.currentTime}`;
   };
-
-  // const handleHideModal = () => {
-  //   setActionModalState({
-  //     ...actionModalState,
-  //     isOpen: false,
-  //   });
-  // };
-
-  // const handleConfirmModal = () => {
-  //   setActionModalState({
-  //     ...actionModalState,
-  //     isRequestingToClose: true,
-  //   });
-  // };
-
-  // const getActionModal = () => {
-  //   if (actionModalState.isOpen) {
-  //     //@ts-ignore
-  //     switch (actionModalState.action) {
-  //       case TASK_ACTION.COMPARE: {
-  //         return (
-  //           <CompareTasksModal
-  //             tasks={actionModalState.affectedTasks}
-  //             onHide={handleHideModal}
-  //             isListLoading={isLoading}
-  //           />
-  //         );
-  //       }
-  //       default: {
-  //         return null;
-  //       }
-  //     }
-  //   } else {
-  //     return null;
-  //   }
-  // };
 
   const sorting = {
     sort: {
@@ -349,10 +250,6 @@ export function HistoricalDetectorList(props: HistoricalDetectorListProps) {
     pageSizeOptions: [5, 10, 20, 50],
   };
 
-  // const selection = {
-  //   onSelectionChange: handleSelectionChange,
-  // };
-
   return (
     <EuiPage>
       <EuiPageBody>
@@ -366,11 +263,6 @@ export function HistoricalDetectorList(props: HistoricalDetectorListProps) {
                 )
           }
           actions={[
-            // <TaskListActions
-            //   onCompareTasks={handleCompareTasksAction}
-            //   isActionsDisabled={taskListActionsState.isDisabled}
-            //   isCompareDisabled={taskListActionsState.isCompareDisabled}
-            // />,
             <EuiButton
               style={{ width: '225px' }}
               data-test-subj="createDetectorButton"

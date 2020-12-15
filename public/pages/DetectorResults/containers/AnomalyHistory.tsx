@@ -13,7 +13,13 @@
  * permissions and limitations under the License.
  */
 
-import React, { useState, useEffect, useCallback, Fragment } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  Fragment,
+  useRef,
+} from 'react';
 
 import { isEmpty, get } from 'lodash';
 import {
@@ -72,9 +78,15 @@ interface AnomalyHistoryProps {
   isNotSample?: boolean;
 }
 
+const useAsyncRef = (value: any) => {
+  const ref = useRef(value);
+  ref.current = value;
+  return ref;
+};
+
 export const AnomalyHistory = (props: AnomalyHistoryProps) => {
   const dispatch = useDispatch();
-
+  const taskId = useAsyncRef(props.taskId);
   const [isLoading, setIsLoading] = useState(false);
   const initialStartDate =
     props.isHistorical && props.detector?.detectionDateRange
@@ -95,7 +107,6 @@ export const AnomalyHistory = (props: AnomalyHistoryProps) => {
   const [selectedTabId, setSelectedTabId] = useState<string>(
     ANOMALY_HISTORY_TABS.ANOMALY_OCCURRENCE
   );
-
   const [isLoadingAnomalyResults, setIsLoadingAnomalyResults] = useState<
     boolean
   >(false);
@@ -127,7 +138,7 @@ export const AnomalyHistory = (props: AnomalyHistoryProps) => {
               dateRange.endDate,
               props.detector.id,
               props.isHistorical,
-              props.taskId
+              taskId.current
             )
           )
         );
@@ -143,7 +154,7 @@ export const AnomalyHistory = (props: AnomalyHistoryProps) => {
               1,
               props.detector.id,
               props.isHistorical,
-              props.taskId
+              taskId.current
             )
           )
         );
@@ -199,7 +210,7 @@ export const AnomalyHistory = (props: AnomalyHistoryProps) => {
         isHCDetector
       );
       const detectorResultResponse = props.isHistorical
-        ? await dispatch(getDetectorResults(props.taskId || '', params, true))
+        ? await dispatch(getDetectorResults(taskId.current || '', params, true))
         : await dispatch(getDetectorResults(props.detector.id, params, false));
       const rawAnomaliesData = get(detectorResultResponse, 'response', []);
       const rawAnomaliesResult = {

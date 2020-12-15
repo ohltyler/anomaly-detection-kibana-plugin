@@ -187,7 +187,7 @@ export const HistoricalDetectorDetail = (
       );
 
       if (nodeCount * 2 <= runningCount) {
-        throw 'only 2 historical detectors can be running per node in the cluster';
+        throw 'only 2 historical detectors can be running per data node in the cluster';
       }
 
       await dispatch(startDetector(detectorId));

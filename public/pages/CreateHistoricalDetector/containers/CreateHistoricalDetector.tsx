@@ -231,7 +231,6 @@ export function CreateHistoricalDetector(props: CreateHistoricalDetectorProps) {
     formikBag: any
   ) => {
     const apiRequest = formikToHistoricalDetector(values, detector);
-    console.log('api request: ', apiRequest);
     try {
       if (props.isEdit) {
         await handleUpdate(apiRequest, saveDetectorOption);
@@ -247,7 +246,6 @@ export function CreateHistoricalDetector(props: CreateHistoricalDetectorProps) {
   const handleFormValidation = (
     formikProps: FormikProps<HistoricalDetectorFormikValues>
   ) => {
-    console.log('formik fields: ', formikProps.values);
     if (props.isEdit && detector.curState === DETECTOR_STATE.RUNNING) {
       core.notifications.toasts.addDanger(
         'Historical detector cannot be updated while it is running'

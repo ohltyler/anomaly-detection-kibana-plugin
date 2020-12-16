@@ -40,6 +40,7 @@ interface FeatureAccordionProps {
   index: number;
   feature: any;
   handleChange(event: React.ChangeEvent<HTMLSelectElement>): void;
+  deleteDisabled?: boolean;
 }
 
 export const FeatureAccordion = (props: FeatureAccordionProps) => {
@@ -95,7 +96,12 @@ export const FeatureAccordion = (props: FeatureAccordionProps) => {
   };
 
   const deleteAction = (onClick: any) => (
-    <EuiButton size="s" color="danger" onClick={onClick}>
+    <EuiButton
+      size="s"
+      color="danger"
+      onClick={onClick}
+      disabled={props.deleteDisabled}
+    >
       Delete
     </EuiButton>
   );

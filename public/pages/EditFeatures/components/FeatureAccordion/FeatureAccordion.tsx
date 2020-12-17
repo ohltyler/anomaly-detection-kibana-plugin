@@ -13,7 +13,7 @@
  * permissions and limitations under the License.
  */
 
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useState, useEffect } from 'react';
 import {
   EuiFormRow,
   EuiSelect,
@@ -44,8 +44,20 @@ interface FeatureAccordionProps {
 }
 
 export const FeatureAccordion = (props: FeatureAccordionProps) => {
-  const initialIsOpen = get(props.feature, 'newFeature');
+  const initialIsOpen = get(props.feature, 'newFeature', false);
   const [showSubtitle, setShowSubtitle] = useState<boolean>(!initialIsOpen);
+  const [stayOpen, setStayOpen] = useState<boolean>(initialIsOpen);
+
+  // Hook to open/close the accordion depending on if it's a new feature or not
+  useEffect(() => {
+    if (get(props.feature, 'newFeature', false)) {
+      setStayOpen(true);
+      setShowSubtitle(false);
+    } else {
+      setStayOpen(false);
+      setShowSubtitle(true);
+    }
+  }, [props.feature]);
 
   const simpleAggDescription = (feature: any) => (
     <Fragment>
@@ -120,9 +132,16 @@ export const FeatureAccordion = (props: FeatureAccordionProps) => {
       className="euiAccordion__noTopBorder"
       paddingSize="l"
       initialIsOpen={initialIsOpen}
+      forceState={stayOpen ? 'open' : 'closed'}
       extraAction={deleteAction(props.onDelete)}
       onToggle={(isOpen: boolean) => {
-        isOpen ? setShowSubtitle(false) : setShowSubtitle(true);
+        if (isOpen) {
+          setShowSubtitle(false);
+          setStayOpen(true);
+        } else {
+          setShowSubtitle(true);
+          setStayOpen(false);
+        }
       }}
     >
       <Field

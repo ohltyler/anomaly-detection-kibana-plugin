@@ -42,9 +42,8 @@ export const EditHistoricalDetectorModal = (
             <EuiFlexItem>
               <EuiText>
                 <p>
-                  The historical detector needs to stop before you can edit the
-                  configuration. Make sure to restart the detector after making
-                  changes.
+                  You must stop the detector to change its configuration. After
+                  you reconfigure the detector, be sure to restart it.
                 </p>
               </EuiText>
             </EuiFlexItem>

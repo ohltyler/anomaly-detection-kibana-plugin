@@ -113,7 +113,7 @@ function DataSource(props: DataSourceProps) {
       {isDifferentIndex() ? (
         <div>
           <EuiCallOut
-            title="Modifying the index selected will reset your detector configuration settings."
+            title="Modifying the selected index resets your detector configuration."
             color="warning"
             iconType="alert"
           />

@@ -101,7 +101,9 @@ export const HistoricalDetectorDetail = (
 
   useEffect(() => {
     if (errorGettingDetectors) {
-      core.notifications.toasts.addDanger('Unable to get historical detector');
+      core.notifications.toasts.addDanger(
+        'Unable to get the historical detector'
+      );
       props.history.push('/historical-detectors');
     }
   }, [errorGettingDetectors]);
@@ -122,7 +124,7 @@ export const HistoricalDetectorDetail = (
       setIsLoadingDetector(false);
     } catch {
       core.notifications.toasts.addDanger(
-        'Error retrieving historical detector'
+        'Error retrieving the historical detector'
       );
     }
   };
@@ -193,7 +195,7 @@ export const HistoricalDetectorDetail = (
       await dispatch(startDetector(detectorId));
       fetchDetector();
       core.notifications.toasts.addSuccess(
-        `Historical detector has been started successfully`
+        `Successfully started the historical detector`
       );
     } catch (err) {
       core.notifications.toasts.addDanger(
@@ -216,7 +218,7 @@ export const HistoricalDetectorDetail = (
       }
       if (!isDelete) {
         core.notifications.toasts.addSuccess(
-          'Historical detector has been stopped successfully'
+          'Successfully stopped the historical detector'
         );
       }
       if (listener) listener.onSuccess();
@@ -232,7 +234,7 @@ export const HistoricalDetectorDetail = (
     try {
       await dispatch(deleteDetector(detectorId));
       core.notifications.toasts.addSuccess(
-        `Historical detector has been deleted successfully`
+        `Successfully deleted the historical detector`
       );
       handleHideModal();
       props.history.push('/historical-detectors');

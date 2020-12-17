@@ -1345,7 +1345,7 @@ exports[`<CreateHistoricalDetector /> spec create historical detector renders th
                 >
                   <div
                     class="euiFormRow euiFormRow--fullWidth"
-                    hint="Define how often the detector collects data to generate anomalies. The shorter the interval is, the more detector results there will be, and the more computing resources the detector will need."
+                    hint="Define how often the detector collects data to generate anomalies. Shorter intervals generate more detector results and  therefore require more computing resources."
                     id="random_html_id-row"
                     title="Detection interval"
                   >
@@ -1367,7 +1367,7 @@ exports[`<CreateHistoricalDetector /> spec create historical detector renders th
                           <p
                             class="sublabel"
                           >
-                            Define how often the detector collects data to generate anomalies. The shorter the interval is, the more detector results there will be, and the more computing resources the detector will need.
+                            Define how often the detector collects data to generate anomalies. Shorter intervals generate more detector results and  therefore require more computing resources.
                           </p>
                         </div>
                       </label>
@@ -1438,6 +1438,17 @@ exports[`<CreateHistoricalDetector /> spec create historical detector renders th
                       Run detector automatically after creating
                     </label>
                   </div>
+                </div>
+                <div
+                  class="euiFlexItem"
+                  style="margin-top: -8px;"
+                >
+                  <p
+                    class="sublabel"
+                  >
+                     
+                    We recommend running this detector during low traffic times.
+                  </p>
                 </div>
               </div>
             </div>
@@ -1730,7 +1741,7 @@ exports[`<CreateHistoricalDetector /> spec edit historical detector renders the 
               <span
                 class="euiCallOutHeader__title"
               >
-                Modifying the index selected will reset your detector configuration settings.
+                Modifying the selected index resets your detector configuration.
               </span>
             </div>
           </div>
@@ -2814,7 +2825,7 @@ exports[`<CreateHistoricalDetector /> spec edit historical detector renders the 
                 >
                   <div
                     class="euiFormRow euiFormRow--fullWidth"
-                    hint="Define how often the detector collects data to generate anomalies. The shorter the interval is, the more detector results there will be, and the more computing resources the detector will need."
+                    hint="Define how often the detector collects data to generate anomalies. Shorter intervals generate more detector results and  therefore require more computing resources."
                     id="random_html_id-row"
                     title="Detection interval"
                   >
@@ -2836,7 +2847,7 @@ exports[`<CreateHistoricalDetector /> spec edit historical detector renders the 
                           <p
                             class="sublabel"
                           >
-                            Define how often the detector collects data to generate anomalies. The shorter the interval is, the more detector results there will be, and the more computing resources the detector will need.
+                            Define how often the detector collects data to generate anomalies. Shorter intervals generate more detector results and  therefore require more computing resources.
                           </p>
                         </div>
                       </label>
@@ -2907,6 +2918,17 @@ exports[`<CreateHistoricalDetector /> spec edit historical detector renders the 
                       Run detector automatically after creating
                     </label>
                   </div>
+                </div>
+                <div
+                  class="euiFlexItem"
+                  style="margin-top: -8px;"
+                >
+                  <p
+                    class="sublabel"
+                  >
+                     
+                    We recommend running this detector during low traffic times.
+                  </p>
                 </div>
               </div>
             </div>

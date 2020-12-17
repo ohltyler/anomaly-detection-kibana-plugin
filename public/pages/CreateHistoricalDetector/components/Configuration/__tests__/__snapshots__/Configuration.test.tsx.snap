@@ -360,7 +360,7 @@ exports[`<Configuration /> spec renders the component in create mode with existi
               >
                 <div
                   class="euiFormRow euiFormRow--fullWidth"
-                  hint="Define how often the detector collects data to generate anomalies. The shorter the interval is, the more detector results there will be, and the more computing resources the detector will need."
+                  hint="Define how often the detector collects data to generate anomalies. Shorter intervals generate more detector results and  therefore require more computing resources."
                   id="random_html_id-row"
                   title="Detection interval"
                 >
@@ -382,7 +382,7 @@ exports[`<Configuration /> spec renders the component in create mode with existi
                         <p
                           class="sublabel"
                         >
-                          Define how often the detector collects data to generate anomalies. The shorter the interval is, the more detector results there will be, and the more computing resources the detector will need.
+                          Define how often the detector collects data to generate anomalies. Shorter intervals generate more detector results and  therefore require more computing resources.
                         </p>
                       </div>
                     </label>
@@ -454,6 +454,17 @@ exports[`<Configuration /> spec renders the component in create mode with existi
                     Run detector automatically after creating
                   </label>
                 </div>
+              </div>
+              <div
+                class="euiFlexItem"
+                style="margin-top: -8px;"
+              >
+                <p
+                  class="sublabel"
+                >
+                   
+                  We recommend running this detector during low traffic times.
+                </p>
               </div>
             </div>
           </div>
@@ -833,7 +844,7 @@ exports[`<Configuration /> spec renders the component in edit mode without exist
               >
                 <div
                   class="euiFormRow euiFormRow--fullWidth"
-                  hint="Define how often the detector collects data to generate anomalies. The shorter the interval is, the more detector results there will be, and the more computing resources the detector will need."
+                  hint="Define how often the detector collects data to generate anomalies. Shorter intervals generate more detector results and  therefore require more computing resources."
                   id="random_html_id-row"
                   title="Detection interval"
                 >
@@ -855,7 +866,7 @@ exports[`<Configuration /> spec renders the component in edit mode without exist
                         <p
                           class="sublabel"
                         >
-                          Define how often the detector collects data to generate anomalies. The shorter the interval is, the more detector results there will be, and the more computing resources the detector will need.
+                          Define how often the detector collects data to generate anomalies. Shorter intervals generate more detector results and  therefore require more computing resources.
                         </p>
                       </div>
                     </label>
@@ -927,6 +938,17 @@ exports[`<Configuration /> spec renders the component in edit mode without exist
                     Run detector automatically after creating
                   </label>
                 </div>
+              </div>
+              <div
+                class="euiFlexItem"
+                style="margin-top: -8px;"
+              >
+                <p
+                  class="sublabel"
+                >
+                   
+                  We recommend running this detector during low traffic times.
+                </p>
               </div>
             </div>
           </div>

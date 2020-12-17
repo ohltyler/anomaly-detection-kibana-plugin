@@ -45,10 +45,7 @@ import {
   getIndices,
   getPrioritizedIndices,
 } from '../../../../redux/reducers/elasticsearch';
-import {
-  APP_PATH,
-  PLUGIN_NAME,
-} from '../../../../utils/constants';
+import { APP_PATH, PLUGIN_NAME } from '../../../../utils/constants';
 import { DETECTOR_STATE } from '../../../../../server/utils/constants';
 import { getVisibleOptions, sanitizeSearchText } from '../../../utils/helpers';
 import { EmptyDetectorMessage } from '../../components/EmptyMessage/EmptyMessage';
@@ -468,7 +465,7 @@ export const DetectorList = (props: ListProps) => {
     await Promise.all(promises)
       .then(() => {
         core.notifications.toasts.addSuccess(
-          'All selected detectors have been started successfully'
+          'Successfully started all selected detectors'
         );
       })
       .catch((error) => {
@@ -495,7 +492,7 @@ export const DetectorList = (props: ListProps) => {
     await Promise.all(promises)
       .then(() => {
         core.notifications.toasts.addSuccess(
-          'All selected detectors have been stopped successfully'
+          'Successfully stopped all selected detectors'
         );
         if (listener) listener.onSuccess();
       })
@@ -527,7 +524,7 @@ export const DetectorList = (props: ListProps) => {
     await Promise.all(promises)
       .then(() => {
         core.notifications.toasts.addSuccess(
-          'All selected detectors have been deleted successfully'
+          'Successfully deleted all selected detectors'
         );
       })
       .catch((error) => {

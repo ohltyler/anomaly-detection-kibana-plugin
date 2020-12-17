@@ -225,7 +225,7 @@ exports[`<IndexChooser /> spec renders the component in edit mode with callout 1
             <span
               class="euiCallOutHeader__title"
             >
-              Modifying the index selected will reset your detector configuration settings.
+              Modifying the selected index resets your detector configuration.
             </span>
           </div>
         </div>

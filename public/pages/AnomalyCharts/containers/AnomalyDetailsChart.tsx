@@ -211,7 +211,7 @@ export const AnomalyDetailsChart = React.memo(
               minValue={anomalySummary.minAnomalyGrade}
               maxValue={anomalySummary.maxAnomalyGrade}
               description={getAnomalyGradeWording(props.isNotSample)}
-              tooltip="Indicates to what extent this data point is anomalous. The scale ranges from 0 to 1."
+              tooltip="Indicates the extent to which a data point is anomalous. Higher grades indicate more unusual data."
             />
           </EuiFlexItem>
           <EuiFlexItem>

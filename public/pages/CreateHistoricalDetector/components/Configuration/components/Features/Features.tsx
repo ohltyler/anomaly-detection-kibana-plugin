@@ -22,7 +22,6 @@ import {
   EuiButton,
   EuiLink,
   EuiIcon,
-  EuiLoadingSpinner,
 } from '@elastic/eui';
 import { FieldArray, FieldArrayRenderProps, FormikProps } from 'formik';
 
@@ -38,7 +37,6 @@ import { FeatureAccordion } from '../../../../../EditFeatures/components/Feature
 interface FeaturesProps {
   detector: Detector | undefined;
   formikProps: FormikProps<HistoricalDetectorFormikValues>;
-  isLoading: boolean;
 }
 
 export function Features(props: FeaturesProps) {
@@ -82,58 +80,42 @@ export function Features(props: FeaturesProps) {
                     <EuiSpacer size="m" />
                   </div>
                 ) : null}
-                {props.isLoading ? (
-                  <EuiLoadingSpinner
-                    size="l"
-                    style={{
-                      marginLeft: '4px',
-                      marginRight: '8px',
-                      marginBottom: '8px',
+                {values.featureList.map((feature: any, index: number) => (
+                  <FeatureAccordion
+                    onDelete={() => {
+                      remove(index);
                     }}
+                    index={index}
+                    feature={feature}
+                    handleChange={props.formikProps.handleChange}
                   />
-                ) : (
-                  values.featureList.map((feature: any, index: number) => (
-                    <FeatureAccordion
-                      onDelete={() => {
-                        remove(index);
+                ))}
+                <EuiFlexGroup
+                  alignItems="center"
+                  style={{ padding: '12px 24px' }}
+                >
+                  <EuiFlexItem grow={false}>
+                    <EuiButton
+                      data-test-subj="addFeature"
+                      isDisabled={values.featureList.length >= MAX_FEATURE_NUM}
+                      onClick={() => {
+                        push(initialFeatureValue());
                       }}
-                      index={index}
-                      feature={feature}
-                      handleChange={props.formikProps.handleChange}
-                      deleteDisabled={index === 0}
-                    />
-                  ))
-                )}
-                {props.isLoading ? null : (
-                  <EuiFlexGroup
-                    alignItems="center"
-                    style={{ padding: '12px 24px' }}
-                  >
-                    <EuiFlexItem grow={false}>
-                      <EuiButton
-                        data-test-subj="addFeature"
-                        isDisabled={
-                          values.featureList.length >= MAX_FEATURE_NUM
-                        }
-                        onClick={() => {
-                          push(initialFeatureValue());
-                        }}
-                      >
-                        Add feature
-                      </EuiButton>
-                      <EuiText className="content-panel-subTitle">
-                        <p>
-                          You can add up to{' '}
-                          {Math.max(
-                            MAX_FEATURE_NUM - values.featureList.length,
-                            0
-                          )}{' '}
-                          more features.
-                        </p>
-                      </EuiText>
-                    </EuiFlexItem>
-                  </EuiFlexGroup>
-                )}
+                    >
+                      Add feature
+                    </EuiButton>
+                    <EuiText className="content-panel-subTitle">
+                      <p>
+                        You can add up to{' '}
+                        {Math.max(
+                          MAX_FEATURE_NUM - values.featureList.length,
+                          0
+                        )}{' '}
+                        more features.
+                      </p>
+                    </EuiText>
+                  </EuiFlexItem>
+                </EuiFlexGroup>
               </Fragment>
             );
           }}

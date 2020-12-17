@@ -906,8 +906,7 @@ exports[`<CreateHistoricalDetector /> spec create historical detector renders th
                     class="euiAccordion__optionalAction"
                   >
                     <button
-                      class="euiButton euiButton--danger euiButton--small euiButton-isDisabled"
-                      disabled=""
+                      class="euiButton euiButton--danger euiButton--small"
                       type="button"
                     >
                       <span
@@ -2371,8 +2370,7 @@ exports[`<CreateHistoricalDetector /> spec edit historical detector renders the 
                     class="euiAccordion__optionalAction"
                   >
                     <button
-                      class="euiButton euiButton--danger euiButton--small euiButton-isDisabled"
-                      disabled=""
+                      class="euiButton euiButton--danger euiButton--small"
                       type="button"
                     >
                       <span

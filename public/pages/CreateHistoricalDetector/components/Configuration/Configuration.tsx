@@ -44,11 +44,7 @@ export function Configuration(props: ConfigurationProps) {
       ) : null}
       <Timestamp formikProps={props.formikProps} />
       <EuiSpacer size="l" />
-      <Features
-        detector={props.detector}
-        formikProps={props.formikProps}
-        isLoading={props.isLoading}
-      />
+      <Features detector={props.detector} formikProps={props.formikProps} />
       <EuiSpacer size="l" />
       <OperationSettings
         formikProps={props.formikProps}

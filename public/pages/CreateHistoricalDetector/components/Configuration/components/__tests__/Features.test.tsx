@@ -86,16 +86,6 @@ describe('<Features /> spec', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
-  test('renders the component in loading state', () => {
-    const { container, getByText, queryByText } = renderWithRouter(
-      {},
-      [],
-      true
-    );
-    expect(container.firstChild).toMatchSnapshot();
-    getByText(TITLE_TEXT);
-    expect(queryByText(DEFAULT_FEATURE_TEXT)).toBeNull();
-  });
   test('renders the component with no given features', () => {
     const { container, getByText } = renderWithRouter({}, [], false);
     expect(container.firstChild).toMatchSnapshot();

@@ -50,6 +50,7 @@ const renderWithRouter = (isEdit: boolean = false) => ({
                         formikProps={{
                           values: { featureList: [] },
                           setFieldValue: jest.fn(),
+                          setFieldTouched: jest.fn(),
                         }}
                         isEdit={isEdit}
                         detector={{}}

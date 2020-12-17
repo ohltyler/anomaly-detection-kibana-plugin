@@ -37,6 +37,9 @@ import {
 import { DETECTOR_STATE } from '../../../../../server/utils/constants';
 import { CoreServicesContext } from '../../../../components/CoreServices/CoreServices';
 
+const EMPTY_MESSAGE_TEXT =
+  'Use historical detectors to detect anomalies on a selected time range of your historical data.';
+
 const renderWithRouter = (
   initialAdState: Detectors = initialDetectorsState
 ) => ({
@@ -88,9 +91,7 @@ describe('<HistoricalDetectorList /> spec', () => {
         requesting: true,
       });
       await wait();
-      getByText(
-        'Use historical detectors to detect anomalies on a selected time range of your historic data.'
-      );
+      getByText(EMPTY_MESSAGE_TEXT);
     });
   });
   describe('Populated results', () => {

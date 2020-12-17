@@ -202,7 +202,7 @@ export function EditFeatures(props: EditFeaturesProps) {
                   </EuiButton>
                   <EuiText className="content-panel-subTitle">
                     <p>
-                      You can add{' '}
+                      You can add up to{' '}
                       {Math.max(MAX_FEATURE_NUM - values.featureList.length, 0)}{' '}
                       more features.
                     </p>

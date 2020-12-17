@@ -20,7 +20,7 @@ import { APP_PATH, PLUGIN_NAME } from '../../../../utils/constants';
 const FILTER_TEXT =
   'There are no historical detectors matching your applied filters. Reset your filters to view all historical detectors.';
 const EMPTY_TEXT =
-  'Use historical detectors to detect anomalies on a selected time range of your historic data.';
+  'Use historical detectors to detect anomalies on a selected time range of your historical data.';
 
 interface EmptyHistoricalDetectorMessageProps {
   isFilterApplied: boolean;

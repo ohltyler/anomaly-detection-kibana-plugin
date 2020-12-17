@@ -51,7 +51,7 @@ import {
 } from '../utils/constants';
 import { AnomalyOccurrenceChart } from './AnomalyOccurrenceChart';
 import { FeatureBreakDown } from './FeatureBreakDown';
-import { convertTimestampToString } from '../../CreateHistoricalDetector/utils/helpers';
+import { convertTimestampToString } from '../../../utils/utils';
 
 interface AnomaliesChartProps {
   onDateRangeChange(

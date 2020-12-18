@@ -69,7 +69,7 @@ export const HistoricalDetectorControls = (
             </EuiContextMenuItem>
             <EuiContextMenuItem
               key="deleteDetector"
-              data-test-subj="deleteDetector"
+              data-test-subj="deleteDetectorItem"
               onClick={props.onDeleteDetector}
             >
               Delete historical detector

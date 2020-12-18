@@ -66,6 +66,7 @@ export const HistoricalDetectorConfig = (
       panelStyles={{ margin: '0px' }}
       actions={[
         <EuiButton
+          data-test-subj="editDetectorButton"
           onClick={props.onEditDetector}
           disabled={props.isStoppingDetector}
         >

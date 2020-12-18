@@ -14,7 +14,7 @@
  */
 
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render, fireEvent } from '@testing-library/react';
 import { HistoricalDetectorConfig } from '../HistoricalDetectorConfig/HistoricalDetectorConfig';
 import moment from 'moment';
 
@@ -47,7 +47,7 @@ describe('<HistoricalDetectorConfig /> spec', () => {
   });
   describe('detector is not stopping', () => {
     test('renders the component', () => {
-      const { container, getByText, queryByText } = render(
+      const { container, getByText } = render(
         <HistoricalDetectorConfig
           detector={TEST_DETECTOR}
           isStoppingDetector={false}
@@ -63,6 +63,50 @@ describe('<HistoricalDetectorConfig /> spec', () => {
       getByText(INTERVAL_STRING);
       getByText(START_TIME_STRING);
       getByText(START_TIME_STRING + '-' + END_TIME_STRING);
+    });
+    test('onEditDetector() is called when clicking edit', () => {
+      const { getByTestId } = render(
+        <HistoricalDetectorConfig
+          detector={TEST_DETECTOR}
+          isStoppingDetector={false}
+          onEditDetector={mockOnEditDetector}
+        />
+      );
+      expect(mockOnEditDetector).toHaveBeenCalledTimes(0);
+      fireEvent.click(getByTestId('editDetectorButton'));
+      expect(mockOnEditDetector).toHaveBeenCalledTimes(1);
+    });
+  });
+  describe('detector is stopping', () => {
+    test('renders the component', () => {
+      const { container, getByText } = render(
+        <HistoricalDetectorConfig
+          detector={TEST_DETECTOR}
+          isStoppingDetector={true}
+          onEditDetector={mockOnEditDetector}
+        />
+      );
+      expect(container.firstChild).toMatchSnapshot();
+      getByText(TITLE_TEXT);
+      getByText(TEST_DETECTOR.id);
+      getByText(TEST_DETECTOR.name);
+      getByText(TEST_DETECTOR.description);
+      getByText(TEST_DETECTOR.indices[0]);
+      getByText(INTERVAL_STRING);
+      getByText(START_TIME_STRING);
+      getByText(START_TIME_STRING + '-' + END_TIME_STRING);
+    });
+    test('onEditDetector() is not called when clicking edit', () => {
+      const { getByTestId } = render(
+        <HistoricalDetectorConfig
+          detector={TEST_DETECTOR}
+          isStoppingDetector={true}
+          onEditDetector={mockOnEditDetector}
+        />
+      );
+      expect(mockOnEditDetector).toHaveBeenCalledTimes(0);
+      fireEvent.click(getByTestId('editDetectorButton'));
+      expect(mockOnEditDetector).toHaveBeenCalledTimes(0);
     });
   });
 });

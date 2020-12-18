@@ -55,7 +55,7 @@ const TEST_PROPS = {
   onDeleteDetector: mockOnDeleteDetector,
 };
 
-describe('<HistoricalDetectorConfig /> spec', () => {
+describe('<HistoricalDetectorControls /> spec', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });

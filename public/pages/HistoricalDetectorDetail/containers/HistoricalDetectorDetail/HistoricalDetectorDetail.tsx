@@ -286,7 +286,6 @@ export const HistoricalDetectorDetail = (
         case HISTORICAL_DETECTOR_ACTION.EDIT: {
           return (
             <EditHistoricalDetectorModal
-              detector={detector}
               isStoppingDetector={isStoppingDetector}
               onHide={handleHideModal}
               onStopDetectorForEditing={onStopDetectorForEditing}

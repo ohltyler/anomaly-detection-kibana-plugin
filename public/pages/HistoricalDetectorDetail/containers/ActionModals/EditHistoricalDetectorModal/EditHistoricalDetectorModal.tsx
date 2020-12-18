@@ -20,11 +20,9 @@ import {
   EuiFlexGroup,
   EuiFlexItem,
 } from '@elastic/eui';
-import { Detector } from '../../../../../models/interfaces';
 import { ConfirmModal } from '../../../../DetectorDetail/components/ConfirmModal/ConfirmModal';
 
 interface EditHistoricalDetectorModalProps {
-  detector: Detector;
   isStoppingDetector: boolean;
   onHide(): void;
   onStopDetectorForEditing(): void;

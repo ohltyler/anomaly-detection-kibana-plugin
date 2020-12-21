@@ -97,32 +97,75 @@ describe('<HistoricalDetectorDetail /> spec', () => {
     console.error = jest.fn();
     console.warn = jest.fn();
   });
-  describe('detector not stopping', () => {
-    test('renders the component', async () => {
-      httpClientMock.get = jest.fn().mockResolvedValue({
-        ok: true,
-        response: {
-          ...TEST_DETECTOR,
-        },
-      });
-      const { container, getByText, getAllByText } = renderWithRouter();
-      await wait();
-      expect(container.firstChild).toMatchSnapshot();
-      await wait();
-      getByText(CONFIGURATION_TITLE);
-      getByText(ANOMALY_HISTORY_TITLE);
-      getByText(ACTIONS_BUTTON_TEXT);
-
-      // Name should be displayed in the header and in the configuration
-      expect(getAllByText(TEST_DETECTOR.name)).toHaveLength(2);
+  test('renders the component', async () => {
+    httpClientMock.get = jest.fn().mockResolvedValue({
+      ok: true,
+      response: {
+        ...TEST_DETECTOR,
+      },
     });
+    const { container, getByText, getAllByText } = renderWithRouter();
+    await wait();
+    expect(container.firstChild).toMatchSnapshot();
+    await wait();
+    getByText(CONFIGURATION_TITLE);
+    getByText(ANOMALY_HISTORY_TITLE);
+    getByText(ACTIONS_BUTTON_TEXT);
+    getByText(TEST_DETECTOR.id);
+    getByText(TEST_DETECTOR.description);
+    // Name should be displayed in the header and in the configuration
+    expect(getAllByText(TEST_DETECTOR.name)).toHaveLength(2);
   });
-  describe('detector is stopping', () => {
-    it.skip('renders the component', () => {
-      const { container, getByText } = renderWithRouter(false);
-      expect(container.firstChild).toMatchSnapshot();
-      getByText('Create historical detector');
-      getByText('Create');
+  test('shows correct callout when detector is stopped', async () => {
+    httpClientMock.get = jest.fn().mockResolvedValue({
+      ok: true,
+      response: {
+        ...TEST_DETECTOR,
+        curState: DETECTOR_STATE.DISABLED,
+      },
     });
+    const { getByText } = renderWithRouter();
+    await wait();
+    getByText(STOPPED_CALLOUT_TEXT);
+    getByText(START_DETECTOR_BUTTON_TEXT);
+  });
+  test('shows correct callout when detector is initializing', async () => {
+    httpClientMock.get = jest.fn().mockResolvedValue({
+      ok: true,
+      response: {
+        ...TEST_DETECTOR,
+        curState: DETECTOR_STATE.INIT,
+      },
+    });
+    const { getByText } = renderWithRouter();
+    await wait();
+    getByText(INIT_CALLOUT_TEXT);
+    getByText(STOP_DETECTOR_BUTTON_TEXT);
+  });
+  test('shows correct callout when detector is running', async () => {
+    httpClientMock.get = jest.fn().mockResolvedValue({
+      ok: true,
+      response: {
+        ...TEST_DETECTOR,
+        curState: DETECTOR_STATE.RUNNING,
+      },
+    });
+    const { getByText } = renderWithRouter();
+    await wait();
+    getByText(RUNNING_CALLOUT_TEXT);
+    getByText(STOP_DETECTOR_BUTTON_TEXT);
+  });
+  test('shows correct callout when detector is finished', async () => {
+    httpClientMock.get = jest.fn().mockResolvedValue({
+      ok: true,
+      response: {
+        ...TEST_DETECTOR,
+        curState: DETECTOR_STATE.FINISHED,
+      },
+    });
+    const { getByText } = renderWithRouter();
+    await wait();
+    getByText('Finished');
+    getByText(START_DETECTOR_BUTTON_TEXT);
   });
 });

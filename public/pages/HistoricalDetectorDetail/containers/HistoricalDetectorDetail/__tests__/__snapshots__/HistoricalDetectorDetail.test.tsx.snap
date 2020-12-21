@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`<HistoricalDetectorDetail /> spec detector not stopping renders the component 1`] = `
+exports[`<HistoricalDetectorDetail /> spec renders the component 1`] = `
 <div
   class="euiFlexGroup euiFlexGroup--gutterLarge euiFlexGroup--directionColumn euiFlexGroup--responsive"
   style="background-color: rgb(255, 255, 255);"

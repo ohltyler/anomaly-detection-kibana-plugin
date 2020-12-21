@@ -48,7 +48,7 @@ export function HistoricalDetectorFilters(
           data-test-subj="historicalDetectorListSearch"
         />
       </EuiFlexItem>
-      <EuiFlexItem>
+      <EuiFlexItem grow={false} style={{ width: '30%' }}>
         <EuiComboBox
           id="selectedDetectorStates"
           data-test-subj="historicalDetectorStateFilter"

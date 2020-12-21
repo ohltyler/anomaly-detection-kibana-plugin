@@ -151,7 +151,7 @@ exports[`<IndexChooser /> spec renders the component in create mode 1`] = `
               class="euiFormHelpText euiFormRow__text"
               id="random_html_id-help"
             >
-              You can use a wildcard (*) in your index pattern
+              You can use a wildcard (*) in your index pattern.
             </div>
           </div>
         </div>
@@ -345,7 +345,7 @@ exports[`<IndexChooser /> spec renders the component in edit mode with callout 1
               class="euiFormHelpText euiFormRow__text"
               id="random_html_id-help"
             >
-              You can use a wildcard (*) in your index pattern
+              You can use a wildcard (*) in your index pattern.
             </div>
           </div>
         </div>

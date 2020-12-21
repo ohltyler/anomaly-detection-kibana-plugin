@@ -266,7 +266,7 @@ exports[`<Configuration /> spec renders the component in create mode with existi
           >
             <div
               class="euiFlexGroup euiFlexGroup--gutterLarge euiFlexGroup--alignItemsCenter euiFlexGroup--directionRow euiFlexGroup--responsive"
-              style="padding: 12px 24px;"
+              style="padding: 12px 0px;"
             >
               <div
                 class="euiFlexItem euiFlexItem--flexGrowZero"
@@ -282,7 +282,7 @@ exports[`<Configuration /> spec renders the component in create mode with existi
                     <span
                       class="euiButton__text"
                     >
-                      Add feature
+                      Add another feature
                     </span>
                   </span>
                 </button>
@@ -407,6 +407,7 @@ exports[`<Configuration /> spec renders the component in create mode with existi
                               class="euiFieldNumber"
                               data-test-subj="detectionInterval"
                               id="detectionInterval"
+                              min="1"
                               name="detectionInterval"
                               placeholder="Detector interval"
                               type="number"
@@ -750,7 +751,7 @@ exports[`<Configuration /> spec renders the component in edit mode without exist
           >
             <div
               class="euiFlexGroup euiFlexGroup--gutterLarge euiFlexGroup--alignItemsCenter euiFlexGroup--directionRow euiFlexGroup--responsive"
-              style="padding: 12px 24px;"
+              style="padding: 12px 0px;"
             >
               <div
                 class="euiFlexItem euiFlexItem--flexGrowZero"
@@ -766,7 +767,7 @@ exports[`<Configuration /> spec renders the component in edit mode without exist
                     <span
                       class="euiButton__text"
                     >
-                      Add feature
+                      Add another feature
                     </span>
                   </span>
                 </button>
@@ -891,6 +892,7 @@ exports[`<Configuration /> spec renders the component in edit mode without exist
                               class="euiFieldNumber"
                               data-test-subj="detectionInterval"
                               id="detectionInterval"
+                              min="1"
                               name="detectionInterval"
                               placeholder="Detector interval"
                               type="number"

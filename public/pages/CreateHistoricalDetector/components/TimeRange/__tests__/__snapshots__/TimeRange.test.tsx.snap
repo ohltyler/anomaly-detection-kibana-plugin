@@ -50,7 +50,6 @@ exports[`<TimeRange /> spec renders the component (loading state) 1`] = `
       >
         <div
           class="euiFormRow"
-          hint="Choose a time range for your historical data analysis."
           id="random_html_id-row"
           title="Time range for historical analysis "
         >
@@ -69,11 +68,6 @@ exports[`<TimeRange /> spec renders the component (loading state) 1`] = `
                   Time range for historical analysis 
                 </p>
                 <br />
-                <p
-                  class="sublabel"
-                >
-                  Choose a time range for your historical data analysis.
-                </p>
               </div>
             </label>
           </div>
@@ -241,7 +235,6 @@ exports[`<TimeRange /> spec renders the component 1`] = `
       >
         <div
           class="euiFormRow"
-          hint="Choose a time range for your historical data analysis."
           id="random_html_id-row"
           title="Time range for historical analysis "
         >
@@ -260,11 +253,6 @@ exports[`<TimeRange /> spec renders the component 1`] = `
                   Time range for historical analysis 
                 </p>
                 <br />
-                <p
-                  class="sublabel"
-                >
-                  Choose a time range for your historical data analysis.
-                </p>
               </div>
             </label>
           </div>

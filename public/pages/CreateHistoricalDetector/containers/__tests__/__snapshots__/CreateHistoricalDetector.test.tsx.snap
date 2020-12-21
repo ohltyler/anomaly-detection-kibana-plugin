@@ -69,7 +69,7 @@ exports[`<CreateHistoricalDetector /> spec create historical detector renders th
         >
           <div
             class="euiFormRow"
-            hint="Specify a unique and descriptive name that is easy to recognize. Detector name must contain 1-64 characters.  Valid characters are a-z, A-Z, 0-9, -(hyphen) and _(underscore)"
+            hint="Specify a unique and descriptive name that is easy to recognize"
             id="random_html_id-row"
             title="Name"
           >
@@ -91,7 +91,7 @@ exports[`<CreateHistoricalDetector /> spec create historical detector renders th
                   <p
                     class="sublabel"
                   >
-                    Specify a unique and descriptive name that is easy to recognize. Detector name must contain 1-64 characters.  Valid characters are a-z, A-Z, 0-9, -(hyphen) and _(underscore)
+                    Specify a unique and descriptive name that is easy to recognize
                   </p>
                 </div>
               </label>
@@ -106,6 +106,7 @@ exports[`<CreateHistoricalDetector /> spec create historical detector renders th
                   class="euiFormControlLayout__childrenWrapper"
                 >
                   <input
+                    aria-describedby="random_html_id-help"
                     class="euiFieldText"
                     id="random_html_id"
                     name="name"
@@ -114,6 +115,13 @@ exports[`<CreateHistoricalDetector /> spec create historical detector renders th
                     value=""
                   />
                 </div>
+              </div>
+              <div
+                class="euiFormHelpText euiFormRow__text"
+                id="random_html_id-help"
+              >
+                Detector name must contain 1-64 characters. Valid characters are
+                a-z, A-Z, 0-9, -(hyphen) and _(underscore)
               </div>
             </div>
           </div>
@@ -325,7 +333,7 @@ exports[`<CreateHistoricalDetector /> spec create historical detector renders th
                 class="euiFormHelpText euiFormRow__text"
                 id="random_html_id-help"
               >
-                You can use a wildcard (*) in your index pattern
+                You can use a wildcard (*) in your index pattern.
               </div>
             </div>
           </div>
@@ -383,7 +391,6 @@ exports[`<CreateHistoricalDetector /> spec create historical detector renders th
         >
           <div
             class="euiFormRow"
-            hint="Choose a time range for your historical data analysis."
             id="random_html_id-row"
             title="Time range for historical analysis "
           >
@@ -402,11 +409,6 @@ exports[`<CreateHistoricalDetector /> spec create historical detector renders th
                     Time range for historical analysis 
                   </p>
                   <br />
-                  <p
-                    class="sublabel"
-                  >
-                    Choose a time range for your historical data analysis.
-                  </p>
                 </div>
               </label>
             </div>
@@ -1250,7 +1252,7 @@ exports[`<CreateHistoricalDetector /> spec create historical detector renders th
               </div>
               <div
                 class="euiFlexGroup euiFlexGroup--gutterLarge euiFlexGroup--alignItemsCenter euiFlexGroup--directionRow euiFlexGroup--responsive"
-                style="padding: 12px 24px;"
+                style="padding: 12px 0px;"
               >
                 <div
                   class="euiFlexItem euiFlexItem--flexGrowZero"
@@ -1266,7 +1268,7 @@ exports[`<CreateHistoricalDetector /> spec create historical detector renders th
                       <span
                         class="euiButton__text"
                       >
-                        Add feature
+                        Add another feature
                       </span>
                     </span>
                   </button>
@@ -1391,6 +1393,7 @@ exports[`<CreateHistoricalDetector /> spec create historical detector renders th
                                 class="euiFieldNumber"
                                 data-test-subj="detectionInterval"
                                 id="detectionInterval"
+                                min="1"
                                 name="detectionInterval"
                                 placeholder="Detector interval"
                                 type="number"
@@ -1571,7 +1574,7 @@ exports[`<CreateHistoricalDetector /> spec edit historical detector renders the 
         >
           <div
             class="euiFormRow"
-            hint="Specify a unique and descriptive name that is easy to recognize. Detector name must contain 1-64 characters.  Valid characters are a-z, A-Z, 0-9, -(hyphen) and _(underscore)"
+            hint="Specify a unique and descriptive name that is easy to recognize"
             id="random_html_id-row"
             title="Name"
           >
@@ -1593,7 +1596,7 @@ exports[`<CreateHistoricalDetector /> spec edit historical detector renders the 
                   <p
                     class="sublabel"
                   >
-                    Specify a unique and descriptive name that is easy to recognize. Detector name must contain 1-64 characters.  Valid characters are a-z, A-Z, 0-9, -(hyphen) and _(underscore)
+                    Specify a unique and descriptive name that is easy to recognize
                   </p>
                 </div>
               </label>
@@ -1608,6 +1611,7 @@ exports[`<CreateHistoricalDetector /> spec edit historical detector renders the 
                   class="euiFormControlLayout__childrenWrapper"
                 >
                   <input
+                    aria-describedby="random_html_id-help"
                     class="euiFieldText"
                     id="random_html_id"
                     name="name"
@@ -1616,6 +1620,13 @@ exports[`<CreateHistoricalDetector /> spec edit historical detector renders the 
                     value=""
                   />
                 </div>
+              </div>
+              <div
+                class="euiFormHelpText euiFormRow__text"
+                id="random_html_id-help"
+              >
+                Detector name must contain 1-64 characters. Valid characters are
+                a-z, A-Z, 0-9, -(hyphen) and _(underscore)
               </div>
             </div>
           </div>
@@ -1860,7 +1871,7 @@ exports[`<CreateHistoricalDetector /> spec edit historical detector renders the 
                 class="euiFormHelpText euiFormRow__text"
                 id="random_html_id-help"
               >
-                You can use a wildcard (*) in your index pattern
+                You can use a wildcard (*) in your index pattern.
               </div>
             </div>
           </div>
@@ -1918,7 +1929,6 @@ exports[`<CreateHistoricalDetector /> spec edit historical detector renders the 
         >
           <div
             class="euiFormRow"
-            hint="Choose a time range for your historical data analysis."
             id="random_html_id-row"
             title="Time range for historical analysis "
           >
@@ -1937,11 +1947,6 @@ exports[`<CreateHistoricalDetector /> spec edit historical detector renders the 
                     Time range for historical analysis 
                   </p>
                   <br />
-                  <p
-                    class="sublabel"
-                  >
-                    Choose a time range for your historical data analysis.
-                  </p>
                 </div>
               </label>
             </div>
@@ -2729,7 +2734,7 @@ exports[`<CreateHistoricalDetector /> spec edit historical detector renders the 
               </div>
               <div
                 class="euiFlexGroup euiFlexGroup--gutterLarge euiFlexGroup--alignItemsCenter euiFlexGroup--directionRow euiFlexGroup--responsive"
-                style="padding: 12px 24px;"
+                style="padding: 12px 0px;"
               >
                 <div
                   class="euiFlexItem euiFlexItem--flexGrowZero"
@@ -2745,7 +2750,7 @@ exports[`<CreateHistoricalDetector /> spec edit historical detector renders the 
                       <span
                         class="euiButton__text"
                       >
-                        Add feature
+                        Add another feature
                       </span>
                     </span>
                   </button>
@@ -2870,6 +2875,7 @@ exports[`<CreateHistoricalDetector /> spec edit historical detector renders the 
                                 class="euiFieldNumber"
                                 data-test-subj="detectionInterval"
                                 id="detectionInterval"
+                                min="1"
                                 name="detectionInterval"
                                 placeholder="Detector interval"
                                 type="number"

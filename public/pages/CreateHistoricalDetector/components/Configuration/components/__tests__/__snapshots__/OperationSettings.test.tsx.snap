@@ -104,6 +104,7 @@ exports[`<OperationSettings /> spec renders the component 1`] = `
                           class="euiFieldNumber"
                           data-test-subj="detectionInterval"
                           id="detectionInterval"
+                          min="1"
                           name="detectionInterval"
                           placeholder="Detector interval"
                           type="number"

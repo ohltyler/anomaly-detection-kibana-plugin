@@ -75,7 +75,7 @@ exports[`<Features /> spec renders the component with no given features 1`] = `
       >
         <div
           class="euiFlexGroup euiFlexGroup--gutterLarge euiFlexGroup--alignItemsCenter euiFlexGroup--directionRow euiFlexGroup--responsive"
-          style="padding: 12px 24px;"
+          style="padding: 12px 0px;"
         >
           <div
             class="euiFlexItem euiFlexItem--flexGrowZero"
@@ -91,7 +91,7 @@ exports[`<Features /> spec renders the component with no given features 1`] = `
                 <span
                   class="euiButton__text"
                 >
-                  Add feature
+                  Add another feature
                 </span>
               </span>
             </button>
@@ -606,7 +606,7 @@ exports[`<Features /> spec renders the component with one feature 1`] = `
         </div>
         <div
           class="euiFlexGroup euiFlexGroup--gutterLarge euiFlexGroup--alignItemsCenter euiFlexGroup--directionRow euiFlexGroup--responsive"
-          style="padding: 12px 24px;"
+          style="padding: 12px 0px;"
         >
           <div
             class="euiFlexItem euiFlexItem--flexGrowZero"
@@ -622,7 +622,7 @@ exports[`<Features /> spec renders the component with one feature 1`] = `
                 <span
                   class="euiButton__text"
                 >
-                  Add feature
+                  Add another feature
                 </span>
               </span>
             </button>

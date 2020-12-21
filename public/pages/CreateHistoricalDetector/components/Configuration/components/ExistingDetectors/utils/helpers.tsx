@@ -30,7 +30,7 @@ export function populateDetectorFieldsFromDetector(
   formikProps.setFieldValue('timeField', detector.timeField);
   formikProps.setFieldValue(
     'featureList',
-    makeAllFeaturesClosed(generateInitialFeatures(detector))
+    makeAllFeaturesOpen(generateInitialFeatures(detector))
   );
   formikProps.setFieldValue(
     'detectionInterval',
@@ -63,13 +63,13 @@ export function untouchDetectorFields(
   formikProps.setFieldTouched('detectionInterval', false);
 }
 
-function makeAllFeaturesClosed(
+function makeAllFeaturesOpen(
   features: FeaturesFormikValues[]
 ): FeaturesFormikValues[] {
   return features.map((feature: any) => {
     return {
       ...feature,
-      newFeature: false,
+      newFeature: true,
     };
   });
 }

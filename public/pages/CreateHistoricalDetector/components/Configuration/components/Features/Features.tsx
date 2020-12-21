@@ -92,7 +92,7 @@ export function Features(props: FeaturesProps) {
                 ))}
                 <EuiFlexGroup
                   alignItems="center"
-                  style={{ padding: '12px 24px' }}
+                  style={{ padding: '12px 0px' }}
                 >
                   <EuiFlexItem grow={false}>
                     <EuiButton
@@ -102,7 +102,7 @@ export function Features(props: FeaturesProps) {
                         push(initialFeatureValue());
                       }}
                     >
-                      Add feature
+                      Add another feature
                     </EuiButton>
                     <EuiText className="content-panel-subTitle">
                       <p>

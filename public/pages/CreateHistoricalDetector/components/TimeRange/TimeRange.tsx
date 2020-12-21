@@ -34,7 +34,6 @@ export function TimeRange(props: TimeRangeProps) {
           <EuiFlexItem style={{ maxWidth: '70%' }}>
             <FormattedFormRow
               title="Time range for historical analysis "
-              hint="Choose a time range for your historical data analysis."
               isInvalid={isInvalid(field.name, form)}
               error={getError(field.name, form)}
             >

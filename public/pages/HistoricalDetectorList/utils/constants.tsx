@@ -76,7 +76,7 @@ export const historicalDetectorListColumns = [
     field: 'totalAnomalies',
     name: (
       <EuiToolTip content="The total number of anomalies found">
-        <span style={columnStyle}>No. of anomalies{''}</span>
+        <span style={columnStyle}>Anomalies detected{''}</span>
       </EuiToolTip>
     ),
     sortable: true,

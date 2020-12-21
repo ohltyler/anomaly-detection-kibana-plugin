@@ -96,7 +96,7 @@ export function IndexChooser(props: IndexChooserProps) {
                   hint="Choose an index or index pattern as the data source."
                   isInvalid={isInvalid(field.name, form)}
                   error={getError(field.name, form)}
-                  helpText="You can use a wildcard (*) in your index pattern"
+                  helpText="You can use a wildcard (*) in your index pattern."
                 >
                   <EuiComboBox
                     id="index"
@@ -134,7 +134,7 @@ export function IndexChooser(props: IndexChooserProps) {
                       }
                     }}
                     selectedOptions={field.value}
-                    singleSelection={true}
+                    singleSelection={{ asPlainText: true }}
                     isClearable={true}
                     renderOption={(option, searchValue, className) => (
                       <IndexOption

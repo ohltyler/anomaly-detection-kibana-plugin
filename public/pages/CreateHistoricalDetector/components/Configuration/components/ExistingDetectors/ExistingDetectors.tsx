@@ -188,7 +188,7 @@ export function ExistingDetectors(props: ExistingDetectorsProps) {
             <FormattedFormRow
               fullWidth
               title="Source existing detector configuration"
-              hint="Choose from an existing real-time or historical detector configuration"
+              hint="Choose from an existing real-time or historical detector configuration."
             >
               <EuiComboBox
                 id="existingDetectorsComboBox"
@@ -212,7 +212,7 @@ export function ExistingDetectors(props: ExistingDetectorsProps) {
                     ]) ||
                   []
                 }
-                singleSelection={true}
+                singleSelection={{ asPlainText: true }}
                 isClearable={true}
               />
             </FormattedFormRow>

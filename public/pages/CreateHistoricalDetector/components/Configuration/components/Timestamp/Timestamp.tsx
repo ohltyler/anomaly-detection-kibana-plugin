@@ -97,7 +97,7 @@ export function Timestamp(props: TimestampProps) {
                 selectedOptions={
                   (field.value && [{ label: field.value }]) || []
                 }
-                singleSelection={true}
+                singleSelection={{ asPlainText: true }}
                 isClearable={true}
               />
             </FormattedFormRow>

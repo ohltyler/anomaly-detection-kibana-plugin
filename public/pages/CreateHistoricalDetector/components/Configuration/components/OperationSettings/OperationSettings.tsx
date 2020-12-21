@@ -64,6 +64,7 @@ export function OperationSettings(props: OperationSettingsProps) {
                         id="detectionInterval"
                         placeholder="Detector interval"
                         data-test-subj="detectionInterval"
+                        min={1}
                         {...field}
                       />
                     </EuiFlexItem>

@@ -57,6 +57,7 @@ export const Settings = () => {
                       id="detectionInterval"
                       placeholder="Detector interval"
                       data-test-subj="detectionInterval"
+                      min={1}
                       {...field}
                     />
                   </EuiFlexItem>

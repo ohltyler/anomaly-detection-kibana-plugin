@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`<HistoricalDetectorConfig /> spec detector is not stopping renders the component with detector initializing 1`] = `
+exports[`<HistoricalDetectorControls /> spec detector is not stopping renders the component with detector initializing 1`] = `
 <div
   class="euiFlexGroup euiFlexGroup--gutterLarge euiFlexGroup--alignItemsCenter euiFlexGroup--justifyContentSpaceBetween euiFlexGroup--directionRow euiFlexGroup--responsive"
 >
@@ -81,7 +81,7 @@ exports[`<HistoricalDetectorConfig /> spec detector is not stopping renders the 
 </div>
 `;
 
-exports[`<HistoricalDetectorConfig /> spec detector is not stopping renders the component with detector running 1`] = `
+exports[`<HistoricalDetectorControls /> spec detector is not stopping renders the component with detector running 1`] = `
 <div
   class="euiFlexGroup euiFlexGroup--gutterLarge euiFlexGroup--alignItemsCenter euiFlexGroup--justifyContentSpaceBetween euiFlexGroup--directionRow euiFlexGroup--responsive"
 >
@@ -167,7 +167,7 @@ exports[`<HistoricalDetectorConfig /> spec detector is not stopping renders the 
 </div>
 `;
 
-exports[`<HistoricalDetectorConfig /> spec detector is not stopping renders the component with detector stopped 1`] = `
+exports[`<HistoricalDetectorControls /> spec detector is not stopping renders the component with detector stopped 1`] = `
 <div
   class="euiFlexGroup euiFlexGroup--gutterLarge euiFlexGroup--alignItemsCenter euiFlexGroup--justifyContentSpaceBetween euiFlexGroup--directionRow euiFlexGroup--responsive"
 >
@@ -243,7 +243,7 @@ exports[`<HistoricalDetectorConfig /> spec detector is not stopping renders the 
 </div>
 `;
 
-exports[`<HistoricalDetectorConfig /> spec detector is stopping renders the component 1`] = `
+exports[`<HistoricalDetectorControls /> spec detector is stopping renders the component 1`] = `
 <div
   class="euiFlexGroup euiFlexGroup--gutterLarge euiFlexGroup--alignItemsCenter euiFlexGroup--justifyContentSpaceBetween euiFlexGroup--directionRow euiFlexGroup--responsive"
 >

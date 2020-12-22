@@ -40,7 +40,10 @@ import {
 } from '../../../utils/constants';
 import { DETECTOR_STATE } from '../../../../server/utils/constants';
 import { getTitleWithCount } from '../../../utils/utils';
-import { ALL_DETECTOR_STATES } from '../../utils/constants';
+import {
+  ALL_DETECTOR_STATES,
+  SINGLE_DETECTOR_NOT_FOUND_MSG,
+} from '../../utils/constants';
 import { getURLQueryParams } from '../utils/helpers';
 import {
   filterAndSortHistoricalDetectors,
@@ -110,7 +113,11 @@ export function HistoricalDetectorList(props: HistoricalDetectorListProps) {
   }, []);
 
   useEffect(() => {
-    if (errorGettingDetectors) {
+    if (
+      errorGettingDetectors &&
+      !errorGettingDetectors.includes(SINGLE_DETECTOR_NOT_FOUND_MSG)
+    ) {
+      console.log();
       console.error(errorGettingDetectors);
       core.notifications.toasts.addDanger(
         typeof errorGettingDetectors === 'string' &&

@@ -56,6 +56,7 @@ import {
   GET_ALL_DETECTORS_QUERY_PARAMS,
   ALL_DETECTOR_STATES,
   ALL_INDICES,
+  SINGLE_DETECTOR_NOT_FOUND_MSG,
 } from '../../../utils/constants';
 import { BREADCRUMBS } from '../../../../utils/constants';
 import {
@@ -68,10 +69,7 @@ import {
   getDetectorsToDisplay,
 } from '../../../utils/helpers';
 import { staticColumn } from '../../utils/tableUtils';
-import {
-  DETECTOR_ACTION,
-  SINGLE_DETECTOR_ERROR_MSG,
-} from '../../utils/constants';
+import { DETECTOR_ACTION } from '../../utils/constants';
 import { getTitleWithCount, Listener } from '../../../../utils/utils';
 import { ListActions } from '../../components/ListActions/ListActions';
 import { searchMonitors } from '../../../../redux/reducers/alerting';
@@ -180,7 +178,7 @@ export const DetectorList = (props: ListProps) => {
   useEffect(() => {
     if (
       errorGettingDetectors &&
-      errorGettingDetectors !== SINGLE_DETECTOR_ERROR_MSG
+      !errorGettingDetectors.includes(SINGLE_DETECTOR_NOT_FOUND_MSG)
     ) {
       console.error(errorGettingDetectors);
       core.notifications.toasts.addDanger(

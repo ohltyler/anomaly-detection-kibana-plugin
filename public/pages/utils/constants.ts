@@ -76,3 +76,5 @@ export const GET_SAMPLE_DETECTORS_QUERY_PARAMS = {
 };
 
 export const GET_SAMPLE_INDICES_QUERY = 'opendistro-sample-*';
+
+export const SINGLE_DETECTOR_NOT_FOUND_MSG = `Can't find detector with id`;

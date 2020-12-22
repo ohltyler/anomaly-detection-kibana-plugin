@@ -46,7 +46,6 @@ export function registerESRoutes(apiRouter: Router, esService: ESService) {
   apiRouter.put('/create_index', esService.createIndex);
   apiRouter.post('/bulk', esService.bulk);
   apiRouter.post('/delete_index', esService.deleteIndex);
-  apiRouter.get('/cluster_stats', esService.getClusterStats);
 }
 
 export default class ESService {
@@ -304,30 +303,6 @@ export default class ESService {
       });
     } catch (err) {
       console.log('Anomaly detector - Unable to get mappings', err);
-      return kibanaResponse.ok({
-        body: {
-          ok: false,
-          error: getErrorMessage(err),
-        },
-      });
-    }
-  };
-
-  getClusterStats = async (
-    context: RequestHandlerContext,
-    request: KibanaRequest,
-    kibanaResponse: KibanaResponseFactory
-  ): Promise<IKibanaResponse<any>> => {
-    try {
-      const response = await this.client
-        .asScoped(request)
-        .callAsCurrentUser('cluster.stats');
-
-      return kibanaResponse.ok({
-        body: { ok: true, response: response },
-      });
-    } catch (err) {
-      console.log('Anomaly detector - Unable to get cluster stats', err);
       return kibanaResponse.ok({
         body: {
           ok: false,

@@ -25,7 +25,6 @@ export const AD_NODE_API = Object.freeze({
   BULK: `${BASE_NODE_API_PATH}/bulk`,
   DELETE_INDEX: `${BASE_NODE_API_PATH}/delete_index`,
   CREATE_SAMPLE_DATA: `${BASE_NODE_API_PATH}/create_sample_data`,
-  GET_CLUSTER_STATS: `${BASE_NODE_API_PATH}/cluster_stats`,
 });
 export const ALERTING_NODE_API = Object.freeze({
   _SEARCH: `${BASE_NODE_API_PATH}/monitors/_search`,
